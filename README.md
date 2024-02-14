@@ -1,6 +1,6 @@
 # Bomberman_TEC
 
-Author: @MaickolFernandez
+Author: @MaickolFernandez | @JordiPerez
 
 Description: This project determines how good we are at coding in C, we are going to do that by programming a cool game called Bomberman.
 
