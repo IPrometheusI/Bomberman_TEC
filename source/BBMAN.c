@@ -110,6 +110,9 @@ static SDL_Surface *title;
 static SDL_Surface *numbermap;
 static SDL_Surface *end;
 static SDL_Surface *bomb;
+static SDL_Surface *fire;
+static SDL_Surface *skin;
+
 
 
 //textures
@@ -432,6 +435,57 @@ static void draw_bomb(){
 
 }
 
+static void draw_explosion(){
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = (screen->w / 2) + 12;
+	dest.y = 300;
+	dest.w = 64;
+	dest.h = 64;
+	
+	if (g_score[1] > 0 && g_score[1] < 10) {
+		
+		src.x += src.w * g_score[1];
+	}
+
+	SDL_BlitSurface(fire, &src, screen, &dest);
+
+}
+
+static void draw_skin(){
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = 20;
+	dest.y = 100;
+	dest.w = 64;
+	dest.h = 64;
+	
+	if (g_score[1] > 0 && g_score[1] < 10) {
+		
+		src.x += src.w * g_score[1];
+	}
+
+	SDL_BlitSurface(skin, &src, screen, &dest);
+
+}
+
+
+
+
 // Main function
 
 int main (int argc, char *args[]) {
@@ -553,8 +607,14 @@ int main (int argc, char *args[]) {
 			//draw the score
 			draw_game_element_1_score();
 			
-			//draw something else
+			//draw a bomb
 			draw_bomb();
+			
+			//draw fire 
+			draw_explosion();
+			
+			//draw skin
+			draw_skin();
 		}
 	
 		SDL_UpdateTexture(screen_texture, NULL, screen->pixels, 
@@ -580,6 +640,8 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(numbermap);
 	SDL_FreeSurface(end);
 	SDL_FreeSurface(bomb);
+	SDL_FreeSurface(fire);
+	SDL_FreeSurface(skin);
 
 	//free renderer and all textures used with it
 	SDL_DestroyRenderer(renderer);
@@ -704,6 +766,33 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 
 		return FAILURE;
 	}
+	
+	//Load the fire image
+	fire = SDL_LoadBMP("fire.bmp");
+
+	if (fire == NULL) {
+		
+		printf("Could not Load fire image! SDL_Error: %s\n", 
+				SDL_GetError());
+
+		return FAILURE;
+	}
+	
+	//Load the skin image
+	skin = SDL_LoadBMP("skin.bmp");
+
+	if (skin == NULL) {
+		
+		printf("Could not Load skin image! SDL_Error: %s\n", 
+				SDL_GetError());
+
+		return FAILURE;
+	}
+	
+	
+	
+	
+	
 	
 	//Load the gameover image
 	end = SDL_LoadBMP("gameover.bmp");
