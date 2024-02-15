@@ -54,6 +54,13 @@
 // The colors used in the game
 #define BLACK 0x000000ff
 #define WHITE 0xffffffff
+#define RED   0xFF0000FF // Rojo con opacidad completa
+#define GREEN 0x00FF00FF // Verde con opacidad completa
+#define BLUE  0x0000FFFF // Azul con opacidad completa
+#define YELLOW 0xFFFF00FF // Amarillo con opacidad completa
+#define ORANGE 0xFF7D0000
+
+
 
 // Timing delays
 #define INPUT_DELAY_MS 500
@@ -90,7 +97,7 @@ typedef struct game_element_t {
 
 // This is one of the few cases where it makes sense to use magic numbers
 // Avoid the use of global variables at maximum
-int g_score[] = {0,0}; 
+int g_score[] = {1,0}; 
 // Avoid the use of global variables, modify the code to avoid its use.
 int g_width, g_height;		//used if fullscreen
 
@@ -102,6 +109,8 @@ static SDL_Surface *screen;
 static SDL_Surface *title;
 static SDL_Surface *numbermap;
 static SDL_Surface *end;
+static SDL_Surface *bomb;
+
 
 //textures
 SDL_Texture *screen_texture;
@@ -156,7 +165,13 @@ static void init_game(game_element_t *player, game_element_t *map_element, game_
 	
 	//Inamovible
 	map_element3->x = screen->w/2;
-	map_element3->y = screen->h/1;
+	map_element3->y = screen->h/2;
+	map_element3->w = BLOCK_SIZE;
+	map_element3->h = BLOCK_SIZE;
+	
+	//Inamovible
+	map_element3->x = 100;
+	map_element3->y = 100;
 	map_element3->w = BLOCK_SIZE;
 	map_element3->h = BLOCK_SIZE;
 	
@@ -392,6 +407,31 @@ static void draw_game_element_1_score() {
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
 
+static void draw_bomb(){
+
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = (screen->w / 2) + 12;
+	dest.y = 200;
+	dest.w = 64;
+	dest.h = 64;
+	
+	if (g_score[1] > 0 && g_score[1] < 10) {
+		
+		src.x += src.w * g_score[1];
+	}
+
+	SDL_BlitSurface(bomb, &src, screen, &dest);
+
+}
+
 // Main function
 
 int main (int argc, char *args[]) {
@@ -459,7 +499,7 @@ int main (int argc, char *args[]) {
 		
 		//draw background
 		SDL_RenderClear(renderer);
-		SDL_FillRect(screen, NULL, BLACK);
+		SDL_FillRect(screen, NULL, ORANGE);
 		
 		//display main menu
 		if (state == START_SCREEN ) {
@@ -512,6 +552,9 @@ int main (int argc, char *args[]) {
 	
 			//draw the score
 			draw_game_element_1_score();
+			
+			//draw something else
+			draw_bomb();
 		}
 	
 		SDL_UpdateTexture(screen_texture, NULL, screen->pixels, 
@@ -536,6 +579,7 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(title);
 	SDL_FreeSurface(numbermap);
 	SDL_FreeSurface(end);
+	SDL_FreeSurface(bomb);
 
 	//free renderer and all textures used with it
 	SDL_DestroyRenderer(renderer);
@@ -645,6 +689,17 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	if (numbermap == NULL) {
 		
 		printf("Could not Load numbermap image! SDL_Error: %s\n", 
+				SDL_GetError());
+
+		return FAILURE;
+	}
+	
+	//Load the bomb image
+	bomb = SDL_LoadBMP("bomb.bmp");
+
+	if (bomb == NULL) {
+		
+		printf("Could not Load bomb image! SDL_Error: %s\n", 
 				SDL_GetError());
 
 		return FAILURE;
