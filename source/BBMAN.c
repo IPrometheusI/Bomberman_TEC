@@ -28,6 +28,7 @@
 #define RIGHT 1
 #define UP 2
 #define DOWN 3
+#define DROP 4
 
 
 // Block size that will be used for drawing on the screen
@@ -278,6 +279,10 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
  *
  *	void.
  */
+ 
+
+
+
 static void draw_game_over() { 
 
 	SDL_Rect p1;
@@ -410,7 +415,8 @@ static void draw_game_element_1_score() {
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
 
-static void draw_bomb(){
+static void draw_bomb(game_element_t *player){
+
 
 
 	SDL_Rect src;
@@ -421,15 +427,15 @@ static void draw_bomb(){
 	src.w = 64;
 	src.h = 64;
 
-	dest.x = (screen->w / 2) + 12;
-	dest.y = 200;
+	dest.x = player->x;
+	dest.y = player->y;
 	dest.w = 64;
 	dest.h = 64;
 	
-	if (g_score[1] > 0 && g_score[1] < 10) {
+	/*if (g_score[1] > 0 && g_score[1] < 10) {
 		
 		src.x += src.w * g_score[1];
-	}
+	}*/
 
 	SDL_BlitSurface(bomb, &src, screen, &dest);
 
@@ -530,24 +536,30 @@ int main (int argc, char *args[]) {
 			quit = TRUE;
 		}
 		
-		if (keystate[SDL_SCANCODE_S]) {
+		if (keystate[SDL_SCANCODE_DOWN]) {
 			
 			move_player(DOWN, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 
-		if (keystate[SDL_SCANCODE_W]) {
+		if (keystate[SDL_SCANCODE_UP]) {
 			
 			move_player(UP, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 		
-		if (keystate[SDL_SCANCODE_A]) {
+		if (keystate[SDL_SCANCODE_LEFT]) {
 			
 			move_player(LEFT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 
-		if (keystate[SDL_SCANCODE_D]) {
+		if (keystate[SDL_SCANCODE_RIGHT]) {
 			
 			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
+		}
+		
+		if (keystate[SDL_SCANCODE_B]) {
+		
+			draw_bomb(&player);
+		
 		}
 		
 		
@@ -608,7 +620,7 @@ int main (int argc, char *args[]) {
 			draw_game_element_1_score();
 			
 			//draw a bomb
-			draw_bomb();
+			draw_bomb(&player);
 			
 			//draw fire 
 			draw_explosion();
