@@ -415,7 +415,7 @@ static void draw_game_element_1_score() {
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
 
-static void draw_bomb(game_element_t *player){
+static void draw_bomb(){
 
 
 
@@ -427,8 +427,8 @@ static void draw_bomb(game_element_t *player){
 	src.w = 64;
 	src.h = 64;
 
-	dest.x = player->x;
-	dest.y = player->y;
+	dest.x = 100;
+	dest.y = 100;
 	dest.w = 64;
 	dest.h = 64;
 	
@@ -465,7 +465,7 @@ static void draw_explosion(){
 
 }
 
-static void draw_skin(){
+static void draw_skin(game_element_t *player){
 
 	SDL_Rect src;
 	SDL_Rect dest;
@@ -475,8 +475,8 @@ static void draw_skin(){
 	src.w = 64;
 	src.h = 64;
 
-	dest.x = 20;
-	dest.y = 100;
+	dest.x = player -> x;
+	dest.y = player -> y;
 	dest.w = 64;
 	dest.h = 64;
 	
@@ -620,13 +620,13 @@ int main (int argc, char *args[]) {
 			draw_game_element_1_score();
 			
 			//draw a bomb
-			draw_bomb(&player);
+			draw_bomb();
 			
 			//draw fire 
 			draw_explosion();
 			
 			//draw skin
-			draw_skin();
+			draw_skin(&player);
 		}
 	
 		SDL_UpdateTexture(screen_texture, NULL, screen->pixels, 
