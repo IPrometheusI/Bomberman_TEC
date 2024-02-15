@@ -122,7 +122,7 @@ SDL_Texture *screen_texture;
  * Return:
  * 	void.
  */
-static void init_game(game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3) {
+static void init_game(game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4) {
 	// Here the function is receiving the pointer to the player object
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
@@ -131,34 +131,34 @@ static void init_game(game_element_t *player, game_element_t *map_element, game_
 	player->h = BLOCK_SIZE;
  
  	//Barrera de la derecha
-	map_element->x = 1210;    //screen->w/64;
-	map_element->y = 1;    //screen->h/10;
-	map_element->w = 1.5*BLOCK_SIZE;
+	map_element->x = 1250;    //screen->w/64;
+	map_element->y = 90;    //screen->h/10;
+	map_element->w = BLOCK_SIZE;
 	map_element->h = 50*BLOCK_SIZE;
 	
 	//Barrera de la izquierda
-	map_element1->x = 1;  //screen->w/168;
-	map_element1->y = 1;   //screen->h/168;
-	map_element1->w = 1.5*BLOCK_SIZE;
+	map_element1->x = -20;  //screen->w/168;
+	map_element1->y = 90;   //screen->h/168;
+	map_element1->w = BLOCK_SIZE;
 	map_element1->h = 50*BLOCK_SIZE;
 	
 	//Barrera superior
-	map_element2->x = 640;
-	map_element2->y = 1;
-	map_element2->w = 50*BLOCK_SIZE;
-	map_element2->h = 1.5*BLOCK_SIZE;
+	map_element2->x = 0;
+	map_element2->y = 55;
+	map_element2->w = 40*BLOCK_SIZE;
+	map_element2->h = BLOCK_SIZE-10;
 	
 	//Barrera inferior
-	map_element2->x = 640;
-	map_element2->y = 600;
-	map_element2->w = 50*BLOCK_SIZE;
-	map_element2->h = 1.5*BLOCK_SIZE;
+	map_element4->x = 0;
+	map_element4->y = 690;
+	map_element4->w = 50*BLOCK_SIZE;
+	map_element4->h = BLOCK_SIZE;
 	
 	//Inamovible
 	map_element3->x = screen->w/2;
 	map_element3->y = screen->h/1;
-	map_element3->w = 1.5*BLOCK_SIZE;
-	map_element3->h = 1.5*BLOCK_SIZE;
+	map_element3->w = BLOCK_SIZE;
+	map_element3->h = BLOCK_SIZE;
 	
 
 }
@@ -221,29 +221,29 @@ int check_collision(game_element_t a, game_element_t b){
  *	void.
  */
 
-void move_player(int d, game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3){
+void move_player(int d, game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4){
 	//
 	if (d == LEFT) {
 		player->x -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
 			player->x += MOVEMENT_DELTA;
 	}
 
 	if (d == RIGHT) {
 		player->x += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
 			player->x -= MOVEMENT_DELTA;
 	}
 		
 	if (d == UP) {
 		player->y -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
 			player->y += MOVEMENT_DELTA;
 	}
 
 	if (d == DOWN) {
 		player->y += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
 			player->y -= MOVEMENT_DELTA;
 	}
 }
@@ -405,6 +405,7 @@ int main (int argc, char *args[]) {
 	game_element_t map_element1;
 	game_element_t map_element2; 
 	game_element_t map_element3;
+	game_element_t map_element4;
 
 	//SDL Window setup
 	if (init_SDL(SCREEN_WIDTH, SCREEN_HEIGHT, argc, args) == FAILURE) {
@@ -420,7 +421,7 @@ int main (int argc, char *args[]) {
 	Uint32 next_game_tick = SDL_GetTicks();
 	
 	// Initialize the ball position data. 
-	init_game(&player, &map_element,&map_element1, &map_element2,&map_element3); // The & means "Address of"
+	init_game(&player, &map_element,&map_element1, &map_element2,&map_element3,&map_element4); // The & means "Address of"
 	
 	//render loop
 	while(quit == FALSE) {
@@ -437,23 +438,25 @@ int main (int argc, char *args[]) {
 		
 		if (keystate[SDL_SCANCODE_S]) {
 			
-			move_player(DOWN, &player, &map_element, &map_element1, &map_element2, &map_element3);
+			move_player(DOWN, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 
 		if (keystate[SDL_SCANCODE_W]) {
 			
-			move_player(UP, &player, &map_element, &map_element1, &map_element2, &map_element3);
+			move_player(UP, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 		
 		if (keystate[SDL_SCANCODE_A]) {
 			
-			move_player(LEFT, &player, &map_element, &map_element1, &map_element2, &map_element3);
+			move_player(LEFT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 
 		if (keystate[SDL_SCANCODE_D]) {
 			
-			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3);
+			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
+		
+		
 		//draw background
 		SDL_RenderClear(renderer);
 		SDL_FillRect(screen, NULL, BLACK);
@@ -501,6 +504,7 @@ int main (int argc, char *args[]) {
 			draw_game_element(&map_element1);
 			draw_game_element(&map_element2);
 			draw_game_element(&map_element3);
+			draw_game_element(&map_element4);
 
 
 			//draw the score
