@@ -98,7 +98,7 @@ typedef struct game_element_t {
 
 // This is one of the few cases where it makes sense to use magic numbers
 // Avoid the use of global variables at maximum
-int g_score[] = {1,0}; 
+int g_score[] = {5,5}; 
 // Avoid the use of global variables, modify the code to avoid its use.
 int g_width, g_height;		//used if fullscreen
 
@@ -281,8 +281,6 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
  */
  
 
-
-
 static void draw_game_over() { 
 
 	SDL_Rect p1;
@@ -415,8 +413,8 @@ static void draw_game_element_1_score() {
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
 
-static void draw_bomb(){
-
+int void draw_bomb(int pos_x, int pos_y){
+	
 
 
 	SDL_Rect src;
@@ -427,19 +425,27 @@ static void draw_bomb(){
 	src.w = 64;
 	src.h = 64;
 
-	dest.x = 100;
-	dest.y = 100;
+	dest.x = pos_x;
+	dest.y = pos_y;
 	dest.w = 64;
 	dest.h = 64;
 	
-	/*if (g_score[1] > 0 && g_score[1] < 10) {
+	
+	if (g_score[1] > 0 && g_score[1] < 10) {
 		
 		src.x += src.w * g_score[1];
-	}*/
+	}
+	
+	
 
 	SDL_BlitSurface(bomb, &src, screen, &dest);
+	//SDL_RenderCopy(renderer, screen_texture, NULL, NULL);
 
-}
+
+	}
+
+
+
 
 static void draw_explosion(){
 
@@ -480,10 +486,7 @@ static void draw_skin(game_element_t *player){
 	dest.w = 64;
 	dest.h = 64;
 	
-	if (g_score[1] > 0 && g_score[1] < 10) {
-		
-		src.x += src.w * g_score[1];
-	}
+	
 
 	SDL_BlitSurface(skin, &src, screen, &dest);
 
@@ -556,11 +559,13 @@ int main (int argc, char *args[]) {
 			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 		
-		if (keystate[SDL_SCANCODE_B]) {
+		/*if (keystate[SDL_SCANCODE_B]) {
 		
-			draw_bomb(&player);
+			draw_bomb(DROP,&player);
+			//SDL_Delay(INPUT_DELAY_MS);
+			//printf("Se presiono B\n");
 		
-		}
+		}*/
 		
 		
 		//draw background
@@ -620,7 +625,27 @@ int main (int argc, char *args[]) {
 			draw_game_element_1_score();
 			
 			//draw a bomb
-			draw_bomb();
+			//draw_bomb(DROP,&player);
+			if (keystate[SDL_SCANCODE_B]) {
+				int x[5];
+				int y[5];
+					
+				for (int i=0;i<5;i++){
+					x[i] = player.x;
+					y[i] = player.y;
+				//int x = player.x;
+				//int y = player.y;
+				}	
+				
+				
+				draw_bomb(x[3],y[3]);
+				//SDL_Delay(INPUT_DELAY_MS);
+				
+				/*for(int n = 0; n < 5; n++) {
+			    		x[n] = 0;
+			    		y[n] = 0;
+				}*/
+		}
 			
 			//draw fire 
 			draw_explosion();
