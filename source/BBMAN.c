@@ -2,6 +2,7 @@
 #include <SDL.h>	//SDL version 2.0
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h> 
 
 
 // Numbers bitmap, some routines and and SDL initialization taken from
@@ -78,6 +79,16 @@
 //initialise SDL
 int init_SDL(int w, int h, int argc, char *args[]);
 
+/*int void timer_measure(){
+
+    time_t start = time(NULL);
+    sleep(3);
+    printf("%.2f\n",(double)(time(NULL)-start));
+    return 0; 
+
+
+
+}*/
 
 typedef struct player_t {
 
@@ -98,7 +109,7 @@ typedef struct game_element_t {
 
 // This is one of the few cases where it makes sense to use magic numbers
 // Avoid the use of global variables at maximum
-int g_score[] = {5,5}; 
+int g_score[] = {1,0}; 
 // Avoid the use of global variables, modify the code to avoid its use.
 int g_width, g_height;		//used if fullscreen
 
@@ -110,7 +121,7 @@ static SDL_Surface *screen;
 static SDL_Surface *title;
 static SDL_Surface *numbermap;
 static SDL_Surface *end;
-static SDL_Surface *bomb;
+static SDL_Surface *bomb_image;
 static SDL_Surface *fire;
 static SDL_Surface *skin;
 
@@ -135,13 +146,20 @@ SDL_Texture *screen_texture;
  * Return:
  * 	void.
  */
-static void init_game(game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4) {
+static void init_game(game_element_t *player,game_element_t *bomb_object, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4) {
 	// Here the function is receiving the pointer to the player object
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
 	player->w = BLOCK_SIZE;
 	player->h = BLOCK_SIZE;
+	
+	//Objeto Bomba
+	bomb_object->x = PLAYER_START_X+2000;
+	bomb_object->y = PLAYER_START_Y+2000;
+	bomb_object->w = BLOCK_SIZE;
+	bomb_object->h = BLOCK_SIZE;
+	
  
  	//Barrera de la derecha
 	map_element->x = 1250;    //screen->w/64;
@@ -173,15 +191,21 @@ static void init_game(game_element_t *player, game_element_t *map_element, game_
 	map_element3->w = BLOCK_SIZE;
 	map_element3->h = BLOCK_SIZE;
 	
-	//Inamovible
-	map_element3->x = 100;
-	map_element3->y = 100;
-	map_element3->w = BLOCK_SIZE;
-	map_element3->h = BLOCK_SIZE;
-	
 
 }
 
+static void relocation_object(game_element_t *bomb_object){
+	//Cuando se presiona B, se deja la imagen bomba en esa posicion
+	
+	
+
+
+
+
+
+
+
+}
 
 
 /* Function: check_collision
@@ -244,25 +268,41 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
 	//
 	if (d == LEFT) {
 		player->x -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || 
+		check_collision(*player, *map_element1) == TRUE || 
+		check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || 
+		check_collision(*player, *map_element4) == TRUE)
 			player->x += MOVEMENT_DELTA;
 	}
 
 	if (d == RIGHT) {
 		player->x += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || 
+		check_collision(*player, *map_element1) == TRUE || 
+		check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || 
+		check_collision(*player, *map_element4) == TRUE)
 			player->x -= MOVEMENT_DELTA;
 	}
 		
 	if (d == UP) {
 		player->y -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || 
+		check_collision(*player, *map_element1) == TRUE || 
+		check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || 
+		check_collision(*player, *map_element4) == TRUE)
 			player->y += MOVEMENT_DELTA;
 	}
 
 	if (d == DOWN) {
 		player->y += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || 
+		check_collision(*player, *map_element1) == TRUE || 
+		check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || 
+		check_collision(*player, *map_element4) == TRUE)
 			player->y -= MOVEMENT_DELTA;
 	}
 }
@@ -280,6 +320,8 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
  *	void.
  */
  
+
+
 
 static void draw_game_over() { 
 
@@ -413,8 +455,8 @@ static void draw_game_element_1_score() {
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
 
-int void draw_bomb(int pos_x, int pos_y){
-	
+static void draw_bomb(game_element_t *bomb_object){
+
 
 
 	SDL_Rect src;
@@ -425,27 +467,14 @@ int void draw_bomb(int pos_x, int pos_y){
 	src.w = 64;
 	src.h = 64;
 
-	dest.x = pos_x;
-	dest.y = pos_y;
+	dest.x = bomb_object->x;
+	dest.y = bomb_object->y;
 	dest.w = 64;
 	dest.h = 64;
 	
-	
-	if (g_score[1] > 0 && g_score[1] < 10) {
-		
-		src.x += src.w * g_score[1];
-	}
-	
-	
+	SDL_BlitSurface(bomb_image, &src, screen, &dest);
 
-	SDL_BlitSurface(bomb, &src, screen, &dest);
-	//SDL_RenderCopy(renderer, screen_texture, NULL, NULL);
-
-
-	}
-
-
-
+}
 
 static void draw_explosion(){
 
@@ -462,11 +491,6 @@ static void draw_explosion(){
 	dest.w = 64;
 	dest.h = 64;
 	
-	if (g_score[1] > 0 && g_score[1] < 10) {
-		
-		src.x += src.w * g_score[1];
-	}
-
 	SDL_BlitSurface(fire, &src, screen, &dest);
 
 }
@@ -486,7 +510,6 @@ static void draw_skin(game_element_t *player){
 	dest.w = 64;
 	dest.h = 64;
 	
-	
 
 	SDL_BlitSurface(skin, &src, screen, &dest);
 
@@ -501,7 +524,7 @@ int main (int argc, char *args[]) {
 
 	// Define the player and the maps
 	game_element_t player;
-
+	game_element_t bomb_object;
 	// For the project the elements of the map should be created
 	// dinamically (using malloc) and using linked lists.
 	game_element_t map_element; 
@@ -524,7 +547,7 @@ int main (int argc, char *args[]) {
 	Uint32 next_game_tick = SDL_GetTicks();
 	
 	// Initialize the ball position data. 
-	init_game(&player, &map_element,&map_element1, &map_element2,&map_element3,&map_element4); // The & means "Address of"
+	init_game(&player, &bomb_object, &map_element,&map_element1, &map_element2,&map_element3,&map_element4); // The & means "Address of"
 	
 	//render loop
 	while(quit == FALSE) {
@@ -559,13 +582,7 @@ int main (int argc, char *args[]) {
 			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 		
-		/*if (keystate[SDL_SCANCODE_B]) {
 		
-			draw_bomb(DROP,&player);
-			//SDL_Delay(INPUT_DELAY_MS);
-			//printf("Se presiono B\n");
-		
-		}*/
 		
 		
 		//draw background
@@ -616,7 +633,8 @@ int main (int argc, char *args[]) {
 			draw_game_element(&map_element2);
 			draw_game_element(&map_element3);
 			draw_game_element(&map_element4);
-
+			//draw_game_element(&bomb_object);
+			draw_bomb(&bomb_object);
 
 			//draw the score
 			draw_game_element_0_score();
@@ -624,28 +642,15 @@ int main (int argc, char *args[]) {
 			//draw the score
 			draw_game_element_1_score();
 			
-			//draw a bomb
-			//draw_bomb(DROP,&player);
+			//draw a bomb 
 			if (keystate[SDL_SCANCODE_B]) {
-				int x[5];
-				int y[5];
-					
-				for (int i=0;i<5;i++){
-					x[i] = player.x;
-					y[i] = player.y;
-				//int x = player.x;
-				//int y = player.y;
-				}	
+	
+				bomb_object.x = player.x;
+				bomb_object.y = player.y;
 				
-				
-				draw_bomb(x[3],y[3]);
-				//SDL_Delay(INPUT_DELAY_MS);
-				
-				/*for(int n = 0; n < 5; n++) {
-			    		x[n] = 0;
-			    		y[n] = 0;
-				}*/
-		}
+				draw_bomb(&bomb_object);	
+
+			}
 			
 			//draw fire 
 			draw_explosion();
@@ -654,8 +659,11 @@ int main (int argc, char *args[]) {
 			draw_skin(&player);
 		}
 	
-		SDL_UpdateTexture(screen_texture, NULL, screen->pixels, 
-						  screen->w * sizeof (Uint32));
+		SDL_UpdateTexture(screen_texture, 
+					NULL, 
+					screen->pixels, 
+					screen->w * sizeof (Uint32));
+		
 		SDL_RenderCopy(renderer, screen_texture, NULL, NULL);
 
 		//draw to the display
@@ -676,7 +684,7 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(title);
 	SDL_FreeSurface(numbermap);
 	SDL_FreeSurface(end);
-	SDL_FreeSurface(bomb);
+	SDL_FreeSurface(bomb_image);
 	SDL_FreeSurface(fire);
 	SDL_FreeSurface(skin);
 
@@ -726,18 +734,18 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 		if(strcmp(args[i], "-f")) {
 			
 			SDL_CreateWindowAndRenderer(SCREEN_WIDTH, 
-										SCREEN_HEIGHT, 
-										SDL_WINDOW_SHOWN, 
-										&window, 
-										&renderer);
+                  			        SCREEN_HEIGHT, 
+						SDL_WINDOW_SHOWN, 
+						&window, 
+						&renderer);
 		
 		} else {
 		
 			SDL_CreateWindowAndRenderer(SCREEN_WIDTH, 
-										SCREEN_HEIGHT, 
-										SDL_WINDOW_FULLSCREEN_DESKTOP, 
-										&window, 
-										&renderer);
+						SCREEN_HEIGHT,
+						SDL_WINDOW_FULLSCREEN_DESKTOP, 							
+						&window, 
+						&renderer);
 		}
 	}
 
@@ -749,8 +757,7 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	}
 
 	// Create the screen surface where all the elements will be drawn
-	screen = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, 
-											SDL_PIXELFORMAT_RGBA32);
+	screen = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32,SDL_PIXELFORMAT_RGBA32);
 	
 	if (screen == NULL) {
 		
@@ -794,9 +801,9 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	}
 	
 	//Load the bomb image
-	bomb = SDL_LoadBMP("bomb.bmp");
+	bomb_image = SDL_LoadBMP("bomb.bmp");
 
-	if (bomb == NULL) {
+	if (bomb_image == NULL) {
 		
 		printf("Could not Load bomb image! SDL_Error: %s\n", 
 				SDL_GetError());
