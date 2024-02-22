@@ -237,6 +237,10 @@ else {
 
 }*/
 
+
+
+//obj1 sera la bomba
+//obj2 sera la explosion
 static void time_bomb_countdown(game_element_t *obj1, game_element_t *obj2){
 
 
@@ -248,12 +252,26 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 1000) { // 5000 milisegundos = 
     	
     	obj2->x = obj1->x;
     	obj2->y = obj1->y;
+    	draw_explosion(obj2);
+    	obj2->x = obj1->x;
+    	obj2->y = obj1->y+77;
+    	draw_explosion(obj2);
+    	obj2->x = obj1->x;
+    	obj2->y = obj1->y-77;
+    	draw_explosion(obj2);
+    	obj2->x = obj1->x+77;
+    	obj2->y = obj1->y;
+    	draw_explosion(obj2);
+    	obj2->x = obj1->x-77;
+    	obj2->y = obj1->y;
+    	draw_explosion(obj2);
     	
-    	draw_explosion(obj1);
     	
+    	obj1->x = 2000;
+	obj1->y = 2000; 
     	
-  	obj1->x = 2000;
-	obj2->y = 2000;    
+
+  	   
     
     }
     
@@ -665,7 +683,7 @@ int main (int argc, char *args[]) {
 		} else if (state == LEVEL_1) {
 
 			time_bomb_countdown(&bomb_object,&explosion_object);
-			//draw_explosion(&bomb_object);
+
 			
 			
 			//if either player wins, change to game over state
@@ -709,7 +727,7 @@ int main (int argc, char *args[]) {
 				// Coloca la bomba y guarda el momento actual
     				bomb_timer = SDL_GetTicks();
     				bomb_placed = 1; // Indica que la bomba ha sido colocada
-				//draw_explosion(&bomb_object);
+
 
 
 			}
