@@ -2,6 +2,8 @@
 #include <SDL.h>	//SDL version 2.0
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <time.h>
 
 
 // Numbers bitmap, some routines and and SDL initialization taken from
@@ -36,7 +38,7 @@
 
 // Coordinates of the starting player
 #define PLAYER_START_X 78
-#define PLAYER_START_Y 120
+#define PLAYER_START_Y 125
 
 // For the return of the functions
 #define SUCCESS 0
@@ -55,6 +57,10 @@
 #define BLACK 0x000000ff
 #define WHITE 0xffffffff
 #define BLUE 0xFF7D0000
+#define GREEN 0x00FF00FF // Verde con opacidad completa
+#define YELLOW 0xFFFF00FF // Amarillo con opacidad completa
+#define ORANGE 0xFF7D0000
+
 
 // Timing delays
 #define INPUT_DELAY_MS 500
@@ -64,6 +70,10 @@
 
 // Movement diferential
 #define MOVEMENT_DELTA 5
+
+#
+
+
 
 
 
@@ -86,8 +96,11 @@ typedef struct game_element_t {
 	int y;
 	int w;
 	int h;
+	bool destroyed;
 
 } game_element_t;
+
+
 
 // This is one of the few cases where it makes sense to use magic numbers
 // Avoid the use of global variables at maximum
@@ -103,6 +116,12 @@ static SDL_Surface *screen;
 static SDL_Surface *title;
 static SDL_Surface *numbermap;
 static SDL_Surface *end;
+static SDL_Surface *Block;
+static SDL_Surface *Block_des;
+static SDL_Surface *bomb_image;
+static SDL_Surface *fire;
+static SDL_Surface *skin;
+
 
 //textures
 SDL_Texture *screen_texture;
@@ -123,13 +142,19 @@ SDL_Texture *screen_texture;
  * Return:
  * 	void.
  */
-static void init_game(game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *map_element5,game_element_t *map_element6, game_element_t *map_element7,  game_element_t *map_element8, game_element_t *map_element9,game_element_t *map_element10, game_element_t *map_element11, game_element_t *map_element12, game_element_t *map_element13,game_element_t *map_element14, game_element_t *map_element15, game_element_t *map_element16,  game_element_t *map_element17, game_element_t *map_element18,game_element_t *map_element19, game_element_t *map_element20, game_element_t *map_element21, game_element_t *map_element22,game_element_t *map_element23, game_element_t *map_element24) {
+static void init_game(game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *map_element5,game_element_t *map_element6, game_element_t *map_element7,  game_element_t *map_element8, game_element_t *map_element9,game_element_t *map_element10, game_element_t *map_element11, game_element_t *map_element12, game_element_t *map_element13,game_element_t *map_element14, game_element_t *map_element15, game_element_t *map_element16,  game_element_t *map_element17, game_element_t *map_element18,game_element_t *map_element19, game_element_t *map_element20, game_element_t *map_element21, game_element_t *map_element22,game_element_t *map_element23, game_element_t *map_element24, game_element_t *map_des_block, game_element_t *map_des_block1, game_element_t *map_des_block2,game_element_t *map_des_block3,game_element_t *map_des_block4,game_element_t *map_des_block5,game_element_t *map_des_block6,game_element_t *map_des_block7,game_element_t *map_des_block8,game_element_t *map_des_block9,game_element_t *map_des_block10,game_element_t *map_des_block11,game_element_t *map_des_block12,game_element_t *map_des_block13,game_element_t *map_des_block14,game_element_t *map_des_block15, game_element_t *bomb_object) {
 	// Here the function is receiving the pointer to the player object
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
 	player->w = 1.5*BLOCK_SIZE;
 	player->h = 1.5*BLOCK_SIZE;
+	
+	//Objeto Bomba
+	bomb_object->x = PLAYER_START_X+2000;
+	bomb_object->y = PLAYER_START_Y+2000;
+	bomb_object->w = BLOCK_SIZE;
+	bomb_object->h = BLOCK_SIZE;
 
 // aca inician los bloques de las orillas
 	map_element->x = 1240;    //screen->w/64;
@@ -143,7 +168,7 @@ static void init_game(game_element_t *player, game_element_t *map_element, game_
 	map_element1->h = 50*BLOCK_SIZE;
 	
 	map_element2->x = 1;
-	map_element2->y = 660;
+	map_element2->y = 665;
 	map_element2->w = 50*BLOCK_SIZE;
 	map_element2->h = 1.5*BLOCK_SIZE;
 	
@@ -261,7 +286,91 @@ static void init_game(game_element_t *player, game_element_t *map_element, game_
 	map_element24->y = 510;
 	map_element24->w = 1.5*BLOCK_SIZE;
 	map_element24->h = 1.5*BLOCK_SIZE;
-
+	
+	//Bloques destructibles
+	map_des_block->x = 233;
+	map_des_block->y = 125;
+	map_des_block->w = 1.5*BLOCK_SIZE;
+	map_des_block->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block1->x = 233;
+	map_des_block1->y = 278+50;
+	map_des_block1->w = 1.5*BLOCK_SIZE;
+	map_des_block1->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block2->x = 78;
+	map_des_block2->y = 278;
+	map_des_block2->w = 1.5*BLOCK_SIZE;
+	map_des_block2->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block3->x = 155;
+	map_des_block3->y = 433;
+	map_des_block3->w = 1.5*BLOCK_SIZE;
+	map_des_block3->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block4->x = 310;
+	map_des_block4->y = 278;
+	map_des_block4->w = 1.5*BLOCK_SIZE;
+	map_des_block4->h = 1.5*BLOCK_SIZE;
+	
+	
+	map_des_block5->x = 387;
+	map_des_block5->y = 433;
+	map_des_block5->w = 1.5*BLOCK_SIZE;
+	map_des_block5->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block6->x = 387;
+	map_des_block6->y = 125;
+	map_des_block6->w = 1.5*BLOCK_SIZE;
+	map_des_block6->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block7->x = 387;
+	map_des_block7->y = 588;
+	map_des_block7->w = 1.5*BLOCK_SIZE;
+	map_des_block7->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block8->x = 310;
+	map_des_block8->y = 588;
+	map_des_block8->w = 1.5*BLOCK_SIZE;
+	map_des_block8->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block9->x = 852;
+	map_des_block9->y = 588;
+	map_des_block9->w = 1.5*BLOCK_SIZE;
+	map_des_block9->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block10->x = 852;
+	map_des_block10->y = 433;
+	map_des_block10->w = 1.5*BLOCK_SIZE;
+	map_des_block10->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block11->x = 543;
+	map_des_block11->y = 278;
+	map_des_block11->w = 1.5*BLOCK_SIZE;
+	map_des_block11->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block12->x = 698;
+	map_des_block12->y = 125;
+	map_des_block12->w = 1.5*BLOCK_SIZE;
+	map_des_block12->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block13->x = 930;
+	map_des_block13->y = 278;
+	map_des_block13->w = 1.5*BLOCK_SIZE;
+	map_des_block13->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block14->x = 1007;
+	map_des_block14->y = 201;
+	map_des_block14->w = 1.5*BLOCK_SIZE;
+	map_des_block14->h = 1.5*BLOCK_SIZE;
+	
+	map_des_block15->x = 1162;
+	map_des_block15->y = 278;
+	map_des_block15->w = 1.5*BLOCK_SIZE;
+	map_des_block15->h = 1.5*BLOCK_SIZE;
+	
+	
+	
 }
 
 
@@ -307,8 +416,28 @@ int check_collision(game_element_t a, game_element_t b){
 
 	return TRUE;
 
-}
+}/*
+void check_collision_destroy(game_element_t *player,game_element_t *map_des_block){
 
+	if(!map_des_block->destroyed && check_collision(*player, *map_des_block)) {
+		map_des_block->destroyed = true;
+		}
+	}
+	
+void render_block(SDL_Renderer *renderer, const game_element_t *map_des_block){
+	
+	
+	//renderizar bloques que no se han destruido
+	
+	if(!map_des_block->destroyed){
+	SDL_Rect block_rect = {map_des_block->x, map_des_block->y, map_des_block->w, map_des_block->h};
+	SDL_SetRenderDrawColor(renderer, 255,255,255,255);
+	SDL_RenderFillRect(renderer, &block_rect);
+	
+	}
+}*/
+	
+		
 
 /* Function: move_player
  * ---------------------
@@ -320,34 +449,158 @@ int check_collision(game_element_t a, game_element_t b){
  *
  * Return:
  *	void.
- */
+ */ 
 
-void move_player(int d, game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *map_element5,game_element_t *map_element6, game_element_t *map_element7,  game_element_t *map_element8, game_element_t *map_element9,game_element_t *map_element10, game_element_t *map_element11, game_element_t *map_element12, game_element_t *map_element13,game_element_t *map_element14, game_element_t *map_element15, game_element_t *map_element16,  game_element_t *map_element17, game_element_t *map_element18,game_element_t *map_element19, game_element_t *map_element20, game_element_t *map_element21, game_element_t *map_element22,game_element_t *map_element23, game_element_t *map_element24){
+void move_player(int d, game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *map_element5,game_element_t *map_element6, game_element_t *map_element7,  game_element_t *map_element8, game_element_t *map_element9,game_element_t *map_element10, game_element_t *map_element11, game_element_t *map_element12, game_element_t *map_element13,game_element_t *map_element14, game_element_t *map_element15, game_element_t *map_element16,  game_element_t *map_element17, game_element_t *map_element18,game_element_t *map_element19, game_element_t *map_element20, game_element_t *map_element21, game_element_t *map_element22,game_element_t *map_element23, game_element_t *map_element24, game_element_t *map_des_block, game_element_t *map_des_block1,game_element_t *map_des_block2,game_element_t *map_des_block3,game_element_t *map_des_block4,game_element_t *map_des_block5,game_element_t *map_des_block6,game_element_t *map_des_block7,game_element_t *map_des_block8,game_element_t *map_des_block9,game_element_t *map_des_block10,game_element_t *map_des_block11, game_element_t *map_des_block12,game_element_t *map_des_block13,game_element_t *map_des_block14,game_element_t *map_des_block15){
 	//
 	if (d == LEFT) {
 		player->x -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
+		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE || check_collision(*player, *map_element8) == TRUE || 
+		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
+		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
+		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
+		check_collision(*player, *map_element17) == TRUE || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
+		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
+		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
+		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
+		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
+		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
+		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
+		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
 			player->x += MOVEMENT_DELTA;
 	}
 
 	if (d == RIGHT) {
 		player->x += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
+		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || 
+		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
+		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
+		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
+		check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
+		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
+		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
+		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
+		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
+		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
+		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
+		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
+			
 			player->x -= MOVEMENT_DELTA;
 	}
 		
 	if (d == UP) {
 		player->y -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
+		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || 
+		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
+		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
+		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
+		check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
+		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
+		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
+		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
+		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
+		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
+		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
+		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
 			player->y += MOVEMENT_DELTA;
 	}
 
 	if (d == DOWN) {
 		player->y += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE)
+		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
+		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
+		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || 
+		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
+		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
+		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
+		check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
+		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
+		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
+		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
+		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
+		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
+		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
+		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
 			player->y -= MOVEMENT_DELTA;
+			
 	}
 }
+void destroy_block(int d, game_element_t *player, game_element_t *map_des_block){
+
+	
+	if (d == RIGHT){
+	player->x += MOVEMENT_DELTA;
+	if (check_collision(*player, *map_des_block)  == TRUE ){
+		printf("calc solve error");
+		
+		map_des_block->x = -4000;
+		map_des_block->y = -4000;
+		map_des_block->w = 0;
+		map_des_block->h = 0;
+		
+		
+		}
+
+		player->x -= MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	}
+	
+	if (d == LEFT){
+	player->x -= MOVEMENT_DELTA;
+	if (check_collision(*player, *map_des_block) == TRUE){
+		printf("calc solve error");
+		
+		}
+
+		player->x += MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	}
+	
+	if (d == UP){
+	player->y -= MOVEMENT_DELTA;
+	if ( check_collision(*player, *map_des_block) == TRUE ){
+		printf("calc solve error");
+
+		
+
+		}
+
+		player->y += MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	}
+	
+	if (d == DOWN){
+	player->y += MOVEMENT_DELTA;
+	if (check_collision(*player, *map_des_block) == TRUE ){
+		printf("calc solve error");
+
+		map_des_block1->x = -4000;
+		map_des_block1->y = -4000;
+		map_des_block1->w = 0;
+		map_des_block1->h = 0;
+		}
+
+		player->y -= MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	}
+	
+	
+	}
+
 
 /* Function: draw_game_over
  * ----------------------------
@@ -425,6 +678,7 @@ static void draw_menu() {
 static void draw_game_element(game_element_t *element) {
 
 	SDL_Rect src;
+	SDL_Rect dest;
 	int i;
 
 	for (i = 0; i < 2; i++) {
@@ -433,13 +687,56 @@ static void draw_game_element(game_element_t *element) {
 		src.y = element->y;
 		src.w = element->w;
 		src.h = element->h;
+		
+		dest.x = 0;
+		dest.y = 0;
+		dest.w = element->w;
+		dest.h = element->h;
 	
-		int r = SDL_FillRect(screen, &src, SDL_MapRGBA(screen->format,255,255,255,255));
+		SDL_BlitSurface(Block_des, &dest, screen, &src);
+	
+	}
+}
+static void draw_game_elementLimites(game_element_t *element) {
+	
+	SDL_Rect src;
+	int i;
+
+	for (i = 0; i < 2; i++){
+	
+		src.x = element->x;
+		src.y = element->y;
+		src.w = element->w;
+		src.h = element->h;
+	
+		int r = SDL_FillRect(screen, &src, 0xFF000000);
 		
 		if (r !=0){
 		
 			printf("fill rectangle failed in func draw_paddle()");
 		}
+	}
+}
+static void draw_game_element_des(game_element_t *element) {
+
+	SDL_Rect src;
+	SDL_Rect dest;
+	int i;
+
+	for (i = 0; i < 2; i++) {
+	
+		src.x = element->x;
+		src.y = element->y;
+		src.w = element->w;
+		src.h = element->h;
+		
+		dest.x = 0;
+		dest.y = 0;
+		dest.w = element->w;
+		dest.h = element->h;
+	
+		SDL_BlitSurface(Block, &dest, screen, &src);
+	
 	}
 }
 
@@ -492,14 +789,74 @@ static void draw_game_element_1_score() {
 
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
+static void draw_bomb(game_element_t *bomb_object){
+
+
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = bomb_object->x;
+	dest.y = bomb_object->y;
+	dest.w = 64;
+	dest.h = 64;
+	
+	SDL_BlitSurface(bomb_image, &src, screen, &dest);
+
+}
+
+static void draw_explosion(){
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = (screen->w / 2) + 12;
+	dest.y = 300;
+	dest.w = 64;
+	dest.h = 64;
+	
+	SDL_BlitSurface(fire, &src, screen, &dest);
+
+}
+
+static void draw_skin(game_element_t *player){
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = player -> x;
+	dest.y = player -> y;
+	dest.w = 64;
+	dest.h = 64;
+	
+
+	SDL_BlitSurface(skin, &src, screen, &dest);
+
+}
 
 // Main function
 
 int main (int argc, char *args[]) {
-
+	int direccion;
 	// Define the player and the maps
 	game_element_t player;
-
+	game_element_t bomb_object;
+	//SDL_Renderer *renderer;
 	// For the project the elements of the map should be created
 	// dinamically (using malloc) and using linked lists.
 	game_element_t map_element; 
@@ -527,6 +884,25 @@ int main (int argc, char *args[]) {
 	game_element_t map_element22;
 	game_element_t map_element23; 
 	game_element_t map_element24;
+	game_element_t map_des_block;
+	game_element_t map_des_block1;
+	game_element_t map_des_block2;
+	game_element_t map_des_block3;
+	game_element_t map_des_block4;
+	game_element_t map_des_block5;
+	game_element_t map_des_block6;
+	game_element_t map_des_block7;
+	game_element_t map_des_block8;
+	game_element_t map_des_block9;
+	game_element_t map_des_block10;
+	game_element_t map_des_block11;
+	game_element_t map_des_block12;
+	game_element_t map_des_block13;
+	game_element_t map_des_block14;
+	game_element_t map_des_block15;
+	
+	//SDL_Renderer *renderer;
+	
 
 	//SDL Window setup
 	if (init_SDL(SCREEN_WIDTH, SCREEN_HEIGHT, argc, args) == FAILURE) {
@@ -542,15 +918,20 @@ int main (int argc, char *args[]) {
 	Uint32 next_game_tick = SDL_GetTicks();
 	
 	// Initialize the ball position data. 
-	init_game(&player, &map_element,&map_element1, &map_element2,&map_element3, &map_element4, &map_element5, &map_element6, &map_element7, &map_element8,&map_element9, &map_element10,&map_element11, &map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18,&map_element19, &map_element20,&map_element21, &map_element22, &map_element23, &map_element24); // The & means "Address of"
-	
+	init_game(&player, &map_element,&map_element1, &map_element2,&map_element3, &map_element4, &map_element5, &map_element6, &map_element7, &map_element8,&map_element9, 		    &map_element10,&map_element11, &map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18,&map_element19, &map_element20,&map_element21, &map_element22, &map_element23, &map_element24,&map_des_block, &map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8,
+	&map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15, &bomb_object); // The & means "Address of"
 	//render loop
 	while(quit == FALSE) {
+	
+	
+	//render_block(renderer, &map_des_block);
 	
 		//check for new events every frame
 		SDL_PumpEvents();
 
 		const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+		
+		//check_collision_destroy(&player, &map_des_block);
 		
 		if (keystate[SDL_SCANCODE_ESCAPE]) {
 		
@@ -559,27 +940,42 @@ int main (int argc, char *args[]) {
 		
 		if (keystate[SDL_SCANCODE_S]) {
 			
-			move_player(DOWN, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24);
+			move_player(DOWN, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+			
+			direccion = DOWN;
 		}
 
 		if (keystate[SDL_SCANCODE_W]) {
 			
-			move_player(UP, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24);
+			move_player(UP, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+			
+			direccion = UP;
 		}
 		
 		if (keystate[SDL_SCANCODE_A]) {
 			
-			move_player(LEFT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24);
+			move_player(LEFT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+			
+			direccion = LEFT;
 		}
 
 		if (keystate[SDL_SCANCODE_D]) {
 			
-			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24);
+			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+			
+			direccion = RIGHT;
+			
 		}
+		destroy_block(direccion, &player, &map_des_block, &map_des_block1);
 		//draw background
+		//SDL_SetRenderDrawColor(renderer, 255,255,255,255);
 		SDL_RenderClear(renderer);
+		//render_block(renderer, &map_des_block);
 		SDL_FillRect(screen, NULL, BLUE);
 		
+		//Renderizar la pantalla
+		
+		//SDL_RenderPresent(renderer);
 		//display main menu
 		if (state == START_SCREEN ) {
 		
@@ -607,6 +1003,7 @@ int main (int argc, char *args[]) {
 		//display the game
 		} else if (state == LEVEL_1) {
 			
+			
 		
 			//if either player wins, change to game over state
 			if (FALSE) {	//Doing nothing for the moment
@@ -619,10 +1016,11 @@ int main (int argc, char *args[]) {
 			draw_game_element(&player);
 
 			// We draw the map element that is going to be static
-			draw_game_element(&map_element);
-			draw_game_element(&map_element1);
-			draw_game_element(&map_element2);
-			draw_game_element(&map_element3);
+			draw_skin(&player);
+			draw_game_elementLimites(&map_element);
+			draw_game_elementLimites(&map_element1);
+			draw_game_elementLimites(&map_element2);
+			draw_game_elementLimites(&map_element3);
 			draw_game_element(&map_element4);
 			draw_game_element(&map_element5);
 			draw_game_element(&map_element6);
@@ -644,6 +1042,24 @@ int main (int argc, char *args[]) {
 			draw_game_element(&map_element22);
 			draw_game_element(&map_element23);
 			draw_game_element(&map_element24);
+			draw_game_element_des(&map_des_block);
+			draw_game_element_des(&map_des_block1);
+			draw_game_element_des(&map_des_block2);
+			draw_game_element_des(&map_des_block3);
+			draw_game_element_des(&map_des_block4);
+			draw_game_element_des(&map_des_block5);
+			draw_game_element_des(&map_des_block6);
+			draw_game_element_des(&map_des_block7);
+			draw_game_element_des(&map_des_block8);
+			draw_game_element_des(&map_des_block9);
+			draw_game_element_des(&map_des_block10);
+			draw_game_element_des(&map_des_block11);
+			draw_game_element_des(&map_des_block12);
+			draw_game_element_des(&map_des_block13);
+			draw_game_element_des(&map_des_block14);
+			draw_game_element_des(&map_des_block15);
+			//draw_game_element(&bomb_object);
+			draw_bomb(&bomb_object);
 
 
 			//draw the score
@@ -651,7 +1067,17 @@ int main (int argc, char *args[]) {
 	
 			//draw the score
 			draw_game_element_1_score();
+			//draw a bomb
+			if (keystate[SDL_SCANCODE_B]) {
+	
+				bomb_object.x = player.x;
+				bomb_object.y = player.y;
+				
+				draw_bomb(&bomb_object);	
+
+			}
 		}
+		
 	
 		SDL_UpdateTexture(screen_texture, NULL, screen->pixels, 
 						  screen->w * sizeof (Uint32));
@@ -675,6 +1101,13 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(title);
 	SDL_FreeSurface(numbermap);
 	SDL_FreeSurface(end);
+	SDL_FreeSurface(Block_des);
+	SDL_FreeSurface(Block);
+	SDL_FreeSurface(fire);
+	SDL_FreeSurface(skin);
+	SDL_FreeSurface(bomb_image);
+
+	
 
 	//free renderer and all textures used with it
 	SDL_DestroyRenderer(renderer);
@@ -770,6 +1203,12 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 
 	//Load the title image
 	title = SDL_LoadBMP("title.bmp");
+	Block = SDL_LoadBMP("Block.bmp");
+	Block_des = SDL_LoadBMP("Block_des.bmp");
+	bomb_image = SDL_LoadBMP("bomb.bmp");
+	fire = SDL_LoadBMP("fire.bmp");
+	skin = SDL_LoadBMP("skin.bmp");
+	
 
 	if (title == NULL) {
 		
