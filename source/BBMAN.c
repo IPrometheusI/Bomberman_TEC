@@ -64,6 +64,8 @@
 
 
 
+
+
 // Timing delays
 #define INPUT_DELAY_MS 500
 
@@ -73,22 +75,16 @@
 // Movement diferential
 #define MOVEMENT_DELTA 5
 
+Uint32 bomb_timer = 0; // Almacena el momento en que se coloca la bomba
+int bomb_placed = 0; // Indica si la bomba ha sido colocada (0 = no, 1 = sí)
+
 
 
 //function prototypes
 //initialise SDL
 int init_SDL(int w, int h, int argc, char *args[]);
 
-/*int void timer_measure(){
 
-    time_t start = time(NULL);
-    sleep(3);
-    printf("%.2f\n",(double)(time(NULL)-start));
-    return 0; 
-
-
-
-}*/
 
 typedef struct player_t {
 
@@ -146,7 +142,7 @@ SDL_Texture *screen_texture;
  * Return:
  * 	void.
  */
-static void init_game(game_element_t *player,game_element_t *bomb_object, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4) {
+static void init_game(game_element_t *player,game_element_t *bomb_object, game_element_t *map_element, game_element_t *map_element1, game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *explosion_object) {
 	// Here the function is receiving the pointer to the player object
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
@@ -191,22 +187,40 @@ static void init_game(game_element_t *player,game_element_t *bomb_object, game_e
 	map_element3->w = BLOCK_SIZE;
 	map_element3->h = BLOCK_SIZE;
 	
+	//Explosion
+	explosion_object->x = PLAYER_START_X+2000;
+	explosion_object->y = PLAYER_START_Y+2000;
+	explosion_object->w = BLOCK_SIZE;
+	explosion_object->h = BLOCK_SIZE;
+	
 
 }
 
-static void relocation_object(game_element_t *bomb_object){
-	//Cuando se presiona B, se deja la imagen bomba en esa posicion
-	
-	
+void time_bomb_countdown(game_element_t *bomb_object, game_element_t *explosion_object){
 
 
 
+if (bomb_placed && SDL_GetTicks() - bomb_timer > 5000) { // 5000 milisegundos = 5 segundos
+    // Ejecuta tu instrucción especial aquí, después de 5 segundos
 
-
-
-
+    bomb_placed = 0; // Resetea la condición para permitir colocar otra bomba
+    //printf("Ahora si papa!");
+    	
+    	
+    	explosion_object->x = bomb_object->x;
+    	explosion_object->y = bomb_object->y;
+    	
+  	bomb_object->x = 2000;
+	bomb_object->y = 2000;
+    
+    
+    }
+else {
+	//printf("NOT YET\n");
+	return;
 }
 
+}
 
 /* Function: check_collision
  * --------------------------
@@ -264,8 +278,9 @@ int check_collision(game_element_t a, game_element_t b){
  *	void.
  */
 
-void move_player(int d, game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4){
-	//
+void move_player(int d, game_element_t *player,game_element_t *bomb_object, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4){
+	//			
+	//time_bomb_countdown(bomb_object);
 	if (d == LEFT) {
 		player->x -= MOVEMENT_DELTA;
 		if (check_collision(*player, *map_element) == TRUE  || 
@@ -274,6 +289,9 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
 		check_collision(*player, *map_element3) == TRUE || 
 		check_collision(*player, *map_element4) == TRUE)
 			player->x += MOVEMENT_DELTA;
+			//time_bomb_countdown(bomb_object);
+			
+		
 	}
 
 	if (d == RIGHT) {
@@ -284,6 +302,7 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
 		check_collision(*player, *map_element3) == TRUE || 
 		check_collision(*player, *map_element4) == TRUE)
 			player->x -= MOVEMENT_DELTA;
+			//time_bomb_countdown(bomb_object);
 	}
 		
 	if (d == UP) {
@@ -294,6 +313,7 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
 		check_collision(*player, *map_element3) == TRUE || 
 		check_collision(*player, *map_element4) == TRUE)
 			player->y += MOVEMENT_DELTA;
+			//time_bomb_countdown(bomb_object);
 	}
 
 	if (d == DOWN) {
@@ -304,6 +324,7 @@ void move_player(int d, game_element_t *player, game_element_t *map_element, gam
 		check_collision(*player, *map_element3) == TRUE || 
 		check_collision(*player, *map_element4) == TRUE)
 			player->y -= MOVEMENT_DELTA;
+			//time_bomb_countdown(bomb_object);
 	}
 }
 
@@ -476,7 +497,7 @@ static void draw_bomb(game_element_t *bomb_object){
 
 }
 
-static void draw_explosion(){
+static void draw_explosion(game_element_t *explosion_object){
 
 	SDL_Rect src;
 	SDL_Rect dest;
@@ -486,8 +507,8 @@ static void draw_explosion(){
 	src.w = 64;
 	src.h = 64;
 
-	dest.x = (screen->w / 2) + 12;
-	dest.y = 300;
+	dest.x = explosion_object->x;
+	dest.y = explosion_object->y;
 	dest.w = 64;
 	dest.h = 64;
 	
@@ -521,6 +542,7 @@ static void draw_skin(game_element_t *player){
 // Main function
 
 int main (int argc, char *args[]) {
+	
 
 	// Define the player and the maps
 	game_element_t player;
@@ -532,6 +554,7 @@ int main (int argc, char *args[]) {
 	game_element_t map_element2; 
 	game_element_t map_element3;
 	game_element_t map_element4;
+	game_element_t explosion_object;
 
 	//SDL Window setup
 	if (init_SDL(SCREEN_WIDTH, SCREEN_HEIGHT, argc, args) == FAILURE) {
@@ -547,7 +570,7 @@ int main (int argc, char *args[]) {
 	Uint32 next_game_tick = SDL_GetTicks();
 	
 	// Initialize the ball position data. 
-	init_game(&player, &bomb_object, &map_element,&map_element1, &map_element2,&map_element3,&map_element4); // The & means "Address of"
+	init_game(&player, &bomb_object, &map_element, &map_element1, &map_element2, &map_element3, &map_element4, &explosion_object); // The & means "Address of"
 	
 	//render loop
 	while(quit == FALSE) {
@@ -564,22 +587,22 @@ int main (int argc, char *args[]) {
 		
 		if (keystate[SDL_SCANCODE_DOWN]) {
 			
-			move_player(DOWN, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
+			move_player(DOWN, &player, &bomb_object, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 
 		if (keystate[SDL_SCANCODE_UP]) {
 			
-			move_player(UP, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
+			move_player(UP, &player, &bomb_object, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 		
 		if (keystate[SDL_SCANCODE_LEFT]) {
 			
-			move_player(LEFT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
+			move_player(LEFT, &player, &bomb_object, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 
 		if (keystate[SDL_SCANCODE_RIGHT]) {
 			
-			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
+			move_player(RIGHT, &player, &bomb_object, &map_element, &map_element1, &map_element2, &map_element3,&map_element4);
 		}
 		
 		
@@ -615,11 +638,11 @@ int main (int argc, char *args[]) {
 				
 		//display the game
 		} else if (state == LEVEL_1) {
-			
+			time_bomb_countdown(&bomb_object,&explosion_object);
 		
 			//if either player wins, change to game over state
 			if (FALSE) {	//Doing nothing for the moment
-				
+
 				state = GAME_OVER;	
 
 			} 
@@ -635,6 +658,10 @@ int main (int argc, char *args[]) {
 			draw_game_element(&map_element4);
 			//draw_game_element(&bomb_object);
 			draw_bomb(&bomb_object);
+			//draw fire 
+			draw_explosion(&bomb_object);
+			
+
 
 			//draw the score
 			draw_game_element_0_score();
@@ -648,12 +675,16 @@ int main (int argc, char *args[]) {
 				bomb_object.x = player.x;
 				bomb_object.y = player.y;
 				
-				draw_bomb(&bomb_object);	
+				draw_bomb(&bomb_object);
+				
+				// Coloca la bomba y guarda el momento actual
+    				bomb_timer = SDL_GetTicks();
+    				bomb_placed = 1; // Indica que la bomba ha sido colocada
+
 
 			}
 			
-			//draw fire 
-			draw_explosion();
+			
 			
 			//draw skin
 			draw_skin(&player);
@@ -855,3 +886,8 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	
 	return SUCCESS;
 }
+
+
+
+
+
