@@ -38,7 +38,7 @@
 
 
 // Coordinates of the starting player
-#define PLAYER_START_X 78
+#define PLAYER_START_X 85
 #define PLAYER_START_Y 125
 
 // For the return of the functions
@@ -752,7 +752,10 @@ static void draw_explosion(game_element_t *explosion_object){
 
 }
 
-static void time_bomb_countdown(game_element_t *obj1, game_element_t *obj2){
+
+void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object);
+
+void time_bomb_countdown(game_element_t *obj1, game_element_t *obj2, game_element_t *destructible){
 
 
 if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 5 segundos
@@ -760,33 +763,35 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 
     	bomb_placed = 0; // Resetea la condición para permitir colocar otra bomba
     	
-    	
     	obj2->x = obj1->x;
     	obj2->y = obj1->y;
+    	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
     	obj2->x = obj1->x;
     	obj2->y = obj1->y+77;
+    	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
     	obj2->x = obj1->x;
     	obj2->y = obj1->y-77;
+    	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
     	obj2->x = obj1->x+77;
     	obj2->y = obj1->y;
+    	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
     	obj2->x = obj1->x-77;
     	obj2->y = obj1->y;
+    	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
     	
     	obj1->x = 2000;
 	obj1->y = 2000; 
-    	
-
-  	   
+    		   
     
     }
     
@@ -796,6 +801,87 @@ else {
 }
 
 }
+
+
+void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object){
+	
+	//if (d == RIGHT){
+	//explosion_object->x += MOVEMENT_DELTA;
+	if (check_collision(*explosion_object, *map_des_block)  == FALSE ){
+		//printf("calc solve error");
+		
+		map_des_block->x = -4000;
+		map_des_block->y = -4000;
+		map_des_block->w = 0;
+		map_des_block->h = 0;
+		
+		}
+
+		//explosion_object->x -= MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	//}
+	
+	//if (d == LEFT){
+	//explosion_object->x -= MOVEMENT_DELTA;
+	if (check_collision(*explosion_object, *map_des_block) == FALSE){
+		//printf("calc solve error");
+		
+		map_des_block->x = -4000;
+		map_des_block->y = -4000;
+		map_des_block->w = 0;
+		map_des_block->h = 0;
+		}
+
+		//explosion_object->x += MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	//}
+	
+	//if (d == UP){
+	//explosion_object->y -= MOVEMENT_DELTA;
+	if ( check_collision(*explosion_object, *map_des_block) == FALSE ){
+		//printf("calc solve error");
+		
+		map_des_block->x = -4000;
+		map_des_block->y = -4000;
+		map_des_block->w = 0;
+		map_des_block->h = 0;
+	
+		
+		}
+
+		//explosion_object->y += MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	//}
+	
+	//if (d == DOWN){
+	//explosion_object->y += MOVEMENT_DELTA;
+	if (check_collision(*explosion_object, *map_des_block) == FALSE ){
+		//printf("calc solve error");
+
+		map_des_block->x = -4000;
+		map_des_block->y = -4000;
+		map_des_block->w = 0;
+		map_des_block->h = 0;
+		}
+
+		//explosion_object->y -= MOVEMENT_DELTA;
+		
+		//kills_counter = kills_counter + 1;
+	
+	//}
+	
+	else{
+	
+	return;}
+	
+	
+	}
 static void draw_bomb(game_element_t *bomb_object){
 
 
@@ -816,75 +902,6 @@ static void draw_bomb(game_element_t *bomb_object){
 	SDL_BlitSurface(bomb_image, &src, screen, &dest);
 
 }
-void destroy_block(int d, game_element_t *map_des_block, game_element_t *explosion_object){
-
-	
-	if (d == RIGHT){
-	//player->x += MOVEMENT_DELTA;
-	if (check_collision(*explosion_object, *map_des_block)  == TRUE ){
-		printf("calc solve error");
-		
-		map_des_block->x = -4000;
-		map_des_block->y = -4000;
-		map_des_block->w = 0;
-		map_des_block->h = 0;
-		
-		}
-
-		//player->x -= MOVEMENT_DELTA;
-		
-		//kills_counter = kills_counter + 1;
-	
-	}
-	
-	if (d == LEFT){
-	//player->x -= MOVEMENT_DELTA;
-	if (check_collision(*explosion_object, *map_des_block) == TRUE){
-		printf("calc solve error");
-		
-		}
-
-		//player->x += MOVEMENT_DELTA;
-		
-		//kills_counter = kills_counter + 1;
-	
-	}
-	
-	if (d == UP){
-	//player->y -= MOVEMENT_DELTA;
-	if ( check_collision(*explosion_object, *map_des_block) == TRUE ){
-		printf("calc solve error");
-
-		
-
-		}
-
-		//player->y += MOVEMENT_DELTA;
-		
-		//kills_counter = kills_counter + 1;
-	
-	}
-	
-	if (d == DOWN){
-	//player->y += MOVEMENT_DELTA;
-	if (check_collision(*explosion_object, *map_des_block) == TRUE ){
-		printf("calc solve error");
-
-		map_des_block->x = -4000;
-		map_des_block->y = -4000;
-		map_des_block->w = 0;
-		map_des_block->h = 0;
-		}
-
-		//player->y -= MOVEMENT_DELTA;
-		
-		//kills_counter = kills_counter + 1;
-	
-	}
-	
-	
-	}
-
 
 static void draw_skin(game_element_t *player){
 
@@ -1029,7 +1046,7 @@ int main (int argc, char *args[]) {
 			direccion = RIGHT;
 			
 		}
-		destroy_block(direccion, &explosion_object, &map_des_block);
+		destroy_block(&explosion_object, &map_des_block);
 		//draw background
 		//SDL_SetRenderDrawColor(renderer, 255,255,255,255);
 		SDL_RenderClear(renderer);
@@ -1066,7 +1083,7 @@ int main (int argc, char *args[]) {
 		//display the game
 		} else if (state == LEVEL_1) {
 		
-			time_bomb_countdown(&bomb_object,&explosion_object);
+			time_bomb_countdown(&bomb_object,&explosion_object,&map_des_block);
 			
 			
 		
