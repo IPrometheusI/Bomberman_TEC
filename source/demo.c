@@ -76,12 +76,6 @@ Uint32 bomb_timer = 0; // Almacena el momento en que se coloca la bomba
 int bomb_placed = 0; // Indica si la bomba ha sido colocada (0 = no, 1 = sí)
 
 
-
-
-
-
-
-
 //function prototypes
 //initialise SDL
 int init_SDL(int w, int h, int argc, char *args[]);
@@ -125,6 +119,8 @@ static SDL_Surface *Block_des;
 static SDL_Surface *bomb_image;
 static SDL_Surface *fire;
 static SDL_Surface *skin;
+static SDL_Surface *monster;
+
 
 
 //textures
@@ -147,6 +143,7 @@ SDL_Texture *screen_texture;
  * 	void.
  */
 static void init_game(game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *map_element5,game_element_t *map_element6, game_element_t *map_element7,  game_element_t *map_element8, game_element_t *map_element9,game_element_t *map_element10, game_element_t *map_element11, game_element_t *map_element12, game_element_t *map_element13,game_element_t *map_element14, game_element_t *map_element15, game_element_t *map_element16,  game_element_t *map_element17, game_element_t *map_element18,game_element_t *map_element19, game_element_t *map_element20, game_element_t *map_element21, game_element_t *map_element22,game_element_t *map_element23, game_element_t *map_element24, game_element_t *map_des_block, game_element_t *map_des_block1, game_element_t *map_des_block2,game_element_t *map_des_block3,game_element_t *map_des_block4,game_element_t *map_des_block5,game_element_t *map_des_block6,game_element_t *map_des_block7,game_element_t *map_des_block8,game_element_t *map_des_block9,game_element_t *map_des_block10,game_element_t *map_des_block11,game_element_t *map_des_block12,game_element_t *map_des_block13,game_element_t *map_des_block14,game_element_t *map_des_block15, game_element_t *bomb_object, game_element_t *explosion_object) {
+		
 	// Here the function is receiving the pointer to the player object
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
@@ -380,10 +377,14 @@ static void init_game(game_element_t *player, game_element_t *map_element, game_
 	map_des_block15->w = 1.5*BLOCK_SIZE;
 	map_des_block15->h = 1.5*BLOCK_SIZE;
 	
-	//
-		
+	
+	
+	
+	
 	
 }
+
+	
 
 
 
@@ -428,26 +429,8 @@ int check_collision(game_element_t a, game_element_t b){
 
 	return TRUE;
 
-}/*
-void check_collision_destroy(game_element_t *player,game_element_t *map_des_block){
+}
 
-	if(!map_des_block->destroyed && check_collision(*player, *map_des_block)) {
-		map_des_block->destroyed = true;
-		}
-	}
-	
-void render_block(SDL_Renderer *renderer, const game_element_t *map_des_block){
-	
-	
-	//renderizar bloques que no se han destruido
-	
-	if(!map_des_block->destroyed){
-	SDL_Rect block_rect = {map_des_block->x, map_des_block->y, map_des_block->w, map_des_block->h};
-	SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-	SDL_RenderFillRect(renderer, &block_rect);
-	
-	}
-}*/
 	
 		
 
@@ -682,6 +665,92 @@ static void draw_game_element_des(game_element_t *element) {
 	
 	}
 }
+static void draw_skin(game_element_t *player){
+
+	SDL_Rect src;
+	SDL_Rect dest;
+	
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = player -> x;
+	dest.y = player -> y;
+	dest.w = 64;
+	dest.h = 64;
+	//if(i== RIGHT){
+	
+	//}
+
+	SDL_BlitSurface(skin, &src, screen, &dest);
+	
+
+}
+static void draw_game_element_monster(game_element_t *monsters) {
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	int num_monsters = 5;
+
+	for (int i = 0; i < num_monsters; i++) {
+	
+		src.x = monsters[i].x;
+		src.y = monsters[i].y;
+		src.w = monsters[i].w;
+		src.h = monsters[i].h;
+		
+		dest.x = 0;
+		dest.y = 0;
+		dest.w = monsters[i].w;
+		dest.h = monsters[i].h;
+	
+		SDL_BlitSurface(monster, &dest, screen, &src);
+	
+	}
+}
+	
+
+
+static void draw_explosion(game_element_t *explosion_object){
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = explosion_object->x;
+	dest.y = explosion_object->y;
+	dest.w = 64;
+	dest.h = 64;
+	
+	SDL_BlitSurface(fire, &src, screen, &dest);
+
+}
+static void draw_bomb(game_element_t *bomb_object){
+
+
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;
+	src.h = 64;
+
+	dest.x = bomb_object->x;
+	dest.y = bomb_object->y;
+	dest.w = 64;
+	dest.h = 64;
+	
+	SDL_BlitSurface(bomb_image, &src, screen, &dest);
+
+}
 
 // The header of this two functions are for the student to complete
 // Try changing the coordinates to see the effect that has on the game
@@ -731,25 +800,6 @@ static void draw_game_element_1_score() {
 	}
 
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
-}
-
-static void draw_explosion(game_element_t *explosion_object){
-
-	SDL_Rect src;
-	SDL_Rect dest;
-
-	src.x = 0;
-	src.y = 0;
-	src.w = 64;
-	src.h = 64;
-
-	dest.x = explosion_object->x;
-	dest.y = explosion_object->y;
-	dest.w = 64;
-	dest.h = 64;
-	
-	SDL_BlitSurface(fire, &src, screen, &dest);
-
 }
 
 
@@ -882,102 +932,59 @@ void destroy_block(game_element_t *map_des_block, game_element_t *explosion_obje
 	
 	
 	}
-static void draw_bomb(game_element_t *bomb_object){
 
-
-
-	SDL_Rect src;
-	SDL_Rect dest;
-
-	src.x = 0;
-	src.y = 0;
-	src.w = 64;
-	src.h = 64;
-
-	dest.x = bomb_object->x;
-	dest.y = bomb_object->y;
-	dest.w = 64;
-	dest.h = 64;
-	
-	SDL_BlitSurface(bomb_image, &src, screen, &dest);
-
-}
-
-static void draw_skin(game_element_t *player){
-
-	SDL_Rect src;
-	SDL_Rect dest;
-	
-	src.x = 0;
-	src.y = 0;
-	src.w = 64;
-	src.h = 64;
-
-	dest.x = player -> x;
-	dest.y = player -> y;
-	dest.w = 64;
-	dest.h = 64;
-	//if(i== RIGHT){
-	
-	//}
-
-	SDL_BlitSurface(skin, &src, screen, &dest);
-	
-
-}
 
 // Main function
 
 int main (int argc, char *args[]) {
+
 	int direccion;
+	// crear los monstruos
+	int num_monster = 5;
+	
+	int posiciones_monsters[][2]={
+	{916,125},
+	{1070,125},
+	{839,510},
+	{1070,587},
+	{233,587},
+	{618,587},
+	{233,202},
+	};
+	
+	game_element_t *monsters = (game_element_t*)malloc (sizeof(game_element_t));
+	
+	for(int i=0; i<num_monster; i++) {
+	  
+		monsters[i].x = posiciones_monsters[i][0];                
+		monsters[i].y = posiciones_monsters[i][1];                  
+		monsters[i].w = 1.5*BLOCK_SIZE;
+		monsters[i].h = 1.5*BLOCK_SIZE;
+		printf("se creo enemigo ");
+		
+	
+	}
+	
+	//free(monster);
+	//return 0;	
+	
 	// Define the player and the maps
 	game_element_t player;
 	game_element_t bomb_object;
 	game_element_t obj1;
+	
 	//SDL_Renderer *renderer;
 	// For the project the elements of the map should be created
 	// dinamically (using malloc) and using linked lists.
-	game_element_t map_element; 
-	game_element_t map_element1;
-	game_element_t map_element2; 
-	game_element_t map_element3;
-	game_element_t map_element4;
-	game_element_t map_element5; 
-	game_element_t map_element6;
-	game_element_t map_element7;
-	game_element_t map_element8; 
-	game_element_t map_element9;
-	game_element_t map_element10; 
-	game_element_t map_element11;
-	game_element_t map_element12;
-	game_element_t map_element13; 
-	game_element_t map_element14;
-	game_element_t map_element15;
-	game_element_t map_element16;
-	game_element_t map_element17;
-	game_element_t map_element18; 
-	game_element_t map_element19;
-	game_element_t map_element20; 
-	game_element_t map_element21;
-	game_element_t map_element22;
-	game_element_t map_element23; 
-	game_element_t map_element24;
-	game_element_t map_des_block;
-	game_element_t map_des_block1;
-	game_element_t map_des_block2;
-	game_element_t map_des_block3;
-	game_element_t map_des_block4;
-	game_element_t map_des_block5;
-	game_element_t map_des_block6;
-	game_element_t map_des_block7;
-	game_element_t map_des_block8;
-	game_element_t map_des_block9;
-	game_element_t map_des_block10;
-	game_element_t map_des_block11;
-	game_element_t map_des_block12;
-	game_element_t map_des_block13;
-	game_element_t map_des_block14;
-	game_element_t map_des_block15;
+	
+	game_element_t map_element, map_element1,map_element2,map_element3,map_element4,map_element5,map_element6,map_element7,
+	map_element8,map_element9,map_element10,map_element11,map_element12,map_element13,map_element14,map_element15,map_element16,
+	map_element17,map_element18,map_element19,map_element20,map_element21,map_element22,map_element23,map_element24;
+	
+	game_element_t map_des_block,map_des_block1,map_des_block2,map_des_block3,map_des_block4,map_des_block5,map_des_block6,map_des_block7,
+	map_des_block8,map_des_block9,map_des_block10,map_des_block11,map_des_block12,map_des_block13,map_des_block14,map_des_block15;
+	
+	
 	
 	game_element_t explosion_object;
 	
@@ -1048,14 +1055,14 @@ int main (int argc, char *args[]) {
 		}
 		destroy_block(&explosion_object, &map_des_block);
 		//draw background
-		//SDL_SetRenderDrawColor(renderer, 255,255,255,255);
+		
 		SDL_RenderClear(renderer);
-		//render_block(renderer, &map_des_block);
+		
 		SDL_FillRect(screen, NULL, BLUE);
 		
 		//Renderizar la pantalla
 		
-		//SDL_RenderPresent(renderer);
+		
 		//display main menu
 		if (state == START_SCREEN ) {
 		
@@ -1140,8 +1147,12 @@ int main (int argc, char *args[]) {
 			draw_game_element_des(&map_des_block13);
 			draw_game_element_des(&map_des_block14);
 			draw_game_element_des(&map_des_block15);
-			//draw_game_element(&bomb_object);
 			draw_bomb(&bomb_object);
+			int num_monsters = 5;
+			//for(int i = 0; i<num_monsters; i++){
+			//draw_game_element_monster(&monsters[i]);
+			//}
+			draw_game_element_monster(monsters);
 
 
 			//draw the score
@@ -1192,6 +1203,7 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(fire);
 	SDL_FreeSurface(skin);
 	SDL_FreeSurface(bomb_image);
+	SDL_FreeSurface(monster);
 
 	
 
@@ -1294,6 +1306,7 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	bomb_image = SDL_LoadBMP("bomb.bmp");
 	fire = SDL_LoadBMP("fire.bmp");
 	skin = SDL_LoadBMP("skin.bmp");
+	monster = SDL_LoadBMP("monster.bmp");
 	
 
 	if (title == NULL) {
