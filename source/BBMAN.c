@@ -38,8 +38,8 @@
 
 
 // Coordinates of the starting player
-#define PLAYER_START_X 85
-#define PLAYER_START_Y 125
+#define PLAYER_START_X 90
+#define PLAYER_START_Y 130
 
 // For the return of the functions
 #define SUCCESS 0
@@ -76,11 +76,58 @@ Uint32 bomb_timer = 0; // Almacena el momento en que se coloca la bomba
 int bomb_placed = 0; // Indica si la bomba ha sido colocada (0 = no, 1 = sí)
 
 
+// Inicialización de valores para x, y, w (ancho), y h (alto)
+float valores_destructibles[16][4] = {
+    {233, 125, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {233, 278 + 50, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {78, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {155, 433, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {310, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {387, 433, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {387, 125, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {387, 588, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {310, 588, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {852, 588, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {852, 433, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {543, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {698, 125, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {930, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {1007, 201, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {1162, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE}
+};
 
 
+float map_elements_values[25][4] = {
+    {1240, 50, 1 * BLOCK_SIZE, 50 * BLOCK_SIZE},
+    {1, 50, 1.5 * BLOCK_SIZE, 50 * BLOCK_SIZE},
+    {1, 665, 50 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {1, 50, 50 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    {155, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {310, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {465, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {620, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {775, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {930, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {1085, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {155, 355, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {310, 355, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {465, 355, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {620, 355, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {775, 355, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {930, 355, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {1085, 355, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {155, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {310, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {465, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {620, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {775, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {930, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+    {1085, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
+};
 
 
-
+int NUM_DESTRUCTIBLES = 16;
+int NUM_MAP_ELEMENTS = 25;
 
 //function prototypes
 //initialise SDL
@@ -104,6 +151,9 @@ typedef struct game_element_t {
 
 } game_element_t;
 
+
+struct game_element_t lista_destructibles[16];
+struct game_element_t map_elements[25];
 
 
 // This is one of the few cases where it makes sense to use magic numbers
@@ -146,13 +196,19 @@ SDL_Texture *screen_texture;
  * Return:
  * 	void.
  */
-static void init_game(game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *map_element5,game_element_t *map_element6, game_element_t *map_element7,  game_element_t *map_element8, game_element_t *map_element9,game_element_t *map_element10, game_element_t *map_element11, game_element_t *map_element12, game_element_t *map_element13,game_element_t *map_element14, game_element_t *map_element15, game_element_t *map_element16,  game_element_t *map_element17, game_element_t *map_element18,game_element_t *map_element19, game_element_t *map_element20, game_element_t *map_element21, game_element_t *map_element22,game_element_t *map_element23, game_element_t *map_element24, game_element_t *map_des_block, game_element_t *map_des_block1, game_element_t *map_des_block2,game_element_t *map_des_block3,game_element_t *map_des_block4,game_element_t *map_des_block5,game_element_t *map_des_block6,game_element_t *map_des_block7,game_element_t *map_des_block8,game_element_t *map_des_block9,game_element_t *map_des_block10,game_element_t *map_des_block11,game_element_t *map_des_block12,game_element_t *map_des_block13,game_element_t *map_des_block14,game_element_t *map_des_block15, game_element_t *bomb_object, game_element_t *explosion_object) {
+static void init_game(
+    game_element_t *player, 
+    game_element_t map_elements[], int num_map_elements, 
+    game_element_t lista_destructibles[], int num_lista_destructibles, 
+    game_element_t *bomb_object, 
+    game_element_t *explosion_object
+) {
 	// Here the function is receiving the pointer to the player object
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
-	player->w = 1.5*BLOCK_SIZE;
-	player->h = 1.5*BLOCK_SIZE;
+	player->w = 1.3*BLOCK_SIZE;
+	player->h = 1.3*BLOCK_SIZE;
 	
 	
 	//Objeto Bomba
@@ -167,220 +223,23 @@ static void init_game(game_element_t *player, game_element_t *map_element, game_
 	explosion_object->w = BLOCK_SIZE;
 	explosion_object->h = BLOCK_SIZE;
 
-// aca inician los bloques de las orillas
-	map_element->x = 1240;    //screen->w/64;
-	map_element->y = 50;    //screen->h/10;
-	map_element->w = 1*BLOCK_SIZE;
-	map_element->h = 50*BLOCK_SIZE;
 	
-	map_element1->x = 1;  //screen->w/168;
-	map_element1->y = 50;   //screen->h/168;
-	map_element1->w = 1.5*BLOCK_SIZE;
-	map_element1->h = 50*BLOCK_SIZE;
-	
-	map_element2->x = 1;
-	map_element2->y = 665;
-	map_element2->w = 50*BLOCK_SIZE;
-	map_element2->h = 1.5*BLOCK_SIZE;
-	
-	map_element3->x = 1;
-	map_element3->y = 50;
-	map_element3->w = 50*BLOCK_SIZE;
-	map_element3->h = 1.5*BLOCK_SIZE;
-	
-	// aca inician los bloques cuadrados de izquierda a derecha primer fila
-	map_element4->x = 155;
-	map_element4->y = 200;
-	map_element4->w = 1.5*BLOCK_SIZE;
-	map_element4->h = 1.5*BLOCK_SIZE;
-	
-	map_element5->x = 310;
-	map_element5->y = 200;
-	map_element5->w = 1.5*BLOCK_SIZE;
-	map_element5->h = 1.5*BLOCK_SIZE;
-	
-	map_element6->x = 465;
-	map_element6->y = 200;
-	map_element6->w = 1.5*BLOCK_SIZE;
-	map_element6->h = 1.5*BLOCK_SIZE;
-	
-	map_element7->x = 620;
-	map_element7->y = 200;
-	map_element7->w = 1.5*BLOCK_SIZE;
-	map_element7->h = 1.5*BLOCK_SIZE;
-	
-	map_element8->x = 775;
-	map_element8->y = 200;
-	map_element8->w = 1.5*BLOCK_SIZE;
-	map_element8->h = 1.5*BLOCK_SIZE;
-	
-	map_element9->x = 930;
-	map_element9->y = 200;
-	map_element9->w = 1.5*BLOCK_SIZE;
-	map_element9->h = 1.5*BLOCK_SIZE;
-	
-	map_element10->x = 1085;
-	map_element10->y = 200;
-	map_element10->w = 1.5*BLOCK_SIZE;
-	map_element10->h = 1.5*BLOCK_SIZE;
-	
-	// aca inician los bloques cuadrados de izquierda a derecha segunda fila
-	
-	map_element11->x = 155;
-	map_element11->y = 355;
-	map_element11->w = 1.5*BLOCK_SIZE;
-	map_element11->h = 1.5*BLOCK_SIZE;
-	
-	map_element12->x = 310;
-	map_element12->y = 355;
-	map_element12->w = 1.5*BLOCK_SIZE;
-	map_element12->h = 1.5*BLOCK_SIZE;
-	
-	map_element13->x = 465;
-	map_element13->y = 355;
-	map_element13->w = 1.5*BLOCK_SIZE;
-	map_element13->h = 1.5*BLOCK_SIZE;
-	
-	map_element14->x = 620;
-	map_element14->y = 355;
-	map_element14->w = 1.5*BLOCK_SIZE;
-	map_element14->h = 1.5*BLOCK_SIZE;
-	
-	map_element15->x = 775;
-	map_element15->y = 355;
-	map_element15->w = 1.5*BLOCK_SIZE;
-	map_element15->h = 1.5*BLOCK_SIZE;
-	
-	map_element16->x = 930;
-	map_element16->y = 355;
-	map_element16->w = 1.5*BLOCK_SIZE;
-	map_element16->h = 1.5*BLOCK_SIZE;
-	
-	map_element17->x = 1085;
-	map_element17->y = 355;
-	map_element17->w = 1.5*BLOCK_SIZE;
-	map_element17->h = 1.5*BLOCK_SIZE;
-	
-	// aca inician los bloques cuadrados de izquierda a derecha tercera fila
-	
-	map_element18->x = 155;
-	map_element18->y = 510;
-	map_element18->w = 1.5*BLOCK_SIZE;
-	map_element18->h = 1.5*BLOCK_SIZE;
-	
-	map_element19->x = 310;
-	map_element19->y = 510;
-	map_element19->w = 1.5*BLOCK_SIZE;
-	map_element19->h = 1.5*BLOCK_SIZE;
-	
-	map_element20->x = 465;
-	map_element20->y = 510;
-	map_element20->w = 1.5*BLOCK_SIZE;
-	map_element20->h = 1.5*BLOCK_SIZE;
-	
-	map_element21->x = 620;
-	map_element21->y = 510;
-	map_element21->w = 1.5*BLOCK_SIZE;
-	map_element21->h = 1.5*BLOCK_SIZE;
-	
-	map_element22->x = 775;
-	map_element22->y = 510;
-	map_element22->w = 1.5*BLOCK_SIZE;
-	map_element22->h = 1.5*BLOCK_SIZE;
-	
-	map_element23->x = 930;
-	map_element23->y = 510;
-	map_element23->w = 1.5*BLOCK_SIZE;
-	map_element23->h = 1.5*BLOCK_SIZE;
-	
-	map_element24->x = 1085;
-	map_element24->y = 510;
-	map_element24->w = 1.5*BLOCK_SIZE;
-	map_element24->h = 1.5*BLOCK_SIZE;
-	
-	//Bloques destructibles
-	map_des_block->x = 233;
-	map_des_block->y = 125;
-	map_des_block->w = 1.5*BLOCK_SIZE;
-	map_des_block->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block1->x = 233;
-	map_des_block1->y = 278+50;
-	map_des_block1->w = 1.5*BLOCK_SIZE;
-	map_des_block1->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block2->x = 78;
-	map_des_block2->y = 278;
-	map_des_block2->w = 1.5*BLOCK_SIZE;
-	map_des_block2->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block3->x = 155;
-	map_des_block3->y = 433;
-	map_des_block3->w = 1.5*BLOCK_SIZE;
-	map_des_block3->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block4->x = 310;
-	map_des_block4->y = 278;
-	map_des_block4->w = 1.5*BLOCK_SIZE;
-	map_des_block4->h = 1.5*BLOCK_SIZE;
+	for (int i = 0; i < 25; i++) { // Ajustado a 25 para coincidir con la cantidad de valores definidos
+	    map_elements[i].x = map_elements_values[i][0];
+	    map_elements[i].y = map_elements_values[i][1];
+	    map_elements[i].w = map_elements_values[i][2];
+	    map_elements[i].h = map_elements_values[i][3];
+	}
 	
 	
-	map_des_block5->x = 387;
-	map_des_block5->y = 433;
-	map_des_block5->w = 1.5*BLOCK_SIZE;
-	map_des_block5->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block6->x = 387;
-	map_des_block6->y = 125;
-	map_des_block6->w = 1.5*BLOCK_SIZE;
-	map_des_block6->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block7->x = 387;
-	map_des_block7->y = 588;
-	map_des_block7->w = 1.5*BLOCK_SIZE;
-	map_des_block7->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block8->x = 310;
-	map_des_block8->y = 588;
-	map_des_block8->w = 1.5*BLOCK_SIZE;
-	map_des_block8->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block9->x = 852;
-	map_des_block9->y = 588;
-	map_des_block9->w = 1.5*BLOCK_SIZE;
-	map_des_block9->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block10->x = 852;
-	map_des_block10->y = 433;
-	map_des_block10->w = 1.5*BLOCK_SIZE;
-	map_des_block10->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block11->x = 543;
-	map_des_block11->y = 278;
-	map_des_block11->w = 1.5*BLOCK_SIZE;
-	map_des_block11->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block12->x = 698;
-	map_des_block12->y = 125;
-	map_des_block12->w = 1.5*BLOCK_SIZE;
-	map_des_block12->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block13->x = 930;
-	map_des_block13->y = 278;
-	map_des_block13->w = 1.5*BLOCK_SIZE;
-	map_des_block13->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block14->x = 1007;
-	map_des_block14->y = 201;
-	map_des_block14->w = 1.5*BLOCK_SIZE;
-	map_des_block14->h = 1.5*BLOCK_SIZE;
-	
-	map_des_block15->x = 1162;
-	map_des_block15->y = 278;
-	map_des_block15->w = 1.5*BLOCK_SIZE;
-	map_des_block15->h = 1.5*BLOCK_SIZE;
-	
-	//
+	// Inicialización de los valores para cada elemento
+	for (int i = 0; i < 16; i++) {
+	    lista_destructibles[i].x = valores_destructibles[i][0];
+	    lista_destructibles[i].y = valores_destructibles[i][1];
+	    lista_destructibles[i].w = valores_destructibles[i][2];
+	    lista_destructibles[i].h = valores_destructibles[i][3];
+	}
+
 		
 	
 }
@@ -428,26 +287,7 @@ int check_collision(game_element_t a, game_element_t b){
 
 	return TRUE;
 
-}/*
-void check_collision_destroy(game_element_t *player,game_element_t *map_des_block){
-
-	if(!map_des_block->destroyed && check_collision(*player, *map_des_block)) {
-		map_des_block->destroyed = true;
-		}
-	}
-	
-void render_block(SDL_Renderer *renderer, const game_element_t *map_des_block){
-	
-	
-	//renderizar bloques que no se han destruido
-	
-	if(!map_des_block->destroyed){
-	SDL_Rect block_rect = {map_des_block->x, map_des_block->y, map_des_block->w, map_des_block->h};
-	SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-	SDL_RenderFillRect(renderer, &block_rect);
-	
-	}
-}*/
+}
 	
 		
 
@@ -463,86 +303,30 @@ void render_block(SDL_Renderer *renderer, const game_element_t *map_des_block){
  *	void.
  */ 
 
-void move_player(int d, game_element_t *player, game_element_t *map_element, game_element_t *map_element1,game_element_t *map_element2, game_element_t *map_element3, game_element_t *map_element4, game_element_t *map_element5,game_element_t *map_element6, game_element_t *map_element7,  game_element_t *map_element8, game_element_t *map_element9,game_element_t *map_element10, game_element_t *map_element11, game_element_t *map_element12, game_element_t *map_element13,game_element_t *map_element14, game_element_t *map_element15, game_element_t *map_element16,  game_element_t *map_element17, game_element_t *map_element18,game_element_t *map_element19, game_element_t *map_element20, game_element_t *map_element21, game_element_t *map_element22,game_element_t *map_element23, game_element_t *map_element24, game_element_t *map_des_block, game_element_t *map_des_block1,game_element_t *map_des_block2,game_element_t *map_des_block3,game_element_t *map_des_block4,game_element_t *map_des_block5,game_element_t *map_des_block6,game_element_t *map_des_block7,game_element_t *map_des_block8,game_element_t *map_des_block9,game_element_t *map_des_block10,game_element_t *map_des_block11, game_element_t *map_des_block12,game_element_t *map_des_block13,game_element_t *map_des_block14,game_element_t *map_des_block15){
-	//
-	if (d == LEFT) {
-		player->x -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
-		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
-		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE || check_collision(*player, *map_element8) == TRUE || 
-		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
-		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
-		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
-		check_collision(*player, *map_element17) == TRUE || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
-		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
-		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
-		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
-		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
-		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
-		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
-		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
-			player->x += MOVEMENT_DELTA;
-	}
+void move_player(int d, game_element_t *player, game_element_t lista_destructibles[], int ld_size, game_element_t map_elements[], int me_size) {
+    player->x += (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
+    player->y += (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
 
-	if (d == RIGHT) {
-		player->x += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
-		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
-		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || 
-		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
-		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
-		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
-		check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
-		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
-		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
-		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
-		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
-		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
-		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
-		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
-			
-			player->x -= MOVEMENT_DELTA;
-	}
-		
-	if (d == UP) {
-		player->y -= MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
-		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
-		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || 
-		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
-		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
-		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
-		check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
-		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
-		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
-		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
-		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
-		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
-		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
-		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
-			player->y += MOVEMENT_DELTA;
-	}
+    // Combinar los arreglos para simplificar la comprobación de colisiones
+    game_element_t* all_elements[ld_size + me_size];
+    for (int i = 0; i < ld_size; i++) {
+        all_elements[i] = &lista_destructibles[i];
+    }
+    for (int i = 0; i < me_size; i++) {
+        all_elements[ld_size + i] = &map_elements[i];
+    }
 
-	if (d == DOWN) {
-		player->y += MOVEMENT_DELTA;
-		if (check_collision(*player, *map_element) == TRUE  || check_collision(*player, *map_element1) == TRUE || check_collision(*player, *map_element2) == TRUE || 
-		check_collision(*player, *map_element3) == TRUE || check_collision(*player, *map_element4) == TRUE || check_collision(*player, *map_element5) == TRUE || 
-		check_collision(*player, *map_element6) == TRUE || check_collision(*player, *map_element7) == TRUE   || check_collision(*player, *map_element8) == TRUE || 
-		check_collision(*player, *map_element9) == TRUE || check_collision(*player, *map_element10) == TRUE || check_collision(*player, *map_element11) == TRUE || 
-		check_collision(*player, *map_element12) == TRUE || check_collision(*player, *map_element13) == TRUE || check_collision(*player, *map_element14) == TRUE || 
-		check_collision(*player, *map_element15) == TRUE || check_collision(*player, *map_element16) == TRUE || check_collision(*player, *map_element17) == TRUE || 
-		check_collision(*player, *map_element17) == TRUE   || check_collision(*player, *map_element18) == TRUE || check_collision(*player, *map_element19) == TRUE || 
-		check_collision(*player, *map_element20) == TRUE || check_collision(*player, *map_element21) == TRUE || check_collision(*player, *map_element22) == TRUE || 
-		check_collision(*player, *map_element23) == TRUE || check_collision(*player, *map_element24) == TRUE || check_collision(*player, *map_des_block) == TRUE || 
-		check_collision(*player, *map_des_block1) == TRUE || check_collision(*player, *map_des_block2) == TRUE || check_collision(*player, *map_des_block3) == TRUE ||
-		check_collision(*player, *map_des_block4) == TRUE || check_collision(*player, *map_des_block5) == TRUE || check_collision(*player, *map_des_block6) == TRUE || 
-		check_collision(*player, *map_des_block7) == TRUE || check_collision(*player, *map_des_block8) == TRUE || check_collision(*player, *map_des_block9) == TRUE ||
-		check_collision(*player, *map_des_block10) == TRUE || check_collision(*player, *map_des_block11) == TRUE || check_collision(*player, *map_des_block12) == TRUE ||
-		check_collision(*player, *map_des_block13) == TRUE || check_collision(*player, *map_des_block14) == TRUE || check_collision(*player, *map_des_block15) == TRUE)
-			player->y -= MOVEMENT_DELTA;
-			
-	}
+    // Comprobar colisión con todos los elementos
+    for (int i = 0; i < ld_size + me_size; i++) {
+        if (check_collision(*player, *all_elements[i]) == TRUE) {
+            // Revertir movimiento
+            player->x -= (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
+            player->y -= (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
+            break; // Suponiendo que solo necesitas detectar la primera colisión
+        }
+    }
 }
+
 
 
 /* Function: draw_game_over
@@ -660,7 +444,7 @@ static void draw_game_elementLimites(game_element_t *element) {
 		}
 	}
 }
-static void draw_game_element_des(game_element_t *element) {
+static void draw_game_element_des(game_element_t destructibles[]) {
 
 	SDL_Rect src;
 	SDL_Rect dest;
@@ -668,15 +452,15 @@ static void draw_game_element_des(game_element_t *element) {
 
 	for (i = 0; i < 2; i++) {
 	
-		src.x = element->x;
-		src.y = element->y;
-		src.w = element->w;
-		src.h = element->h;
+		src.x = destructibles->x;
+		src.y = destructibles->y;
+		src.w = destructibles->w;
+		src.h = destructibles->h;
 		
 		dest.x = 0;
 		dest.y = 0;
-		dest.w = element->w;
-		dest.h = element->h;
+		dest.w = destructibles->w;
+		dest.h = destructibles->h;
 	
 		SDL_BlitSurface(Block, &dest, screen, &src);
 	
@@ -753,40 +537,97 @@ static void draw_explosion(game_element_t *explosion_object){
 }
 
 
-void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object);
 
-void time_bomb_countdown(game_element_t *obj1, game_element_t *obj2, game_element_t *destructible){
+
+void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object){
+	
+			
+	for (int i=0;i<16;i++){
+		printf("Elemento %d",i);
+		printf("\n");
+		printf("Posicion x:%d",lista_destructibles[i].x);
+		printf("\n");
+		printf("Posicion y:%d",lista_destructibles[i].y);
+		printf("\n");
+		printf("Width:%d",lista_destructibles[i].w);
+		printf("\n");
+		printf("Height:%d",lista_destructibles[i].h);
+		printf("\n");
+
+		if (check_collision(*explosion_object, lista_destructibles[i]) == TRUE ){
+			printf("*********Detecto colision***********\n");
+			printf("\n");
+
+			lista_destructibles[i].x = -4000;
+			lista_destructibles[i].y = -4000;
+			lista_destructibles[i].w = 0*BLOCK_SIZE;
+			lista_destructibles[i].h = 0*BLOCK_SIZE;
+			
+			break;		
+		}
+		
+		else{
+		
+		printf("--------No detecto colision------------\n");
+		printf("\n");
+
+		}
+	}
+}
+
+//void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object);
+
+void time_bomb_countdown(game_element_t *obj1, game_element_t *obj2, game_element_t destructible[]){
 
 
 if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 5 segundos
     // Ejecuta tu instrucción especial aquí, después de 5 segundos
 
     	bomb_placed = 0; // Resetea la condición para permitir colocar otra bomba
-    	
+    	printf("################################################################\n");
+    	printf("                          Chequeo 1                   \n");
+    	printf("################################################################\n");
     	obj2->x = obj1->x;
     	obj2->y = obj1->y;
     	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
+    	
+    	printf("################################################################\n");
+    	printf("                          Chequeo 2                   \n");
+    	printf("################################################################\n");
     	obj2->x = obj1->x;
     	obj2->y = obj1->y+77;
     	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
+    	
+    	
+    	printf("################################################################\n");
+    	printf("                          Chequeo 3                   \n");
+    	printf("################################################################\n");
     	obj2->x = obj1->x;
     	obj2->y = obj1->y-77;
     	destroy_block(destructible, obj2);
     	draw_explosion(obj2);
     	
+    	
+  	printf("################################################################\n");
+    	printf("                          Chequeo 4                   \n");
+    	printf("################################################################\n");
     	obj2->x = obj1->x+77;
     	obj2->y = obj1->y;
     	destroy_block(destructible, obj2);
-    	draw_explosion(obj2);
+      	draw_explosion(obj2);
     	
+    	
+    	printf("################################################################\n");
+    	printf("                          Chequeo 5                   \n");
+    	printf("################################################################\n");
     	obj2->x = obj1->x-77;
     	obj2->y = obj1->y;
     	destroy_block(destructible, obj2);
-    	draw_explosion(obj2);
+  	draw_explosion(obj2);
     	
     	
     	obj1->x = 2000;
@@ -803,60 +644,7 @@ else {
 }
 
 
-void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object){
-	
-	
-	if (check_collision(*explosion_object, *map_des_block)  == FALSE ){
 
-		
-		map_des_block->x = -4000;
-		map_des_block->y = -4000;
-		map_des_block->w = 0;
-		map_des_block->h = 0;
-		
-		}
-
-	
-	if (check_collision(*explosion_object, *map_des_block) == FALSE){
-
-		
-		map_des_block->x = -4000;
-		map_des_block->y = -4000;
-		map_des_block->w = 0;
-		map_des_block->h = 0;
-		}
-
-
-	if ( check_collision(*explosion_object, *map_des_block) == FALSE ){
-
-		
-		map_des_block->x = -4000;
-		map_des_block->y = -4000;
-		map_des_block->w = 0;
-		map_des_block->h = 0;
-	
-		
-		}
-
-	
-	
-	if (check_collision(*explosion_object, *map_des_block) == FALSE ){
-
-
-		map_des_block->x = -4000;
-		map_des_block->y = -4000;
-		map_des_block->w = 0;
-		map_des_block->h = 0;
-		}
-
-	
-	
-	else{
-	
-	return;}
-	
-	
-	}
 static void draw_bomb(game_element_t *bomb_object){
 
 
@@ -892,9 +680,7 @@ static void draw_skin(game_element_t *player){
 	dest.y = player -> y;
 	dest.w = 64;
 	dest.h = 64;
-	//if(i== RIGHT){
-	
-	//}
+
 
 	SDL_BlitSurface(skin, &src, screen, &dest);
 	
@@ -912,47 +698,6 @@ int main (int argc, char *args[]) {
 	//SDL_Renderer *renderer;
 	// For the project the elements of the map should be created
 	// dinamically (using malloc) and using linked lists.
-	game_element_t map_element; 
-	game_element_t map_element1;
-	game_element_t map_element2; 
-	game_element_t map_element3;
-	game_element_t map_element4;
-	game_element_t map_element5; 
-	game_element_t map_element6;
-	game_element_t map_element7;
-	game_element_t map_element8; 
-	game_element_t map_element9;
-	game_element_t map_element10; 
-	game_element_t map_element11;
-	game_element_t map_element12;
-	game_element_t map_element13; 
-	game_element_t map_element14;
-	game_element_t map_element15;
-	game_element_t map_element16;
-	game_element_t map_element17;
-	game_element_t map_element18; 
-	game_element_t map_element19;
-	game_element_t map_element20; 
-	game_element_t map_element21;
-	game_element_t map_element22;
-	game_element_t map_element23; 
-	game_element_t map_element24;
-	game_element_t map_des_block;
-	game_element_t map_des_block1;
-	game_element_t map_des_block2;
-	game_element_t map_des_block3;
-	game_element_t map_des_block4;
-	game_element_t map_des_block5;
-	game_element_t map_des_block6;
-	game_element_t map_des_block7;
-	game_element_t map_des_block8;
-	game_element_t map_des_block9;
-	game_element_t map_des_block10;
-	game_element_t map_des_block11;
-	game_element_t map_des_block12;
-	game_element_t map_des_block13;
-	game_element_t map_des_block14;
-	game_element_t map_des_block15;
 	
 	game_element_t explosion_object;
 	
@@ -973,8 +718,14 @@ int main (int argc, char *args[]) {
 	Uint32 next_game_tick = SDL_GetTicks();
 	
 	// Initialize the ball position data. 
-	init_game(&player, &map_element,&map_element1, &map_element2,&map_element3, &map_element4, &map_element5, &map_element6, &map_element7, &map_element8,&map_element9, 		    &map_element10,&map_element11, &map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18,&map_element19, &map_element20,&map_element21, &map_element22, &map_element23, &map_element24,&map_des_block, &map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8,
-	&map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15, &bomb_object, &explosion_object); // The & means "Address of"
+
+	
+init_game(&player, map_elements, NUM_MAP_ELEMENTS, lista_destructibles, NUM_DESTRUCTIBLES, &bomb_object, &explosion_object);
+	
+	
+	
+	
+	// The & means "Address of"
 	//render loop
 	while(quit == FALSE) {
 	
@@ -995,33 +746,37 @@ int main (int argc, char *args[]) {
 		
 		if (keystate[SDL_SCANCODE_DOWN]) {
 			
-			move_player(DOWN, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+			move_player(DOWN, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+
 			
 			direccion = DOWN;
 		}
 
 		if (keystate[SDL_SCANCODE_UP]) {
 			
-			move_player(UP, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+			move_player(UP, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+
 			
 			direccion = UP;
 		}
 		
 		if (keystate[SDL_SCANCODE_LEFT]) {
 			
-			move_player(LEFT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+			move_player(LEFT, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+
 			
 			direccion = LEFT;
 		}
 
 		if (keystate[SDL_SCANCODE_RIGHT]) {
 			
-			move_player(RIGHT, &player, &map_element, &map_element1, &map_element2, &map_element3,&map_element4, &map_element5, &map_element6, &map_element7, &map_element8, &map_element9, &map_element10, &map_element11,&map_element12, &map_element13, &map_element14, &map_element15, &map_element16, &map_element17, &map_element18, &map_element19, &map_element20, &map_element21,&map_element22, &map_element23, &map_element24,&map_des_block,&map_des_block1, &map_des_block2, &map_des_block3, &map_des_block4, &map_des_block5, &map_des_block6, &map_des_block7, &map_des_block8, &map_des_block9, &map_des_block10, &map_des_block11, &map_des_block12, &map_des_block13, &map_des_block14, &map_des_block15);
+move_player(RIGHT, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+
 			
 			direccion = RIGHT;
 			
 		}
-		destroy_block(&explosion_object, &map_des_block);
+		//destroy_block(&explosion_object, lista_destructibles);
 		//draw background
 		//SDL_SetRenderDrawColor(renderer, 255,255,255,255);
 		SDL_RenderClear(renderer);
@@ -1058,7 +813,7 @@ int main (int argc, char *args[]) {
 		//display the game
 		} else if (state == LEVEL_1) {
 		
-			time_bomb_countdown(&bomb_object,&explosion_object,&map_des_block);
+
 			
 			
 		
@@ -1074,47 +829,31 @@ int main (int argc, char *args[]) {
 
 			// We draw the map element that is going to be static
 			draw_skin(&player);
-			draw_game_elementLimites(&map_element);
-			draw_game_elementLimites(&map_element1);
-			draw_game_elementLimites(&map_element2);
-			draw_game_elementLimites(&map_element3);
-			draw_game_element(&map_element4);
-			draw_game_element(&map_element5);
-			draw_game_element(&map_element6);
-			draw_game_element(&map_element7);
-			draw_game_element(&map_element8);
-			draw_game_element(&map_element9);
-			draw_game_element(&map_element10);
-			draw_game_element(&map_element11);
-			draw_game_element(&map_element12);
-			draw_game_element(&map_element13);
-			draw_game_element(&map_element14);
-			draw_game_element(&map_element15);
-			draw_game_element(&map_element16);
-			draw_game_element(&map_element17);
-			draw_game_element(&map_element18);
-			draw_game_element(&map_element19);
-			draw_game_element(&map_element20);
-			draw_game_element(&map_element21);
-			draw_game_element(&map_element22);
-			draw_game_element(&map_element23);
-			draw_game_element(&map_element24);
-			draw_game_element_des(&map_des_block);
-			draw_game_element_des(&map_des_block1);
-			draw_game_element_des(&map_des_block2);
-			draw_game_element_des(&map_des_block3);
-			draw_game_element_des(&map_des_block4);
-			draw_game_element_des(&map_des_block5);
-			draw_game_element_des(&map_des_block6);
-			draw_game_element_des(&map_des_block7);
-			draw_game_element_des(&map_des_block8);
-			draw_game_element_des(&map_des_block9);
-			draw_game_element_des(&map_des_block10);
-			draw_game_element_des(&map_des_block11);
-			draw_game_element_des(&map_des_block12);
-			draw_game_element_des(&map_des_block13);
-			draw_game_element_des(&map_des_block14);
-			draw_game_element_des(&map_des_block15);
+			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde map_element hasta map_element24
+   				 if (i < 4) {
+        // Los primeros 4 elementos usan draw_game_elementLimites
+       				 draw_game_elementLimites(&map_elements[i]);}
+       				 
+			    	 else {
+				// Los elementos restantes usan draw_game_element
+				draw_game_element(&map_elements[i]);
+			    }
+			}
+			
+			
+			
+			for(int i=0;i<16;i++){
+			draw_game_element_des(&lista_destructibles[i]);
+			}
+						
+					
+			time_bomb_countdown(&bomb_object,&explosion_object,lista_destructibles);
+							
+							
+							
+			
+									
+			
 			//draw_game_element(&bomb_object);
 			draw_bomb(&bomb_object);
 
@@ -1126,7 +865,7 @@ int main (int argc, char *args[]) {
 			draw_game_element_1_score();
 			//draw a bomb
 			if (keystate[SDL_SCANCODE_B]) {
-	
+				//printf("%d",map_des_block.x);
 				bomb_object.x = player.x;
 				bomb_object.y = player.y;
 				
@@ -1214,20 +953,19 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 		
 		//Create window	
 		if(strcmp(args[i], "-f")) {
-			
 			SDL_CreateWindowAndRenderer(SCREEN_WIDTH, 
-										SCREEN_HEIGHT, 
-										SDL_WINDOW_SHOWN, 
-										&window, 
-										&renderer);
+			SCREEN_HEIGHT,									 
+			SDL_WINDOW_SHOWN, 
+			&window, 
+			&renderer);
 		
 		} else {
 		
 			SDL_CreateWindowAndRenderer(SCREEN_WIDTH, 
-										SCREEN_HEIGHT, 
-										SDL_WINDOW_FULLSCREEN_DESKTOP, 
-										&window, 
-										&renderer);
+			SCREEN_HEIGHT, 
+			SDL_WINDOW_FULLSCREEN_DESKTOP, 
+			&window, 
+			&renderer);
 		}
 	}
 
