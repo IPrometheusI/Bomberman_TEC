@@ -76,27 +76,8 @@ Uint32 bomb_timer = 0; // Almacena el momento en que se coloca la bomba
 int bomb_placed = 0; // Indica si la bomba ha sido colocada (0 = no, 1 = sí)
 
 
-// Inicialización de valores para x, y, w (ancho), y h (alto)
-float valores_destructibles[16][4] = {
-    {233, 125, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {233, 278 + 50, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {78, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {155, 433, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {310, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {387, 433, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {387, 125, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {387, 588, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {310, 588, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {852, 588, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {852, 433, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {543, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {698, 125, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {930, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {1007, 201, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
-    {1162, 278, 1.5 * BLOCK_SIZE, 1.5 * BLOCK_SIZE}
-};
 
-
+//Coordenadas de bordes y bloques inamovibles
 float map_elements_values[25][4] = {
     {1240, 50, 1 * BLOCK_SIZE, 50 * BLOCK_SIZE},
     {1, 50, 1.5 * BLOCK_SIZE, 50 * BLOCK_SIZE},
@@ -124,8 +105,32 @@ float map_elements_values[25][4] = {
     {930, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
     {1085, 510, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
 };
+//Coordenadas posibles de bloques destructibles
+int coordenadas_destructibles[][2] = {
+    // Fila 1
+    {233,125},{310, 125}, {387, 125}, {464, 125}, {541, 125}, {618, 125}, {695, 125}, {772, 125}, {849, 125}, {926, 125}, {1003, 125}, {1080, 125}, {1157, 125},
+    // Fila 2
+    {78, 202}, {232, 202}, {386, 202}, {540, 202}, {694, 202}, {848, 202}, {1002, 202}, {1156, 202},
+    
+    // Fila 3 
+    {78, 279}, {155, 279}, {232, 279}, {309, 279}, {386, 279}, {463, 279}, {540, 279}, {617, 279}, {694, 279}, {771, 279}, {848, 279}, {925, 279}, {1002, 279}, {1079, 279}, {1156, 279},
+    
+    // Fila 4 
+    {78, 356}, {232, 356}, {386, 356}, {540, 356}, {694, 356}, {848, 356}, {1002, 356}, {1156, 356},
+    
+    // Fila 5 
+    {78, 433}, {155, 433}, {232, 433}, {309, 433}, {386, 433}, {463, 433}, {540, 433}, {617, 433}, {694, 433}, {771, 433}, {848, 433}, {925, 433}, {1002, 433}, {1079, 433}, {1156, 433},
+    
+    // Fila 6 
+    {78, 510}, {232, 510}, {386, 510}, {540, 510}, {694, 510}, {848, 510}, {1002, 510}, {1156, 510},
+    
+    // Fila 7 
+    {78, 587}, {155, 587}, {232, 587}, {309, 587}, {386, 587}, {463, 587}, {540, 587}, {617, 587}, {694, 587}, {771, 587}, {848, 587}, {925, 587}, {1002, 587}, {1079, 587}, {1156, 587}
+};
 
 
+
+//Variables del numero de elementos de un arreglo para argumentos
 int NUM_DESTRUCTIBLES = 16;
 int NUM_MAP_ELEMENTS = 25;
 
@@ -175,6 +180,8 @@ static SDL_Surface *Block_des;
 static SDL_Surface *bomb_image;
 static SDL_Surface *fire;
 static SDL_Surface *skin;
+static SDL_Surface *monster;
+
 
 
 //textures
@@ -207,8 +214,8 @@ static void init_game(
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
-	player->w = 1.3*BLOCK_SIZE;
-	player->h = 1.3*BLOCK_SIZE;
+	player->w = 1*BLOCK_SIZE;
+	player->h = 1*BLOCK_SIZE;
 	
 	
 	//Objeto Bomba
@@ -232,13 +239,20 @@ static void init_game(
 	}
 	
 	
-	// Inicialización de los valores para cada elemento
+    	srand(time(NULL)); // Inicializa el generador de números aleatorios
+    	int num_coordenadas = sizeof(coordenadas_destructibles) / sizeof(coordenadas_destructibles[0]);
+
+
 	for (int i = 0; i < 16; i++) {
-	    lista_destructibles[i].x = valores_destructibles[i][0];
-	    lista_destructibles[i].y = valores_destructibles[i][1];
-	    lista_destructibles[i].w = valores_destructibles[i][2];
-	    lista_destructibles[i].h = valores_destructibles[i][3];
-	}
+	
+        int index_aleatorio = rand() % num_coordenadas; // Índice aleatorio
+        printf("index_aleatorio:%d",index_aleatorio);
+        printf("\n");
+        lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+        lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+        lista_destructibles[i].w = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+        lista_destructibles[i].h = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+    }
 
 		
 	
@@ -322,7 +336,7 @@ void move_player(int d, game_element_t *player, game_element_t lista_destructibl
             // Revertir movimiento
             player->x -= (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
             player->y -= (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
-            break; // Suponiendo que solo necesitas detectar la primera colisión
+            break; 
         }
     }
 }
@@ -581,7 +595,7 @@ void time_bomb_countdown(game_element_t *obj1, game_element_t *obj2, game_elemen
 
 
 if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 5 segundos
-    // Ejecuta tu instrucción especial aquí, después de 5 segundos
+
 
     	bomb_placed = 0; // Resetea la condición para permitir colocar otra bomba
     	printf("################################################################\n");
@@ -687,21 +701,72 @@ static void draw_skin(game_element_t *player){
 
 }
 
+static void draw_game_element_monster(game_element_t *monsters) {
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	int num_monsters = 5;
+
+	for (int i = 0; i < num_monsters; i++) {
+	
+		src.x = monsters[i].x;
+		src.y = monsters[i].y;
+		src.w = monsters[i].w;
+		src.h = monsters[i].h;
+		
+		dest.x = 0;
+		dest.y = 0;
+		dest.w = monsters[i].w;
+		dest.h = monsters[i].h;
+	
+		SDL_BlitSurface(monster, &dest, screen, &src);
+	
+	}
+}
+
+
 // Main function
 
 int main (int argc, char *args[]) {
 	int direccion;
+	
+	// crear los monstruos
+	int num_monster = 5;
+	
+	int posiciones_monsters[][2]={
+	{916,125},
+	{1070,125},
+	{839,510},
+	{1070,587},
+	{233,587},
+	{618,587},
+	{233,202},
+	};
+	
+	game_element_t *monsters = (game_element_t*)malloc (sizeof(game_element_t));
+	
+	for(int i=0; i<num_monster; i++) {
+	  
+		monsters[i].x = posiciones_monsters[i][0];                
+		monsters[i].y = posiciones_monsters[i][1];                  
+		monsters[i].w = 1.5*BLOCK_SIZE;
+		monsters[i].h = 1.5*BLOCK_SIZE;
+		printf("se creo enemigo ");
+		
+	
+	}
+
+
 	// Define the player and the maps
 	game_element_t player;
 	game_element_t bomb_object;
 	game_element_t obj1;
-	//SDL_Renderer *renderer;
+
 	// For the project the elements of the map should be created
 	// dinamically (using malloc) and using linked lists.
 	
 	game_element_t explosion_object;
-	
-	//SDL_Renderer *renderer;
 	
 
 	//SDL Window setup
@@ -717,10 +782,15 @@ int main (int argc, char *args[]) {
 	int state = START_SCREEN;
 	Uint32 next_game_tick = SDL_GetTicks();
 	
-	// Initialize the ball position data. 
 
 	
-init_game(&player, map_elements, NUM_MAP_ELEMENTS, lista_destructibles, NUM_DESTRUCTIBLES, &bomb_object, &explosion_object);
+	init_game(&player,
+	  map_elements, 
+	  NUM_MAP_ELEMENTS,
+	  lista_destructibles, 
+	  NUM_DESTRUCTIBLES, 
+	  &bomb_object, 
+	  &explosion_object);
 	
 	
 	
@@ -730,7 +800,7 @@ init_game(&player, map_elements, NUM_MAP_ELEMENTS, lista_destructibles, NUM_DEST
 	while(quit == FALSE) {
 	
 	
-	//render_block(renderer, &map_des_block);
+
 	
 		//check for new events every frame
 		SDL_PumpEvents();
@@ -746,7 +816,12 @@ init_game(&player, map_elements, NUM_MAP_ELEMENTS, lista_destructibles, NUM_DEST
 		
 		if (keystate[SDL_SCANCODE_DOWN]) {
 			
-			move_player(DOWN, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+			move_player(DOWN,
+			 &player, 
+			 lista_destructibles, 
+			 NUM_DESTRUCTIBLES, 
+			 map_elements, 
+			 NUM_MAP_ELEMENTS);
 
 			
 			direccion = DOWN;
@@ -754,7 +829,12 @@ init_game(&player, map_elements, NUM_MAP_ELEMENTS, lista_destructibles, NUM_DEST
 
 		if (keystate[SDL_SCANCODE_UP]) {
 			
-			move_player(UP, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+			move_player(UP, 
+			&player, 
+			lista_destructibles, 
+			NUM_DESTRUCTIBLES, 
+			map_elements, 
+			NUM_MAP_ELEMENTS);
 
 			
 			direccion = UP;
@@ -762,7 +842,12 @@ init_game(&player, map_elements, NUM_MAP_ELEMENTS, lista_destructibles, NUM_DEST
 		
 		if (keystate[SDL_SCANCODE_LEFT]) {
 			
-			move_player(LEFT, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+			move_player(LEFT, 
+			&player, 
+			lista_destructibles, 
+			NUM_DESTRUCTIBLES, 
+			map_elements, 
+			NUM_MAP_ELEMENTS);
 
 			
 			direccion = LEFT;
@@ -770,22 +855,25 @@ init_game(&player, map_elements, NUM_MAP_ELEMENTS, lista_destructibles, NUM_DEST
 
 		if (keystate[SDL_SCANCODE_RIGHT]) {
 			
-move_player(RIGHT, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements, NUM_MAP_ELEMENTS);
+			move_player(RIGHT, 
+			&player, 
+			lista_destructibles, 
+			NUM_DESTRUCTIBLES, 
+			map_elements, 
+			NUM_MAP_ELEMENTS);
 
 			
 			direccion = RIGHT;
 			
 		}
-		//destroy_block(&explosion_object, lista_destructibles);
-		//draw background
-		//SDL_SetRenderDrawColor(renderer, 255,255,255,255);
+
 		SDL_RenderClear(renderer);
-		//render_block(renderer, &map_des_block);
+
 		SDL_FillRect(screen, NULL, BLUE);
 		
 		//Renderizar la pantalla
 		
-		//SDL_RenderPresent(renderer);
+		
 		//display main menu
 		if (state == START_SCREEN ) {
 		
@@ -812,10 +900,6 @@ move_player(RIGHT, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements
 				
 		//display the game
 		} else if (state == LEVEL_1) {
-		
-
-			
-			
 		
 			//if either player wins, change to game over state
 			if (FALSE) {	//Doing nothing for the moment
@@ -851,7 +935,9 @@ move_player(RIGHT, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements
 							
 							
 							
-			
+			int num_monsters = 5;
+			draw_game_element_monster(monsters);
+
 									
 			
 			//draw_game_element(&bomb_object);
@@ -906,6 +992,9 @@ move_player(RIGHT, &player, lista_destructibles, NUM_DESTRUCTIBLES, map_elements
 	SDL_FreeSurface(fire);
 	SDL_FreeSurface(skin);
 	SDL_FreeSurface(bomb_image);
+	SDL_FreeSurface(monster);
+
+
 
 	
 
@@ -1007,6 +1096,9 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	bomb_image = SDL_LoadBMP("bomb.bmp");
 	fire = SDL_LoadBMP("fire.bmp");
 	skin = SDL_LoadBMP("skin.bmp");
+	monster = SDL_LoadBMP("monster.bmp");
+
+
 	
 
 	if (title == NULL) {
