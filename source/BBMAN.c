@@ -184,6 +184,7 @@ static SDL_Surface *bomb_image;
 static SDL_Surface *fire;
 static SDL_Surface *skin;
 static SDL_Surface *monster;
+static SDL_Surface *portal;
 
 
 
@@ -212,8 +213,10 @@ static void init_game(
     game_element_t lista_destructibles[], int num_lista_destructibles, 
     game_element_t *bomb_object, 
     game_element_t *explosion_object,
-    game_element_t *monster
-) {
+    game_element_t *monster,
+    game_element_t *portal_object) {
+    
+    
 	// Here the function is receiving the pointer to the player object
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
@@ -227,6 +230,10 @@ static void init_game(
 	bomb_object->y = PLAYER_START_Y+2000;
 	bomb_object->w = BLOCK_SIZE;
 	bomb_object->h = BLOCK_SIZE;
+	
+	//Objeto portal
+	portal_object->w = BLOCK_SIZE;
+	portal_object->h = BLOCK_SIZE;
 	
 	//Explosion
 	explosion_object->x = PLAYER_START_X+2000;
@@ -255,14 +262,30 @@ static void init_game(
 	for (int i = 0; i < 16; i++) {
 	
 		int index_aleatorio = rand() % num_coordenadas; // Índice aleatorio
-		/*printf("index_aleatorio:%d",index_aleatorio);
-		printf("\n");*/
+
+		if(i==0){
+
+			portal_object->x=coordenadas_destructibles[index_aleatorio][0];
+			portal_object->y=coordenadas_destructibles[index_aleatorio][1];
+
+			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+			lista_destructibles[i].w = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+			lista_destructibles[i].h = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+			}
+			
+			
+		else{
+		
 		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
 		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
 		lista_destructibles[i].w = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
 		lista_destructibles[i].h = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+	
+		
 		// Marcar la coordenada como usada
-		coordenadas_usadas[index_aleatorio] = true;
+		coordenadas_usadas[index_aleatorio] = true;}
+		
     }
     
 	// Asignar coordenadas a monsters asegurándose de que no coincidan con las de lista_destructibles
@@ -276,13 +299,13 @@ static void init_game(
 	    // Asignar coordenadas no usadas a monsters
 	    monster[i].x = coordenadas_destructibles[index_aleatorio][0];
 	    monster[i].y = coordenadas_destructibles[index_aleatorio][1];
-	    printf("coord x monster:%d",monster[i].x);
-	    printf("\n");
-    	    printf("coord y monster:%d",monster[i].y);
-	    printf("\n");
+	    //printf("coord x monster:%d",monster[i].x);
+	    //printf("\n");
+    	    //printf("coord y monster:%d",monster[i].y);
+	    //printf("\n");
 	    monster[i].w = 1.5 * BLOCK_SIZE;
 	    monster[i].h = 1.5 * BLOCK_SIZE;
-	    printf("se creo enemigo\n");
+	    //printf("se creo enemigo\n");
 	    
 	    coordenadas_usadas[index_aleatorio] = true;
 	}
@@ -602,8 +625,8 @@ void destroy_block(game_element_t *map_des_block, game_element_t *explosion_obje
 		printf("\n");*/
 
 		if (check_collision(*explosion_object, lista_destructibles[i]) == TRUE ){
-			printf("*********Detecto colision***********\n");
-			printf("\n");
+			//printf("*********Detecto colision***********\n");
+			//printf("\n");
 
 			lista_destructibles[i].x = -4000;
 			lista_destructibles[i].y = -4000;
@@ -615,8 +638,8 @@ void destroy_block(game_element_t *map_des_block, game_element_t *explosion_obje
 		
 		else{
 		
-		printf("--------No detecto colision------------\n");
-		printf("\n");
+		//printf("--------No detecto colision------------\n");
+		//printf("\n");
 
 		}
 	}
@@ -734,6 +757,34 @@ static void draw_skin(game_element_t *player){
 
 }
 
+static void draw_portal(game_element_t *portal_object){
+	
+	SDL_Rect src;
+	SDL_Rect dest;
+	
+	src.x = 0;
+	src.y = 0;
+	src.w = 64;//portal_object->w;
+	src.h = 64;//portal_object->h;
+
+	dest.x = portal_object -> x+25;
+	dest.y = portal_object -> y;
+	dest.w = 64;
+	dest.h = 64;
+
+
+	SDL_BlitSurface(portal, &src, screen, &dest);
+	
+
+}
+
+
+
+
+
+
+
+
 static void draw_game_element_monster(game_element_t *monsters) {
 
 	SDL_Rect src;
@@ -768,14 +819,16 @@ int main (int argc, char *args[]) {
 	// Define the player and the maps
 	game_element_t player;
 	game_element_t bomb_object;
-	game_element_t obj1;
+	game_element_t explosion_object;
+	//game_element_t obj1;
 	game_element_t *monsters;
+	game_element_t portal_object;
 	
 
 	// For the project the elements of the map should be created
 	// dinamically (using malloc) and using linked lists.
 	monsters = (game_element_t*)malloc(num_monster * sizeof(game_element_t));
-	game_element_t explosion_object;
+
 	
 
 	//SDL Window setup
@@ -800,9 +853,10 @@ int main (int argc, char *args[]) {
 	  NUM_DESTRUCTIBLES, 
 	  &bomb_object, 
 	  &explosion_object,
-	  monsters);
+	  monsters,
+	  &portal_object);
 	
-	
+
 	
 	
 	// The & means "Address of"
@@ -826,7 +880,7 @@ int main (int argc, char *args[]) {
 		
 		if (keystate[SDL_SCANCODE_DOWN]) {
 			
-			move_player(DOWN,
+			 move_player(DOWN,
 			 &player, 
 			 lista_destructibles, 
 			 NUM_DESTRUCTIBLES, 
@@ -918,10 +972,11 @@ int main (int argc, char *args[]) {
 
 			} 
 		
-			// Here we draw the player that we move across 
 			
+			draw_portal(&portal_object);
 
-			// We draw the map element that is going to be static
+		
+			// Here we draw the player that we move across 
 			draw_skin(&player);
 			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde 			
 							//map_element hasta map_element24
@@ -933,10 +988,9 @@ int main (int argc, char *args[]) {
 				// Los elementos restantes usan draw_game_element
 				draw_game_element(&map_elements[i]);
 			    }
-			}
-			
-			
-			
+			    }
+			// We draw the map element that is going to be static
+
 			for(int i=0;i<16;i++){
 			draw_game_element_des(&lista_destructibles[i]);
 			}
@@ -953,6 +1007,8 @@ int main (int argc, char *args[]) {
 			    draw_game_element_monster(&monsters[i]);
 			}			
 			
+			//Dibujamos el portal
+			//draw_portal(&bomb_object);
 					
 			
 			//draw a bomb
@@ -965,7 +1021,7 @@ int main (int argc, char *args[]) {
 			//draw the score
 			draw_game_element_1_score();
 			//draw a bomb
-			if (keystate[SDL_SCANCODE_B]) {
+			if (keystate[SDL_SCANCODE_B] && bomb_placed==0) {
 				//printf("%d",map_des_block.x);
 				bomb_object.x = player.x;
 				bomb_object.y = player.y;
@@ -1008,6 +1064,7 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(skin);
 	SDL_FreeSurface(bomb_image);
 	SDL_FreeSurface(monster);
+	SDL_FreeSurface(portal);
 	free(monsters);
 
 
@@ -1113,6 +1170,12 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	fire = SDL_LoadBMP("fire.bmp");
 	skin = SDL_LoadBMP("skin.bmp");
 	monster = SDL_LoadBMP("monster.bmp");
+	portal = SDL_LoadBMP("portal.bmp");
+//	portal = SDL_LoadBMP("portal.png");
+
+if (portal == NULL) {
+    printf("No se pudo cargar la imagen portal.bmp: %s\n", SDL_GetError());
+}
 
 
 	
@@ -1152,4 +1215,9 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	
 	return SUCCESS;
 }
+
+
+
+
+
 
