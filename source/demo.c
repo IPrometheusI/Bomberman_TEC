@@ -284,13 +284,9 @@ static void init_game(
 	    // Asignar coordenadas no usadas a monsters
 	    monsters[i].x = coordenadas_destructibles[index_aleatorio][0];
 	    monsters[i].y = coordenadas_destructibles[index_aleatorio][1];
-	    printf("coord x monster:%d",monsters[i].x);
-	    printf("\n");
-    	    printf("coord y monster:%d",monsters[i].y);
-	    printf("\n");
 	    monsters[i].w = 1.5 * BLOCK_SIZE;
 	    monsters[i].h = 1.5 * BLOCK_SIZE;
-	    printf("se creo enemigo\n");
+
 	    
 	    coordenadas_usadas[index_aleatorio] = true;
 	}
@@ -342,34 +338,21 @@ int check_collision(game_element_t a, game_element_t b){
 	return TRUE;
 
 }
-int check_collision_2(game_element_t a, game_element_t b){
-	
-	int left_a = a.x;
-	int right_a = a.x + a.w;
-	int top_a = a.y;
-	int bottom_a = a.y + a.h;
+int check_collision2(game_element_t a, game_element_t b) {
+    int left_a = a.x;
+    int right_a = a.x + a.w;
+    int top_a = a.y;
+    int bottom_a = a.y + a.h;
 
-	int left_b = b.x;
-	int right_b = b.x + b.w;
-	int top_b = b.y;
-	int bottom_b = b.y + b.h;
+    int left_b = b.x;
+    int right_b = b.x + b.w;
+    int top_b = b.y;
+    int bottom_b = b.y + b.h;
 
-	if (bottom_a <= top_b)
-		return TRUE;
-
-	if (top_a >= bottom_b)
-		return TRUE;
-
-	if (right_a <= left_b)
-		return TRUE;
-
-	if (left_a >= right_b)
-		return TRUE;
-
-	// If none of the conditions worked, return TRUE
-
-	return FALSE;
-
+    if (bottom_a <= top_b || top_a >= bottom_b || right_a <= left_b || left_a >= right_b)
+        return FALSE;  // No hay colisión
+    else
+        return TRUE;   // Hay colisión
 }
 	
 		
@@ -652,8 +635,8 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
 	
 	for (int i=0; i<num_monster; i++){
 	if (check_collision(*explosion_object, monsters[i]) == TRUE ){
-			    		
-			free(&monster[i]);
+			printf("sii /n");	
+			//free(&monsters[i]);
 			monsters[i].x = -4000;
 			monsters[i].y = -4000;
 			monsters[i].w = 0*BLOCK_SIZE;
@@ -1007,12 +990,9 @@ int main (int argc, char *args[]) {
 				
 			
 				
-			//kill_monsters(&explosion_object, monsters);
+			kill_monsters(&explosion_object, monsters);
 				
 						
-							
-
-			//draw_game_element_monster(monsters);
 
 			for (int i = 0; i < num_monster; i++) {
 			    draw_game_element_monster(&monsters[i]);
