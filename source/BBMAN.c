@@ -30,6 +30,7 @@
 #define RIGHT 1
 #define UP 2
 #define DOWN 3
+#define CENTERED 5
 #define DROP 4
 
 
@@ -110,24 +111,24 @@ float map_elements_values[25][4] = {
 //Coordenadas posibles de bloques destructibles
 int coordenadas_destructibles[][2] = {
     // Fila 1
-    {233,125},{310, 125}, {387, 125}, {464, 125}, {541, 125}, {618, 125}, {695, 125}, {772, 125}, {849, 125}, {926, 125}, {1003, 125}, {1080, 125}, {1157, 125},
+    {233,125},{310, 125}, {387, 125}, {464, 125}, {541, 125}, {618, 125}, {695, 125}, {772, 125}, {849, 125}, {926, 125}, {1003, 125}, {1080, 125}, {1165, 125},
     // Fila 2
-    {78, 202}, {232, 202}, {386, 202}, {540, 202}, {694, 202}, {848, 202}, {1002, 202}, {1156, 202},
+    {78, 202}, {232, 202}, {386, 202}, {540, 202}, {694, 202}, {848, 202}, {1002, 202}, {1165, 202},
     
     // Fila 3 
-    {78, 279}, {155, 279}, {232, 279}, {309, 279}, {386, 279}, {463, 279}, {540, 279}, {617, 279}, {694, 279}, {771, 279}, {848, 279}, {925, 279}, {1002, 279}, {1079, 279}, {1156, 279},
+    {78, 279}, {155, 279}, {232, 279}, {309, 279}, {386, 279}, {463, 279}, {540, 279}, {617, 279}, {694, 279}, {771, 279}, {848, 279}, {925, 279}, {1002, 279}, {1079, 279}, {1165, 279},
     
     // Fila 4 
-    {78, 356}, {232, 356}, {386, 356}, {540, 356}, {694, 356}, {848, 356}, {1002, 356}, {1156, 356},
+    {78, 356}, {232, 356}, {386, 356}, {540, 356}, {694, 356}, {848, 356}, {1002, 356}, {1165, 356},
     
     // Fila 5 
-    {78, 433}, {155, 433}, {232, 433}, {309, 433}, {386, 433}, {463, 433}, {540, 433}, {617, 433}, {694, 433}, {771, 433}, {848, 433}, {925, 433}, {1002, 433}, {1079, 433}, {1156, 433},
+    {78, 433}, {155, 433}, {232, 433}, {309, 433}, {386, 433}, {463, 433}, {540, 433}, {617, 433}, {694, 433}, {771, 433}, {848, 433}, {925, 433}, {1002, 433}, {1079, 433}, {1165, 433},
     
     // Fila 6 
-    {78, 510}, {232, 510}, {386, 510}, {540, 510}, {694, 510}, {848, 510}, {1002, 510}, {1156, 510},
+    {78, 510}, {232, 510}, {386, 510}, {540, 510}, {694, 510}, {848, 510}, {1002, 510}, {1165, 510},
     
     // Fila 7 
-    {78, 587}, {155, 587}, {232, 587}, {309, 587}, {386, 587}, {463, 587}, {540, 587}, {617, 587}, {694, 587}, {771, 587}, {848, 587}, {925, 587}, {1002, 587}, {1079, 587}, {1156, 587}
+    {78, 587}, {155, 587}, {232, 587}, {309, 587}, {386, 587}, {463, 587}, {540, 587}, {617, 587}, {694, 587}, {771, 587}, {848, 587}, {925, 587}, {1002, 587}, {1079, 587}, {1165, 587}
 };
 
 
@@ -185,6 +186,10 @@ static SDL_Surface *fire;
 static SDL_Surface *skin;
 static SDL_Surface *monster;
 static SDL_Surface *portal;
+static SDL_Surface *grass;
+//static SDL_Surface *spaceman;
+
+
 
 
 
@@ -221,8 +226,8 @@ static void init_game(
 	// it modifies the player object directly
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
-	player->w = 1*BLOCK_SIZE;
-	player->h = 1*BLOCK_SIZE;
+	player->w = 1.2*BLOCK_SIZE;
+	player->h = 1.2*BLOCK_SIZE;
 	
 	
 	//Objeto Bomba
@@ -736,22 +741,68 @@ static void draw_bomb(game_element_t *bomb_object){
 
 }
 
-static void draw_skin(game_element_t *player){
-
+static void draw_skin(int d, game_element_t *player){
+	
+	
+	/*#define LEFT 0
+	#define RIGHT 1
+	#define UP 2
+	#define DOWN 3
+	#define CENTERED 5*/
+	
 	SDL_Rect src;
 	SDL_Rect dest;
 	
-	src.x = 0;
-	src.y = 0;
-	src.w = 64;
-	src.h = 64;
+	//144x256
 
+	if(d==0){
+	src.x = 48;
+	src.y = 192;
+	src.w = 48;
+	src.h = 64;
+	
 	dest.x = player -> x;
 	dest.y = player -> y;
-	dest.w = 64;
-	dest.h = 64;
+	dest.w = 24;
+	dest.h = 48;}
+	
+	if(d==1){
+	src.x = 48;
+	src.y = 64;
+	src.w = 48;
+	src.h = 64;
+	
+	dest.x = player -> x;
+	dest.y = player -> y;
+	dest.w = 24;
+	dest.h = 27;}
+	
+	if(d==2){
+	src.x = 48;
+	src.y = 0;
+	src.w = 48;
+	src.h = 64;
+	
+	dest.x = player -> x;
+	dest.y = player -> y;
+	dest.w = 24;
+	dest.h = 13;}
+	
+	if(d==3){
+	src.x = 48;
+	src.y = 128;
+	src.w = 48;
+	src.h = 64;
+	
+	dest.x = player -> x;
+	dest.y = player -> y;
+	dest.w = 48;
+	dest.h = 64;}
+	
+	
+	//48x64
 
-
+	//SDL_BlitSurface(skin, &src, screen, &dest);
 	SDL_BlitSurface(skin, &src, screen, &dest);
 	
 
@@ -774,6 +825,27 @@ static void draw_portal(game_element_t *portal_object){
 
 
 	SDL_BlitSurface(portal, &src, screen, &dest);
+	
+
+}
+
+static void draw_grass(){
+	
+	SDL_Rect src;
+	SDL_Rect dest;
+	
+	src.x = 0;
+	src.y = 0;
+	src.w = 1280;//portal_object->w;
+	src.h = 640;//portal_object->h;
+
+	dest.x = 78;
+	dest.y = 125;
+	dest.w = 1280;
+	dest.h = 640;
+
+
+	SDL_BlitSurface(grass, &src, screen, &dest);
 	
 
 }
@@ -855,8 +927,8 @@ int main (int argc, char *args[]) {
 	  &explosion_object,
 	  monsters,
 	  &portal_object);
+	  
 	
-
 	
 	
 	// The & means "Address of"
@@ -887,6 +959,7 @@ int main (int argc, char *args[]) {
 			 map_elements, 
 			 NUM_MAP_ELEMENTS);
 
+
 			
 			direccion = DOWN;
 		}
@@ -899,6 +972,7 @@ int main (int argc, char *args[]) {
 			NUM_DESTRUCTIBLES, 
 			map_elements, 
 			NUM_MAP_ELEMENTS);
+
 
 			
 			direccion = UP;
@@ -913,6 +987,7 @@ int main (int argc, char *args[]) {
 			map_elements, 
 			NUM_MAP_ELEMENTS);
 
+
 			
 			direccion = LEFT;
 		}
@@ -925,6 +1000,7 @@ int main (int argc, char *args[]) {
 			NUM_DESTRUCTIBLES, 
 			map_elements, 
 			NUM_MAP_ELEMENTS);
+
 
 			
 			direccion = RIGHT;
@@ -964,6 +1040,8 @@ int main (int argc, char *args[]) {
 				
 		//display the game
 		} else if (state == LEVEL_1) {
+		//Dibuja el pasto
+		draw_grass();
 		
 			//if either player wins, change to game over state
 			if (FALSE) {	//Doing nothing for the moment
@@ -977,7 +1055,28 @@ int main (int argc, char *args[]) {
 
 		
 			// Here we draw the player that we move across 
-			draw_skin(&player);
+			
+			if (keystate[SDL_SCANCODE_DOWN]) {
+				draw_skin(DOWN,&player);}
+			
+			else if (keystate[SDL_SCANCODE_UP]) {
+				draw_skin(UP,&player);}
+			
+			else if (keystate[SDL_SCANCODE_LEFT]) {
+				draw_skin(LEFT,&player);}
+			
+			else if (keystate[SDL_SCANCODE_RIGHT]) {
+				draw_skin(RIGHT,&player);}
+				
+			else{
+				draw_skin(DOWN,&player);
+			}
+			
+				
+				
+				
+				
+			
 			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde 			
 							//map_element hasta map_element24
    				 if (i < 4) {
@@ -1065,6 +1164,8 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(bomb_image);
 	SDL_FreeSurface(monster);
 	SDL_FreeSurface(portal);
+	SDL_FreeSurface(grass);
+	
 	free(monsters);
 
 
@@ -1170,8 +1271,10 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	fire = SDL_LoadBMP("fire.bmp");
 	skin = SDL_LoadBMP("skin.bmp");
 	monster = SDL_LoadBMP("monster.bmp");
-	portal = SDL_LoadBMP("portal.bmp");
-//	portal = SDL_LoadBMP("portal.png");
+	portal = SDL_LoadBMP("portal.bmp");	
+	grass = SDL_LoadBMP("grass.bmp");
+	//spaceman = SDL_LoadBMP("spaceman.bmp");
+
 
 if (portal == NULL) {
     printf("No se pudo cargar la imagen portal.bmp: %s\n", SDL_GetError());
