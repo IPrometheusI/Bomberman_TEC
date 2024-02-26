@@ -651,29 +651,36 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
 
 		}
 	}
-}void kill_player(game_element_t *explosion_object, game_element_t *player){
+}
 	
-	
-	if (check_collision(*explosion_object, *player) == TRUE) {
-		if (!fire_touched) {
-			printf("*********Detecto colision***********\n");
-			printf("\n");
-			
-			player->x = PLAYER_START_X;
-			player->y = PLAYER_START_Y;
-			player->w = 1.5*BLOCK_SIZE;
-			player->h = 1.5*BLOCK_SIZE;
-			
-			
-			 fire_touched = true; // Establece que el jugador ha tocado el fuego
-	
-		}
-		}
-		else{
-			 fire_touched = false; // Restablece la bandera cuando el jugador ya no está tocando el fuego
-
-		}
-	
+void kill_player(game_element_t *explosion_object, game_element_t *player, game_element_t *monsters) {
+    if (check_collision(*explosion_object, *player) == TRUE) {
+        if (!fire_touched) {
+            printf("*********Detecto colision con la explosión***********\n");
+            printf("\n");
+            
+            player->x = PLAYER_START_X;
+            player->y = PLAYER_START_Y;
+            player->w = 1.5 * BLOCK_SIZE;
+            player->h = 1.5 * BLOCK_SIZE;
+            
+            fire_touched = true; // Establece que el jugador ha tocado la explosión
+        }
+    } else {
+        for (int i = 0; i < 5; ++i) {
+            if (check_collision(monsters[i], *player)) {
+                printf("*********Detecto colision con el monstruo***********\n");
+                printf("\n");
+        
+                player->x = PLAYER_START_X;
+                player->y = PLAYER_START_Y;
+                player->w = 1.5 * BLOCK_SIZE;
+                player->h = 1.5 * BLOCK_SIZE;
+                // Puedes añadir más lógica aquí si es necesario
+            }
+        }
+        fire_touched = false; // Restablece la bandera cuando el jugador ya no está tocando la explosión ni a los monstruos
+    }
 }
 
 
@@ -1000,7 +1007,7 @@ int main (int argc, char *args[]) {
 			
 			
 			time_bomb_countdown(&bomb_object,&explosion_object,lista_destructibles);
-			kill_player(&explosion_object, &player);
+			kill_player(&explosion_object, &player, monsters);
 				
 			obj2.x = 2000;
     			obj2.y = 2000;
