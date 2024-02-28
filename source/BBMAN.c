@@ -74,6 +74,9 @@
 #define MOVEMENT_DELTA 5
 
 Uint32 bomb_timer = 0; // Almacena el momento en que se coloca la bomba
+
+Uint32 tiempoInicio = 0; // Almacena el momento en que el temporizador empezó
+
 int bomb_placed = 0; // Indica si la bomba ha sido colocada (0 = no, 1 = sí)
 
 // Spawn de monstruos
@@ -156,6 +159,8 @@ bool fire_touched = false;
 
 int puntaje = 999;
 
+int temporizador = 200;
+
 typedef struct player_t {
 
 	int x; 
@@ -181,7 +186,10 @@ struct game_element_t map_elements[25];
 
 // This is one of the few cases where it makes sense to use magic numbers
 // Avoid the use of global variables at maximum
-int g_score[] = {1,2,3}; 
+int g_score[] = {0,0,0}; 
+
+//matriz centenas, decenas y unidades
+int arreglo_temporizador[]={0,0,0};
 // Avoid the use of global variables, modify the code to avoid its use.
 int g_width, g_height;		//used if fullscreen
 
@@ -203,6 +211,7 @@ static SDL_Surface *portal;
 static SDL_Surface *grass;
 static SDL_Surface *vida;
 static SDL_Surface *score;
+static SDL_Surface *clock_image;
 
 //static SDL_Surface *spaceman;
 
@@ -629,7 +638,7 @@ static void draw_explosion(game_element_t *explosion_object){
 }
 
 
-void draw_vida(int contador_vidas){
+static void draw_vida(int contador_vidas){
 
 	SDL_Rect src;
 	SDL_Rect dest;
@@ -1119,6 +1128,75 @@ static void draw_numbermap() {
     }
 }
 
+static void draw_clock_image(){
+	
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 100;
+	src.h = 100;
+
+	dest.x = -500;
+	dest.y = 0;
+	dest.w = 1000;
+	dest.h = 100;
+
+
+	SDL_BlitSurface(clock_image, &dest, screen, &src);
+
+}
+
+static void draw_timer_countdown(){
+
+
+
+
+    if (tiempoInicio == 0) {
+        tiempoInicio = SDL_GetTicks(); // Marca el inicio del temporizador
+    }
+
+//Verifica que los segundos pasen y se resta al temporizados
+    Uint32 tiempoActual = SDL_GetTicks();
+    if ((tiempoActual - tiempoInicio) >= 1000) {
+        temporizador--; 
+        tiempoInicio = tiempoActual; 
+    }
+
+
+    arreglo_temporizador[0] = temporizador / 100; // Centenas
+    arreglo_temporizador[1] = (temporizador / 10) % 10; // Decenas
+    arreglo_temporizador[2] = temporizador % 10; // Unidades
+
+    SDL_Rect src;
+    SDL_Rect dest;
+
+    src.x = 0;
+    src.y = 0;
+    src.w = 64; 
+    src.h = 64; 
+
+    dest.w = 64; 
+    dest.h = 64; 
+
+
+//Muestra el numero con el archivo numbermap
+    for (int i = 0; i < 3; ++i) {
+        src.x = src.w * arreglo_temporizador[i]; 
+        dest.x = i * dest.w + 600; // Ajusta la posición horizontal
+        dest.y = -5; // Ajusta la posición vertical
+        
+        SDL_BlitSurface(numbermap, &src, screen, &dest);
+    }
+}
+
+
+
+
+
+
+
 
 
 
@@ -1286,6 +1364,8 @@ int main (int argc, char *args[]) {
 		draw_vida(contador_vidas);
 		draw_numbermap();
 		draw_score();
+		draw_clock_image();
+		draw_timer_countdown();
 		
 			//if either player wins, change to game over state
 			if (FALSE) {	//Doing nothing for the moment
@@ -1417,7 +1497,9 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(monster);
 	SDL_FreeSurface(portal);
 	SDL_FreeSurface(grass);
-	SDL_FreeSurface(score);
+	SDL_FreeSurface(score);	
+	SDL_FreeSurface(clock_image);
+	
 	
 	free(monsters);
 
@@ -1528,6 +1610,7 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	grass = SDL_LoadBMP("grass.bmp");
 	vida = SDL_LoadBMP("vida.bmp");
 	score = SDL_LoadBMP("score.bmp");
+	clock_image = SDL_LoadBMP("clock_image.bmp");
 	//spaceman = SDL_LoadBMP("spaceman.bmp");
 
 
