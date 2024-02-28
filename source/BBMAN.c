@@ -83,10 +83,19 @@ int num_monster = 5;
 int contador_vidas = 3;
 //Coordenadas de bordes y bloques inamovibles
 float map_elements_values[25][4] = {
+//top right
     {1240, 50, 1 * BLOCK_SIZE, 50 * BLOCK_SIZE},
+    
+//top left    
     {1, 50, 1.5 * BLOCK_SIZE, 50 * BLOCK_SIZE},
+    
+//bottom    
     {1, 665, 50 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    
+//ceiling    
     {1, 50, 50 * BLOCK_SIZE, 1.5 * BLOCK_SIZE},
+    
+    
     {155, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
     {310, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
     {465, 200, 1.5*BLOCK_SIZE, 1.5*BLOCK_SIZE},
@@ -145,6 +154,8 @@ int init_SDL(int w, int h, int argc, char *args[]);
 
 bool fire_touched = false;
 
+int puntaje = 999;
+
 typedef struct player_t {
 
 	int x; 
@@ -170,7 +181,7 @@ struct game_element_t map_elements[25];
 
 // This is one of the few cases where it makes sense to use magic numbers
 // Avoid the use of global variables at maximum
-int g_score[] = {0,0}; 
+int g_score[] = {1,2,3}; 
 // Avoid the use of global variables, modify the code to avoid its use.
 int g_width, g_height;		//used if fullscreen
 
@@ -191,6 +202,7 @@ static SDL_Surface *monster;
 static SDL_Surface *portal;
 static SDL_Surface *grass;
 static SDL_Surface *vida;
+static SDL_Surface *score;
 
 //static SDL_Surface *spaceman;
 
@@ -1055,6 +1067,61 @@ static void draw_game_element_monster(game_element_t *monsters) {
 	}
 }
 
+static void draw_score(){
+	
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = 200;
+	src.h = 79;
+
+	dest.x = -10;
+	dest.y = -5;
+	dest.w = 200;
+	dest.h = 79;
+
+
+	SDL_BlitSurface(score, &dest, screen, &src);
+
+}
+
+static void draw_numbermap() {
+
+    // Se introduce el puntaje en el arreglo
+    g_score[0] = puntaje / 100; // Centenas
+    g_score[1] = (puntaje / 10) % 10; // Decenas
+    g_score[2] = puntaje % 10; // Unidades
+
+
+    SDL_Rect src;
+    SDL_Rect dest;
+
+    src.x = 0;
+    src.y = 0;
+    src.w = 64; 
+    src.h = 64; 
+
+
+    dest.w = 64; 
+    dest.h = 64; 
+
+//Muestra los numeros en centenas, decenas y unidades
+    for (int i = 0; i < 3; ++i) {
+        src.x = src.w * g_score[i]; // Calcula la posición X del número en la imagen source
+	
+        dest.x = i * dest.w+115;
+        dest.y = -5; 
+        
+        // Dibuja el número actual en la pantalla
+        SDL_BlitSurface(numbermap, &src, screen, &dest);
+    }
+}
+
+
+
+
 
 // Main function
 
@@ -1066,7 +1133,6 @@ int main (int argc, char *args[]) {
 	game_element_t player;
 	game_element_t bomb_object;
 	game_element_t explosion_object;
-	//game_element_t obj1;
 	game_element_t *monsters;
 	game_element_t portal_object;
 	
@@ -1216,7 +1282,10 @@ int main (int argc, char *args[]) {
 		} else if (state == LEVEL_1) {
 		//Dibuja el pasto
 		draw_grass();
+
 		draw_vida(contador_vidas);
+		draw_numbermap();
+		draw_score();
 		
 			//if either player wins, change to game over state
 			if (FALSE) {	//Doing nothing for the moment
@@ -1250,7 +1319,7 @@ int main (int argc, char *args[]) {
 				
 				
 				
-				
+			
 			
 			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde 			
 							//map_element hasta map_element24
@@ -1294,12 +1363,14 @@ int main (int argc, char *args[]) {
 			//draw a bomb
 			draw_bomb(&bomb_object);
 
+			//draw_score();
 
+			
 			//draw the score
-			draw_game_element_0_score();
+			//draw_game_element_0_score();
 	
 			//draw the score
-			draw_game_element_1_score();
+			//draw_game_element_1_score();
 			//draw a bomb
 			if (keystate[SDL_SCANCODE_B] && bomb_placed==0) {
 				//printf("%d",map_des_block.x);
@@ -1346,6 +1417,7 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(monster);
 	SDL_FreeSurface(portal);
 	SDL_FreeSurface(grass);
+	SDL_FreeSurface(score);
 	
 	free(monsters);
 
@@ -1455,6 +1527,7 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	portal = SDL_LoadBMP("portal.bmp");	
 	grass = SDL_LoadBMP("grass.bmp");
 	vida = SDL_LoadBMP("vida.bmp");
+	score = SDL_LoadBMP("score.bmp");
 	//spaceman = SDL_LoadBMP("spaceman.bmp");
 
 
