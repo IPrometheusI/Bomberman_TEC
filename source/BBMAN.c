@@ -161,6 +161,16 @@ int puntaje = 999;
 
 int temporizador = 200;
 
+
+//Se inicializan los powerups
+int powerup_velocidad = 0;
+
+int powerup_firepower = 0;
+
+int powerup_addbomb = 0;
+
+
+
 typedef struct player_t {
 
 	int x; 
@@ -212,6 +222,9 @@ static SDL_Surface *grass;
 static SDL_Surface *vida;
 static SDL_Surface *score;
 static SDL_Surface *clock_image;
+static SDL_Surface *powerup_addbomb_image;
+static SDL_Surface *powerup_speed_image;
+static SDL_Surface *powerup_explosion_range_image;
 
 //static SDL_Surface *spaceman;
 
@@ -245,7 +258,12 @@ static void init_game(
     game_element_t *bomb_object, 
     game_element_t *explosion_object,
     game_element_t *monster,
-    game_element_t *portal_object) {
+    game_element_t *portal_object,
+    game_element_t *powerup_addbomb_object,
+    game_element_t *powerup_speed_object,
+    game_element_t *powerup_explosion_range_object
+    
+    ) {
     
     
 	// Here the function is receiving the pointer to the player object
@@ -272,6 +290,26 @@ static void init_game(
 	explosion_object->w = BLOCK_SIZE;
 	explosion_object->h = BLOCK_SIZE;
 
+	//Powerups objects
+	//powerup_addbomb_object->x = PLAYER_START_X+2000;
+	//powerup_addbomb_object->y = PLAYER_START_Y+2000;
+	powerup_addbomb_object->w = 70;
+	powerup_addbomb_object->h = 67;
+	
+	//powerup_speed_object->x = PLAYER_START_X+2000;
+	//powerup_speed_object->y = PLAYER_START_Y+2000;
+	powerup_speed_object->w = 70;
+	powerup_speed_object->h = 53;
+	
+	//powerup_explosion_range_object->x = PLAYER_START_X+2000;
+	//powerup_explosion_range_object->y = PLAYER_START_Y+2000;
+	powerup_explosion_range_object->w = 70;
+	powerup_explosion_range_object->h = 70;
+	
+	
+	
+	
+	
 	
 	for (int i = 0; i < 25; i++) { // Ajustado a 25 para coincidir con la cantidad de valores definidos
 	    map_elements[i].x = map_elements_values[i][0];
@@ -304,6 +342,43 @@ static void init_game(
 			lista_destructibles[i].w = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
 			lista_destructibles[i].h = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
 			}
+		else if (i==1){
+		
+		powerup_addbomb_object->x = coordenadas_destructibles[index_aleatorio][0];
+		powerup_addbomb_object->y = coordenadas_destructibles[index_aleatorio][1];
+		
+		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+		lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
+		lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
+		
+		}
+		
+		else if (i==2){
+		powerup_speed_object->x = coordenadas_destructibles[index_aleatorio][0];
+		powerup_speed_object->y = coordenadas_destructibles[index_aleatorio][1];
+		
+		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+		lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
+		lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
+		
+		
+		
+		
+		}
+		
+		else if (i==3){
+		powerup_explosion_range_object->x = coordenadas_destructibles[index_aleatorio][0];
+		powerup_explosion_range_object->y = coordenadas_destructibles[index_aleatorio][1];
+		
+		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+		lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
+		lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
+		
+		
+		}
 			
 			
 		else{
@@ -330,13 +405,9 @@ static void init_game(
 	    // Asignar coordenadas no usadas a monsters
 	    monster[i].x = coordenadas_destructibles[index_aleatorio][0];
 	    monster[i].y = coordenadas_destructibles[index_aleatorio][1];
-	    //printf("coord x monster:%d",monster[i].x);
-	    //printf("\n");
-    	    //printf("coord y monster:%d",monster[i].y);
-	    //printf("\n");
+	   
 	    monster[i].w = 1.5 * BLOCK_SIZE;
 	    monster[i].h = 1.5 * BLOCK_SIZE;
-	    //printf("se creo enemigo\n");
 	    
 	    coordenadas_usadas[index_aleatorio] = true;
 	}
@@ -1192,6 +1263,68 @@ static void draw_timer_countdown(){
 }
 
 
+static void draw_powerup_addbomb(game_element_t *powerup_addbomb_object) {
+
+
+//powerup_addbomb_object
+    SDL_Rect src;
+    SDL_Rect dest;
+
+
+    src.x = 0;
+    src.y = 0;
+    src.w = 70; 
+    src.h = 67; 
+
+
+    dest.x = powerup_addbomb_object -> x; 
+    dest.y = powerup_addbomb_object -> y; 
+    dest.w = src.w; 
+    dest.h = src.h; 
+
+    // Dibuja el power-up en la pantalla
+    SDL_BlitSurface(powerup_addbomb_image, &src, screen, &dest);
+}
+
+static void draw_powerup_speed(game_element_t *powerup_speed_object) {
+
+//powerup_speed_object
+    SDL_Rect src;
+    SDL_Rect dest;
+
+    src.x = 0;
+    src.y = 0;
+    src.w = 70;
+    src.h = 53;
+
+    dest.x = powerup_speed_object->x; // Ajusta para no solapar con otros power-ups
+    dest.y = powerup_speed_object->y;
+    dest.w = src.w;
+    dest.h = src.h;
+
+    SDL_BlitSurface(powerup_speed_image, &src, screen, &dest);
+}
+
+static void draw_powerup_explosion_range(game_element_t *powerup_explosion_range_object) {
+
+//powerup_explosion_range_object
+    SDL_Rect src;
+    SDL_Rect dest;
+
+    src.x = 0;
+    src.y = 0;
+    src.w = 70;
+    src.h = 70;
+
+    dest.x = powerup_explosion_range_object->x; // Ajusta para no solapar con otros power-ups
+    dest.y = powerup_explosion_range_object->y;
+    dest.w = src.w;
+    dest.h = src.h;
+
+    SDL_BlitSurface(powerup_explosion_range_image, &src, screen, &dest);
+}
+
+
 
 
 
@@ -1213,6 +1346,11 @@ int main (int argc, char *args[]) {
 	game_element_t explosion_object;
 	game_element_t *monsters;
 	game_element_t portal_object;
+	
+	// Se definen los objetos powerups
+	game_element_t powerup_explosion_range_object;
+	game_element_t powerup_addbomb_object;
+	game_element_t powerup_speed_object;
 	
 
 	// For the project the elements of the map should be created
@@ -1244,7 +1382,10 @@ int main (int argc, char *args[]) {
 	  &bomb_object, 
 	  &explosion_object,
 	  monsters,
-	  &portal_object);
+	  &portal_object,
+	  &powerup_addbomb_object,
+	  &powerup_speed_object,
+  	  &powerup_explosion_range_object);
 	  
 	
 	
@@ -1367,6 +1508,12 @@ int main (int argc, char *args[]) {
 		draw_clock_image();
 		draw_timer_countdown();
 		
+		draw_powerup_addbomb(&powerup_addbomb_object);
+		draw_powerup_speed(&powerup_speed_object);
+		draw_powerup_explosion_range(&powerup_explosion_range_object);
+		
+
+		
 			//if either player wins, change to game over state
 			if (FALSE) {	//Doing nothing for the moment
 				
@@ -1396,7 +1543,25 @@ int main (int argc, char *args[]) {
 				draw_skin(DOWN,&player);
 			}
 			
+			//Aqui cuando el jugador toque los powerups, desaparecen
+			
+			if (check_collision(player, powerup_addbomb_object) == TRUE){
 				
+				powerup_addbomb_object.x = 2000;
+			
+			}	
+			
+			else if (check_collision(player, powerup_speed_object) == TRUE){
+			
+				powerup_speed_object.x = 2000;
+			}
+			
+			else if (check_collision(player, powerup_explosion_range_object) == TRUE){
+				powerup_explosion_range_object.x = 2000;
+			
+			}
+			
+			else {}
 				
 				
 			
@@ -1500,7 +1665,9 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(score);	
 	SDL_FreeSurface(clock_image);
 	
-	
+	SDL_FreeSurface(powerup_addbomb_image);
+	SDL_FreeSurface(powerup_speed_image);
+	SDL_FreeSurface(powerup_explosion_range_image);	
 	free(monsters);
 
 
@@ -1611,6 +1778,10 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	vida = SDL_LoadBMP("vida.bmp");
 	score = SDL_LoadBMP("score.bmp");
 	clock_image = SDL_LoadBMP("clock_image.bmp");
+	
+	powerup_addbomb_image = SDL_LoadBMP("powerup_addbomb_image.bmp");
+	powerup_speed_image = SDL_LoadBMP("powerup_speed_image.bmp");
+	powerup_explosion_range_image = SDL_LoadBMP("powerup_explosion_range_image.bmp");
 	//spaceman = SDL_LoadBMP("spaceman.bmp");
 
 
