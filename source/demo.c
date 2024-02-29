@@ -50,7 +50,9 @@
 #define START_SCREEN 0
 #define LEVEL_1 1
 #define GAME_OVER 2
-#define LEVEL_2 2
+#define LEVEL_2 3
+#define LEVEL_3 4
+#define WIN 5
 // Defines for states
 #define FALSE 0
 #define TRUE 1
@@ -214,7 +216,9 @@ static SDL_Surface *grass;
 static SDL_Surface *vida;
 static SDL_Surface *score;
 static SDL_Surface *clock_image;
-
+static SDL_Surface *lava;
+static SDL_Surface *win;
+static SDL_Surface *agua;
 //static SDL_Surface *spaceman;
 
 
@@ -291,7 +295,6 @@ static void init_game(
 	bool coordenadas_usadas[num_coordenadas];
 	memset(coordenadas_usadas, false, num_coordenadas * sizeof(bool));
 
-
 	for (int i = 0; i < 16; i++) {
 	
 		int index_aleatorio = rand() % num_coordenadas; // Índice aleatorio
@@ -341,10 +344,7 @@ static void init_game(
 	    //printf("se creo enemigo\n");
 	    
 	    coordenadas_usadas[index_aleatorio] = true;
-	}
-
-		
-	
+	}	
 }
 
 
@@ -407,7 +407,7 @@ int check_collision(game_element_t a, game_element_t b){
 void portal_collision(game_element_t *player, game_element_t *portal_object){
 	
 	if (check_collision(*player, *portal_object) == TRUE) {
-				//printf("CHOCO");
+				printf("CHOCO");
 			}
 }
 
@@ -451,23 +451,58 @@ void move_player(int d, game_element_t *player, game_element_t lista_destructibl
  */
 static void draw_game_over() { 
 
-	SDL_Rect p1;
+	SDL_Rect src;
 	SDL_Rect dest;
 
-	p1.x = 0;
-	p1.y = 0;
-	p1.w = end->w;
-	p1.h = 75;
+	src.x = 0;
+	src.y = 0;
+	src.w = end->w;
+	src.h = end->h;
 
-	dest.x = (screen->w / 2) - (end->w / 2);
-	dest.y = (screen->h / 2) - (75 / 2);
+	dest.x = (screen->w / 2) - (src.w / 2);
+	dest.y = (screen->h / 2) - (src.h / 2);
 	dest.w = end->w;
-	dest.h = 75;
+	dest.h = end->h;
+
+	SDL_BlitSurface(end, &src, screen, &dest);
+}
 	
-	SDL_BlitSurface(end, &p1, screen, &dest);
-	
+
+static void draw_win() {
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = win->w;
+	src.h = win->h;
+
+	dest.x = (screen->w / 2) - (src.w / 2);
+	dest.y = (screen->h / 2) - (src.h / 2);
+	dest.w = win->w;
+	dest.h = win->h;
+
+	SDL_BlitSurface(win, &src, screen, &dest);
 }
 
+static void draw_agua() {
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = agua->w;
+	src.h = agua->h;
+
+	dest.x = (screen->w / 2) - (src.w / 2);
+	dest.y = (screen->h / 2) - (src.h / 2);
+	dest.w = agua->w;
+	dest.h = agua->h;
+
+	SDL_BlitSurface(agua, &src, screen, &dest);
+}
 /* Function: draw_menu
  * --------------------------------
  * This function is in charge of drawing the first screen that is
@@ -994,7 +1029,7 @@ static void draw_skin(int d, game_element_t *player){
 	dest.h = 64;}
 	
 	
-	//48x64
+	//
 
 	//SDL_BlitSurface(skin, &src, screen, &dest);
 	SDL_BlitSurface(skin, &src, screen, &dest);
@@ -1040,6 +1075,26 @@ static void draw_grass(){
 
 
 	SDL_BlitSurface(grass, &src, screen, &dest);
+	
+
+}
+static void draw_lava(){
+	
+	SDL_Rect src;
+	SDL_Rect dest;
+	
+	src.x = 0;
+	src.y = 0;
+	src.w = 1280;//portal_object->w;
+	src.h = 640;//portal_object->h;
+
+	dest.x = 78;
+	dest.y = 125;
+	dest.w = 1280;
+	dest.h = 640;
+
+
+	SDL_BlitSurface(lava, &src, screen, &dest);
 	
 
 }
@@ -1183,16 +1238,6 @@ static void draw_timer_countdown(){
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 // Main function
 
 int main (int argc, char *args[]) {
@@ -1211,7 +1256,6 @@ int main (int argc, char *args[]) {
 	// dinamically (using malloc) and using linked lists.
 	monsters = (game_element_t*)malloc(num_monster * sizeof(game_element_t));
 
-	
 
 	//SDL Window setup
 	if (init_SDL(SCREEN_WIDTH, SCREEN_HEIGHT, argc, args) == FAILURE) {
@@ -1225,29 +1269,11 @@ int main (int argc, char *args[]) {
 	int quit = FALSE;
 	int state = START_SCREEN;
 	Uint32 next_game_tick = SDL_GetTicks();
-	
 
-	
-	init_game(&player,
-	  map_elements, 
-	  NUM_MAP_ELEMENTS,
-	  lista_destructibles, 
-	  NUM_DESTRUCTIBLES, 
-	  &bomb_object, 
-	  &explosion_object,
-	  monsters,
-	  &portal_object);
-	  
-	
-	
-	
 	// The & means "Address of"
 	//render loop
 	while(quit == FALSE) {
-	
-	
 
-	
 		//check for new events every frame
 		SDL_PumpEvents();
 
@@ -1326,10 +1352,20 @@ int main (int argc, char *args[]) {
 		
 		//display main menu
 		if (state == START_SCREEN ) {
-		
+			
 			if (keystate[SDL_SCANCODE_SPACE]) {
-				
+				temporizador = 200;
 				state = LEVEL_1;
+				
+			init_game(&player,
+			map_elements, 
+	  		NUM_MAP_ELEMENTS,
+	 		lista_destructibles, 
+			NUM_DESTRUCTIBLES, 
+	 		&bomb_object, 
+	 		&explosion_object,
+	  		monsters,
+	  		&portal_object);
 			}
 		
 			//draw menu 
@@ -1338,23 +1374,45 @@ int main (int argc, char *args[]) {
 		//display gameover
 		} else if (state == GAME_OVER) {
 		
+			init_game(&player,
+			map_elements, 
+	  		NUM_MAP_ELEMENTS,
+	 		lista_destructibles, 
+			NUM_DESTRUCTIBLES, 
+	 		&bomb_object, 
+	 		&explosion_object,
+	  		monsters,
+	  		&portal_object);
+	  		
 			if (keystate[SDL_SCANCODE_SPACE]) {
 				state = START_SCREEN;
+				
+				//state = LEVEL_1;
 				// delay for a little bit so the space bar press doesnt get 
 				// triggered twice
 				// while the main menu is showing
-            			//SDL_Delay(INPUT_DELAY_MS);
-            			if (keystate[SDL_SCANCODE_SPACE]) {
+            			SDL_Delay(INPUT_DELAY_MS);
+            			//if (keystate[SDL_SCANCODE_SPACE]) {
 				
-				state = LEVEL_1;
-			}
+				//state = START_SCREEN;
+				
+				
+			
 			}
 
 				draw_game_over();
 				
+				
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////				
+		
+		
 		//display the game
 		} else if (state == LEVEL_1) {
 		//Dibuja el pasto
+		
+		
+	  	
+	  		  	
 		draw_grass();
 		draw_vida(contador_vidas);
 		draw_numbermap();
@@ -1363,25 +1421,13 @@ int main (int argc, char *args[]) {
 		draw_timer_countdown();
 		
 			//if either player wins, change to game over state
-			if (contador_vidas <= 0 || temporizador == 0) {	//Doing nothing for the moment
+			if (contador_vidas == 0 || temporizador == 0) {	//Doing nothing for the moment
 			draw_vida(contador_vidas);
-				
+				contador_vidas = 3;
 				state = GAME_OVER;	
 
-			} 
-			if(contador_muerte == 0){
-				//if (check_collision(*player, *portal_object) == TRUE) {
-				//printf("CHOCO");
-				portal_collision(&player, &portal_object);
-				
-					state == LEVEL_2;
-				}
-				else{
-				}
-			
-			
-		
-			
+			} 			
+						
 			draw_portal(&portal_object);
 
 		
@@ -1402,11 +1448,7 @@ int main (int argc, char *args[]) {
 			else{
 				draw_skin(DOWN,&player);
 			}
-			
-				
-				
-				
-			
+	
 			
 			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde 			
 							//map_element hasta map_element24
@@ -1443,9 +1485,6 @@ int main (int argc, char *args[]) {
 			    draw_game_element_monster(&monsters[i]);
 			}			
 			
-			//Dibujamos el portal
-			//draw_portal(&bomb_object);
-					
 			
 			//draw a bomb
 			draw_bomb(&bomb_object);
@@ -1459,6 +1498,122 @@ int main (int argc, char *args[]) {
 			//draw the score
 			//draw_game_element_1_score();
 			//draw a bomb
+			if (keystate[SDL_SCANCODE_B] && bomb_placed == 0) {
+				//printf("%d",map_des_block.x);
+				bomb_object.x = player.x;
+				bomb_object.y = player.y;
+				
+				draw_bomb(&bomb_object);
+				
+				// Coloca la bomba y guarda el momento actual
+    				bomb_timer = SDL_GetTicks();
+    				bomb_placed = 1; // Indica que la bomba ha sido colocada	
+
+			}
+			if(contador_muerte == 0){
+				if (check_collision(player, portal_object) == TRUE) {
+				printf("CHOCO");
+				//portal_collision(&player, &portal_object);				
+				contador_muerte = 5;	
+					state = LEVEL_2;
+					
+					init_game(&player,
+				map_elements, 
+	  			NUM_MAP_ELEMENTS,
+	 			lista_destructibles, 
+				NUM_DESTRUCTIBLES, 
+	 			&bomb_object, 
+	 			&explosion_object,
+	  			monsters,
+	  			&portal_object);
+					}
+		}
+		}
+		
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+		
+		else if (state == LEVEL_2) {
+		//Dibuja el pasto
+		
+		printf("entramos al nivel:2  " );	
+		draw_lava();
+		draw_vida(contador_vidas);
+		draw_numbermap();
+		draw_score();
+		draw_clock_image();
+		draw_timer_countdown();
+		
+		
+			if (contador_vidas == 0 || temporizador == 0) {	//Doing nothing for the moment
+			draw_vida(contador_vidas);
+				contador_vidas = 3;
+				state = GAME_OVER;	
+
+			} 			
+			draw_portal(&portal_object);
+
+		
+			// Here we draw the player that we move across 
+			
+			if (keystate[SDL_SCANCODE_DOWN]) {
+				draw_skin(DOWN,&player);}
+			
+			else if (keystate[SDL_SCANCODE_UP]) {
+				draw_skin(UP,&player);}
+			
+			else if (keystate[SDL_SCANCODE_LEFT]) {
+				draw_skin(LEFT,&player);}
+			
+			else if (keystate[SDL_SCANCODE_RIGHT]) {
+				draw_skin(RIGHT,&player);}
+				
+			else{
+				draw_skin(DOWN,&player);
+			}
+
+			
+			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde 			
+							//map_element hasta map_element24
+   				 if (i < 4) {
+        			// Los primeros 4 elementos usan draw_game_elementLimites
+       				 draw_game_elementLimites(&map_elements[i]);}
+       				 
+			    	 else {
+				// Los elementos restantes usan draw_game_element
+				draw_game_element(&map_elements[i]);
+			    }
+			    }
+			// We draw the map element that is going to be static
+
+			for(int i=0;i<16;i++){
+			draw_game_element_des(&lista_destructibles[i]);
+			}
+				
+
+					
+			time_bomb_countdown(&bomb_object,&explosion_object,lista_destructibles, monsters,&player);
+			//kill_monsters(&explosion_object, monsters);		
+							
+			kill_player(&explosion_object, &player, monsters);
+
+
+
+				
+							
+
+			//draw_game_element_monster(monsters);
+
+			for (int i = 0; i < num_monster-2; i++) {
+			    draw_game_element_monster(&monsters[i]);
+			}			
+			
+
+					
+			
+			//draw a bomb
+			draw_bomb(&bomb_object);
+
+			
 			if (keystate[SDL_SCANCODE_B] && bomb_placed==0) {
 				//printf("%d",map_des_block.x);
 				bomb_object.x = player.x;
@@ -1470,6 +1625,156 @@ int main (int argc, char *args[]) {
     				bomb_timer = SDL_GetTicks();
     				bomb_placed = 1; // Indica que la bomba ha sido colocada	
 
+			}
+			if(contador_muerte == 0){
+				if (check_collision(player, portal_object) == TRUE) {
+				printf("CHOCO");
+				//portal_collision(&player, &portal_object);				
+				contador_muerte = 5;
+					
+				state = LEVEL_3;
+					
+				init_game(&player,
+				map_elements, 
+	  			NUM_MAP_ELEMENTS,
+	 			lista_destructibles, 
+				NUM_DESTRUCTIBLES, 
+	 			&bomb_object, 
+	 			&explosion_object,
+	  			monsters,
+	  			&portal_object);
+	  			
+			}
+}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+	
+		
+			else if (state == LEVEL_3) {
+		//Dibuja el pasto
+		
+			  		  	
+		draw_agua();
+		draw_vida(contador_vidas);
+		draw_numbermap();
+		draw_score();
+		draw_clock_image();
+		draw_timer_countdown();
+		
+			//if either player wins, change to game over state
+			if (contador_vidas == 0 || temporizador == 0) {	//Doing nothing for the moment
+			draw_vida(contador_vidas);
+				contador_vidas = 3;
+				state = GAME_OVER;	
+
+			} 			
+						
+			draw_portal(&portal_object);
+
+		
+			// Here we draw the player that we move across 
+			
+			if (keystate[SDL_SCANCODE_DOWN]) {
+				draw_skin(DOWN,&player);}
+			
+			else if (keystate[SDL_SCANCODE_UP]) {
+				draw_skin(UP,&player);}
+			
+			else if (keystate[SDL_SCANCODE_LEFT]) {
+				draw_skin(LEFT,&player);}
+			
+			else if (keystate[SDL_SCANCODE_RIGHT]) {
+				draw_skin(RIGHT,&player);}
+				
+			else{
+				draw_skin(DOWN,&player);
+			}
+	
+			
+			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde 			
+							//map_element hasta map_element24
+   				 if (i < 4) {
+        			// Los primeros 4 elementos usan draw_game_elementLimites
+       				 draw_game_elementLimites(&map_elements[i]);}
+       				 
+			    	 else {
+				// Los elementos restantes usan draw_game_element
+				draw_game_element(&map_elements[i]);
+			    }
+			    }
+			// We draw the map element that is going to be static
+
+			for(int i=0;i<16;i++){
+			draw_game_element_des(&lista_destructibles[i]);
+			}
+				
+
+					
+			time_bomb_countdown(&bomb_object,&explosion_object,lista_destructibles, monsters,&player);
+			//kill_monsters(&explosion_object, monsters);		
+							
+			kill_player(&explosion_object, &player, monsters);
+
+
+
+				
+							
+
+			//draw_game_element_monster(monsters);
+
+			for (int i = 0; i < num_monster-2; i++) {
+			    draw_game_element_monster(&monsters[i]);
+			}			
+			
+			
+			//draw a bomb
+			draw_bomb(&bomb_object);
+
+			//draw_score();
+
+			
+			//draw the score
+			//draw_game_element_0_score();
+	
+			//draw the score
+			//draw_game_element_1_score();
+			//draw a bomb
+			if (keystate[SDL_SCANCODE_B] && bomb_placed == 0) {
+				bomb_object.x = player.x;
+				bomb_object.y = player.y;
+				
+				draw_bomb(&bomb_object);
+				
+				// Coloca la bomba y guarda el momento actual
+    				bomb_timer = SDL_GetTicks();
+    				bomb_placed = 1; // Indica que la bomba ha sido colocada	
+
+			}
+			if(contador_muerte == 0){
+				if (check_collision(player, portal_object) == TRUE) {
+				printf("CHOCO");
+				//portal_collision(&player, &portal_object);				
+					
+					state = WIN;
+					
+					init_game(&player,
+				map_elements, 
+	  			NUM_MAP_ELEMENTS,
+	 			lista_destructibles, 
+				NUM_DESTRUCTIBLES, 
+	 			&bomb_object, 
+	 			&explosion_object,
+	  			monsters,
+	  			&portal_object);
+	  			contador_muerte = 5;
+					}
+				}
+			}
+		else if (state == WIN) {
+			contador_vidas = 3;
+			draw_win(); 
+			if (keystate[SDL_SCANCODE_SPACE]) {
+				state = START_SCREEN;
 			}
 		}
 		
@@ -1506,8 +1811,9 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(grass);
 	SDL_FreeSurface(score);	
 	SDL_FreeSurface(clock_image);
-	
-	
+	SDL_FreeSurface(lava);
+	SDL_FreeSurface(win);
+	SDL_FreeSurface(agua);
 	free(monsters);
 
 
@@ -1618,6 +1924,10 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	vida = SDL_LoadBMP("vida.bmp");
 	score = SDL_LoadBMP("score.bmp");
 	clock_image = SDL_LoadBMP("clock_image.bmp");
+	lava = SDL_LoadBMP("lava.bmp");
+	win = SDL_LoadBMP("win.bmp");
+	end = SDL_LoadBMP("end.bmp");
+	agua = SDL_LoadBMP("agua.bmp");
 	//spaceman = SDL_LoadBMP("spaceman.bmp");
 
 
@@ -1647,7 +1957,7 @@ if (portal == NULL) {
 	}
 	
 	//Load the gameover image
-	end = SDL_LoadBMP("gameover.bmp");
+
 
 	if (end == NULL) {
 		
