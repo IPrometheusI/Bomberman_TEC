@@ -1,4 +1,4 @@
-//Using libs SDL, glibc
+	//Using libs SDL, glibc
 #include <SDL.h>	//SDL version 2.0
 #include <stdlib.h>
 #include <stdio.h>
@@ -99,7 +99,7 @@ int num_monster = 5;
 
 // Se inicializa contador de vidas
 int contador_vidas = 3;
-
+// contador de las muertes del monstruo
 int contador_muerte;
 
 //Coordenadas de bordes y bloques inamovibles
@@ -144,27 +144,28 @@ float map_elements_values[25][4] = {
 int coordenadas_destructibles[][2] = {
 
     // Fila 1
-    {233,125},{310, 125}, {387, 125}, {464, 125}, {541, 125}, {618, 125}, {695, 125}, {772, 125}, {849, 125}, {926, 125}, {1003, 125}, {1080, 125}, {1165, 125},
+    {233,125},{310, 125}, {387, 125}, {464, 125}, {541, 125}, {618, 125}, {695, 125}, {772, 125}, {853, 125}, {930, 125}, {1005, 125}, {1085, 125}, {1165, 125},
 
     // Fila 2
-    {78, 202}, {232, 202}, {386, 202}, {540, 202}, {694, 202}, {848, 202}, {1002, 202}, {1165, 202},
+    {78, 202}, {232, 202}, {386, 202}, {540, 202}, {694, 202}, {853, 202}, {1005, 202}, {1160, 202},
     
     // Fila 3 
-    {78, 279}, {155, 279}, {232, 279}, {309, 279}, {386, 279}, {463, 279}, {540, 279}, {617, 279}, {694, 279}, {771, 279}, {848, 279}, {925, 279}, {1002, 279}, {1079, 279}, {1165, 279},
+    {78, 279}, {155, 279}, {232, 279}, {309, 279}, {386, 279}, {463, 279}, {540, 279}, {617, 279}, {694, 279}, {771, 279}, {853, 279}, {930, 279}, {1005, 279}, {1085, 279}, {1165, 279},
     
     // Fila 4 
-    {78, 356}, {232, 356}, {386, 356}, {540, 356}, {694, 356}, {848, 356}, {1002, 356}, {1165, 356},
+    {78, 356}, {232, 356}, {386, 356}, {540, 356}, {694, 356}, {853, 356}, {1005, 356}, {1165, 356},
     
     // Fila 5 
-    {78, 433}, {155, 433}, {232, 433}, {309, 433}, {386, 433}, {463, 433}, {540, 433}, {617, 433}, {694, 433}, {771, 433}, {848, 433}, {925, 433}, {1002, 433}, {1079, 433}, {1165, 433},
+    {78, 433}, {155, 433}, {232, 433}, {309, 433}, {386, 433}, {463, 433}, {540, 433}, {617, 433}, {694, 433}, {771, 433}, {848, 433}, {930, 433}, {1005, 433}, {1085, 433}, {1165, 433},
     
     // Fila 6 
-    {78, 510}, {232, 510}, {386, 510}, {540, 510}, {694, 510}, {848, 510}, {1002, 510}, {1165, 510},
+    {78, 510}, {232, 510}, {386, 510}, {540, 510}, {694, 510}, {853, 510}, {1005, 510}, {1165, 510},
     
     // Fila 7 
-    {78, 587}, {155, 587}, {232, 587}, {309, 587}, {386, 587}, {463, 587}, {540, 587}, {617, 587}, {694, 587}, {771, 587}, {848, 587}, {925, 587}, {1002, 587}, {1079, 587}, {1165, 587}
+    {78, 587}, {155, 587}, {232, 587}, {309, 587}, {386, 587}, {463, 587}, {540, 587}, {617, 587}, {694, 587}, {771, 587}, {853, 587}, {930, 587}, {1005, 587}, {1085, 587}, {1165, 587}
 
 };
+
 
 
 
@@ -365,10 +366,11 @@ static void init_game(
 	
 	
     	srand(time(NULL)); // Inicializa el generador de números aleatorios
+    	//Esto es para saber el numero de coordenadas disponibles
     	int num_coordenadas = sizeof(coordenadas_destructibles) / 	
 							sizeof(coordenadas_destructibles[0]);	
 
-
+	//inicializan un arreglo de booleanos con un valor de false. menset inicializa un bloque con un valor especifico
 	bool coordenadas_usadas[num_coordenadas];
 	memset(coordenadas_usadas, false, num_coordenadas * sizeof(bool));
 
@@ -542,6 +544,8 @@ void move_player(
  	game_element_t map_elements[], 
  	int me_size)
 {
+    //se utiliza el operador ternario ?  para ver si una condicion sucede, sino dale 0, esto con X y Y.
+    
     player->x += (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
     player->y += (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
 
@@ -564,6 +568,7 @@ void move_player(
         }
     }
 }
+// Función para reproducir un sonido
 
 
 
@@ -580,10 +585,11 @@ void move_monsters(
     for(int i = 0; i<num_monster; i++){
      int d = rand() % 4; //genero nueva direccion
      int collision;
+     // Se utiliza switch para entrar al caso elegido por el rand.
 	switch(d) {
         case LEFT:
             monsters[i].x -= monster_speed;
-            for(int j = 0; j < 26; j++) {
+            for(int j = 0; j < 26; j++) {//26 es el número de elementos indestructibles.
 
                 collision = check_collision(monsters[i], map_element[j]);
                 if(TRUE == collision) {
@@ -591,7 +597,7 @@ void move_monsters(
                     break;
                 }
             }
-            for(int j = 0; j < 15; j++) {
+            for(int j = 0; j < 15; j++) {//15 es la cantidad de destructibles
                 collision = check_collision(monsters[i], lista_destructibles[j]);
                 if(TRUE == collision) {
                     monsters[i].x += monster_speed;
@@ -1065,7 +1071,7 @@ static void draw_vida(int contador_vidas){
 }
 
 
-
+//Esta funcion hace explotar los destructibles
 void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object){
 	
 			
@@ -1090,7 +1096,7 @@ void destroy_block(game_element_t *map_des_block, game_element_t *explosion_obje
 	}
 }
 
-
+// Esta funcion hace explotar a los monstruos 
 void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
 	
 	
@@ -1109,9 +1115,9 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
 		}
 	}
 }
-
+//Funcion para detectar muertees del jugador.
 void kill_player(game_element_t *explosion_object, game_element_t *player, game_element_t *monsters) {
-    if (SDL_GetTicks()  > 4000) {
+    if (SDL_GetTicks()  > 4000) { //Establece 4 segundos inmortal.
     if (check_collision(*explosion_object, *player) == TRUE) {
         if (!fire_touched) {
             printf("*********Detecto colision con la explosión***********\n");
@@ -1124,7 +1130,7 @@ void kill_player(game_element_t *explosion_object, game_element_t *player, game_
             
             contador_vidas--;
             
-            fire_touched = true; // Establece que el jugador ha tocado la explosión
+            fire_touched = true; // El jugador ha tocado la explosión
         }
     } else {
 
@@ -2683,7 +2689,6 @@ static void draw_powerup_explosion_range(game_element_t *powerup_explosion_range
     SDL_BlitSurface(powerup_explosion_range_image, &src, screen, &dest);
 }
 
-
 // Main function
 
 int main (int argc, char *args[]) {
@@ -2823,7 +2828,7 @@ int main (int argc, char *args[]) {
 		
 		//display main menu
 		if (state == START_SCREEN ) {
-			//free(monsters);
+			//inicializamos varias variables en o para el correcto funcionamiento.
 
 			number_bombs = 0;
 			contador_muerte = num_monster;
@@ -2838,6 +2843,7 @@ int main (int argc, char *args[]) {
 			if (keystate[SDL_SCANCODE_SPACE]) {
 
 				state = LEVEL_1;
+				
 			  init_game(&player,
 			  map_elements, 
 			  NUM_MAP_ELEMENTS,
@@ -2855,9 +2861,6 @@ int main (int argc, char *args[]) {
 			  &powerup_speed_object,
 		  	  &powerup_explosion_range_object);
 	  
-				
-								
-
 			}
 		
 			//draw menu 
@@ -2896,18 +2899,14 @@ int main (int argc, char *args[]) {
 				
 		//display the game
 		} else if (state == LEVEL_1) {
-		
 
-
-		//Dibuja el pasto
+		//Dibuja los elementos.
 		draw_grass();
-
 		draw_vida(contador_vidas);
 		draw_numbermap();
 		draw_score();
 		draw_clock_image();
 		draw_timer_countdown();
-		
 		draw_powerup_addbomb(&powerup_addbomb_object);
 		draw_powerup_speed(&powerup_speed_object);
 		draw_powerup_explosion_range(&powerup_explosion_range_object);
@@ -2915,7 +2914,7 @@ int main (int argc, char *args[]) {
 
 		
 			//if either player wins, change to game over state
-			if (contador_vidas == 0 || temporizador == 0) {	//Doing nothing for the moment
+			if (contador_vidas == 0 || temporizador == 0) {	
 			draw_vida(contador_vidas);
 				contador_vidas = 3;
 				state = GAME_OVER;	
@@ -3002,14 +3001,12 @@ int main (int argc, char *args[]) {
 				&player,
 				map_elements);
 
-			//kill_monsters(&explosion_object, monsters);
 			kill_player(&explosion_object, &player, monsters);
 				
 
 			for (int i = 0; i < num_monster; i++) {
 			    draw_game_element_monster(&monsters[i]);
-			}			
-			
+			}						
 			//draw a bomb
 			draw_bomb(&bomb_object,0);
 			draw_bomb(&bomb_object1,1);
@@ -3082,6 +3079,7 @@ int main (int argc, char *args[]) {
 							
 				contador_muerte = num_monster;	
 				monster_speed = 5*1.5;
+				
 				state = LEVEL_2;
 				
 				  init_game(&player,
@@ -3110,9 +3108,8 @@ int main (int argc, char *args[]) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 else if (state == LEVEL_2) {
-		//Dibuja el pasto
-		//temporizador = 200;
-		//monster_speed = monster_speed*1.5;
+		//dibuja los elementos
+		
 		draw_lava();
 		draw_vida(contador_vidas);
 		draw_numbermap();
@@ -3204,8 +3201,6 @@ else if (state == LEVEL_2) {
 				monsters,
 				&player,
 				map_elements);
-
-			//kill_monsters(&explosion_object, monsters);		
 							
 			kill_player(&explosion_object, &player, monsters);
 
@@ -3316,7 +3311,7 @@ else if (state == LEVEL_2) {
 		
 		else if (state == LEVEL_3) {
 		
-		//Dibuja el pasto
+		//Dibuja los elementos
 				  	
 		draw_agua();
 		draw_vida(contador_vidas);
@@ -3380,9 +3375,9 @@ else if (state == LEVEL_2) {
 		else {}
 	
 			
-			for (int i = 0; i < 25; i++) { // Hay 25 elementos en total, desde 			
-							//map_element hasta map_element24
+			for (int i = 0; i < 25; i++) { 
    				 if (i < 4) {
+   				 
         			// Los primeros 4 elementos usan draw_game_elementLimites
        				 draw_game_elementLimites(&map_elements[i]);}
        				 
