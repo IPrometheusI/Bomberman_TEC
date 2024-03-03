@@ -448,8 +448,7 @@ static void init_game(
 	    int index_aleatorio;
 	    do {
 		index_aleatorio = rand() % num_coordenadas;
-		printf("index_aleatorio: %d",index_aleatorio);
-		printf("\n");
+		
 	    } 
 
 	    while (coordenadas_usadas[index_aleatorio]); // Repetir si la coordenada ya fue 		
@@ -461,7 +460,8 @@ static void init_game(
 	   
 	    monsters[i].w = 1.5 * BLOCK_SIZE;
 	    monsters[i].h = 1.5 * BLOCK_SIZE;
-	    
+	    printf("index_aleatorio agregado: %d",index_aleatorio);
+		printf("\n");
 	    coordenadas_usadas[index_aleatorio] = true;
 	}
 
@@ -577,7 +577,9 @@ void move_monsters(
 	game_element_t lista_destructibles[], 
 	game_element_t *monsters, 
 	game_element_t *bomb_object,
-	game_element_t *bomb_object2) {
+	game_element_t *bomb_object1,
+	game_element_t *bomb_object2,
+	game_element_t *bomb_object3) {
 
     srand(time(0)); 
 
@@ -611,7 +613,21 @@ void move_monsters(
                     
                 }
                     
-                    collision = check_collision(monsters[i], *bomb_object2);
+                    collision = check_collision(monsters[i], *bomb_object1);
+                    if (TRUE == collision) {
+                        monsters[i].x += monster_speed;
+                        break;
+                    
+                }
+
+                collision = check_collision(monsters[i], *bomb_object2);
+                    if (TRUE == collision) {
+                        monsters[i].x += monster_speed;
+                        break;
+                    
+                }
+                    
+                    collision = check_collision(monsters[i], *bomb_object3);
                     if (TRUE == collision) {
                         monsters[i].x += monster_speed;
                         break;
@@ -640,13 +656,28 @@ void move_monsters(
                    collision = check_collision(monsters[i], *bomb_object);
                     if (TRUE == collision) {
                         monsters[i].x -= monster_speed;
-                       break;
+                        break;
                     
                 }
+                    
+                    collision = check_collision(monsters[i], *bomb_object1);
+                    if (TRUE == collision) {
+                        monsters[i].x -= monster_speed;
+                        break;
+                    
+                }
+
                 collision = check_collision(monsters[i], *bomb_object2);
                     if (TRUE == collision) {
                         monsters[i].x -= monster_speed;
-                       break;
+                        break;
+                    
+                }
+                    
+                    collision = check_collision(monsters[i], *bomb_object3);
+                    if (TRUE == collision) {
+                        monsters[i].x -= monster_speed;
+                        break;
                     
                 }
             break;
@@ -674,7 +705,22 @@ void move_monsters(
                         break;
                     
                 }
+                    
+                    collision = check_collision(monsters[i], *bomb_object1);
+                    if (TRUE == collision) {
+                        monsters[i].y += monster_speed;
+                        break;
+                    
+                }
+
                 collision = check_collision(monsters[i], *bomb_object2);
+                    if (TRUE == collision) {
+                        monsters[i].y += monster_speed;
+                        break;
+                    
+                }
+                    
+                    collision = check_collision(monsters[i], *bomb_object3);
                     if (TRUE == collision) {
                         monsters[i].y += monster_speed;
                         break;
@@ -705,14 +751,29 @@ void move_monsters(
             }
 
                 collision = check_collision(monsters[i], *bomb_object);
-                if (TRUE == collision) {
-                    monsters[i].y -= monster_speed;
-                    break;
+                    if (TRUE == collision) {
+                        monsters[i].y -= monster_speed;
+                        break;
                     
                 }
+                    
+                    collision = check_collision(monsters[i], *bomb_object1);
+                    if (TRUE == collision) {
+                        monsters[i].y -= monster_speed;
+                        break;
+                    
+                }
+
                 collision = check_collision(monsters[i], *bomb_object2);
                     if (TRUE == collision) {
-                        monsters[i].y += monster_speed;
+                        monsters[i].y -= monster_speed;
+                        break;
+                    
+                }
+                    
+                    collision = check_collision(monsters[i], *bomb_object3);
+                    if (TRUE == collision) {
+                        monsters[i].y -= monster_speed;
                         break;
                     
                 }
@@ -2747,7 +2808,7 @@ int main (int argc, char *args[]) {
 	//render loop
 	while(quit == FALSE) {
 	
-		move_monsters(map_elements, lista_destructibles, monsters, &bomb_object, &bomb_object2);
+		move_monsters(map_elements, lista_destructibles, monsters, &bomb_object, &bomb_object1, &bomb_object2, &bomb_object3);
 
 	
 		//check for new events every frame
@@ -2832,10 +2893,10 @@ int main (int argc, char *args[]) {
 
 			number_bombs = 0;
 			contador_muerte = num_monster;
-			contador_vidas = 3;
+			contador_vidas = 100000;
 			puntaje = 0;
 			add_range = 0;
-			number_bombs = 0;
+			number_bombs = 3;
 			temporizador = 200;
 			monster_speed = 5;
 			MOVEMENT_DELTA = 5;
@@ -2868,24 +2929,6 @@ int main (int argc, char *args[]) {
 		
 		//display gameover
 		} else if (state == GAME_OVER) {
-		
-			  init_game(&player,
-			  map_elements, 
-			  NUM_MAP_ELEMENTS,
-			  lista_destructibles, 
-			  NUM_DESTRUCTIBLES,
-			  &explosion_object,
-		  	  &explosion_object2,
-			  &bomb_object, 
-			  &bomb_object1,
-		  	  &bomb_object2,
-		  	  &bomb_object3,
-			  monsters,
-			  &portal_object,
-			  &powerup_addbomb_object,
-			  &powerup_speed_object,
-		  	  &powerup_explosion_range_object);
-		  	  
 		  	  
 			if (keystate[SDL_SCANCODE_SPACE]) {
 				state = START_SCREEN;
