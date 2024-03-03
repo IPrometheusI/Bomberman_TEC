@@ -77,10 +77,7 @@
 
 // Movement diferential
 int MOVEMENT_DELTA = 5;
-<<<<<<< HEAD
-=======
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 // esto espara que se muevan mas rapido con cada nivel los zorros
 int MOVEMENT_DELT = 5;
 
@@ -93,11 +90,7 @@ int bomb_placed_1 = 0;
 int bomb_placed_2 = 0;
 int bomb_placed_3 = 0;
 
-<<<<<<< HEAD
-int number_bombs = 0; // Cantidad de bombas que se pueden lanzar a la vez
-=======
 int number_bombs = 3; // Cantidad de bombas que se pueden lanzar a la vez
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 
 int add_range = 0;
 
@@ -263,7 +256,7 @@ static SDL_Surface *agua;
 
 
 
-//arreglando el git
+
 
 //textures
 SDL_Texture *screen_texture;
@@ -1149,9 +1142,6 @@ return;
 }
 
 
-<<<<<<< HEAD
-void time_bomb_countdown(game_element_t *bomb_object,game_element_t *bomb_object_1,game_element_t *bomb_object2,game_element_t *bomb_object_3, game_element_t *explosion_object,game_element_t *explosion_object1,game_element_t *explosion_object2,game_element_t *explosion_object3, game_element_t destructible[], game_element_t *monsters, game_element_t *player){
-=======
 void time_bomb_countdown(
 	game_element_t *bomb_object,
 	game_element_t *bomb_object_1,
@@ -1162,7 +1152,6 @@ void time_bomb_countdown(
 	game_element_t destructible[],
 	game_element_t *monsters,
 	game_element_t *player){
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 
 
 if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 5 segundos
@@ -1174,14 +1163,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-<<<<<<< HEAD
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
-		kill_monsters(explosion_object, monsters);
-=======
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 	    	draw_explosion(explosion_object);
 	    	
 	    	
@@ -1189,13 +1172,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y+77;
 	    	destroy_block(destructible, explosion_object);
-<<<<<<< HEAD
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
-=======
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 	    	draw_explosion(explosion_object);
 	    	
 	    	
@@ -1204,13 +1182,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y-77;
 	    	destroy_block(destructible, explosion_object);
-<<<<<<< HEAD
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
-=======
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 	    	draw_explosion(explosion_object);
 	    	
 	    	
@@ -1218,13 +1191,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	explosion_object->x = bomb_object->x+77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-<<<<<<< HEAD
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
-=======
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 	      	draw_explosion(explosion_object);
 	    	
 	    	
@@ -1232,28 +1200,17 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	explosion_object->x = bomb_object->x-77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-<<<<<<< HEAD
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
-	  	draw_explosion(explosion_object);}
-=======
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
 	  		draw_explosion(explosion_object);}
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
   	
   	else if (add_range == 1){
   	//Central
 	  		explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-<<<<<<< HEAD
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
-=======
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 	    	draw_explosion(explosion_object);
 	    	
 	    	
@@ -1269,11 +1226,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	    	draw_explosion(explosion_object);
@@ -1302,10 +1256,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      	draw_explosion(explosion_object);
@@ -1318,11 +1269,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	destroy_block(destructible, explosion_object);
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 	  	draw_explosion(explosion_object);
   	  	 	
   	}
@@ -1349,11 +1297,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	    	draw_explosion(explosion_object);
@@ -1375,11 +1320,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	    	
 	    	
@@ -1400,11 +1342,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      	draw_explosion(explosion_object);
@@ -1443,11 +1382,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	    	draw_explosion(explosion_object);
@@ -1469,11 +1405,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	    	
 	    	
@@ -1494,11 +1427,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      	draw_explosion(explosion_object);
@@ -1519,11 +1449,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	  	
 	  	
@@ -1623,11 +1550,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 		
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	    	draw_explosion(explosion_object);
@@ -1658,11 +1582,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      	draw_explosion(explosion_object);
@@ -1707,11 +1628,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	    	draw_explosion(explosion_object);
@@ -1732,11 +1650,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	    	
 	    	draw_explosion(explosion_object);
@@ -1756,11 +1671,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      	draw_explosion(explosion_object);
@@ -1801,11 +1713,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	    	draw_explosion(explosion_object);
@@ -1826,11 +1735,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	    	
 	    	draw_explosion(explosion_object);
@@ -1850,11 +1756,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      	draw_explosion(explosion_object);
@@ -1874,11 +1777,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	  	draw_explosion(explosion_object);
@@ -1973,11 +1873,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    		    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 				
 	    	draw_explosion(explosion_object);
@@ -2006,11 +1903,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      		      	
@@ -2055,11 +1949,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    		    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 				
 	    	draw_explosion(explosion_object);
@@ -2078,11 +1969,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	    	
 	    	draw_explosion(explosion_object);
@@ -2102,11 +1990,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      		      	
@@ -2148,11 +2033,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    		    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 	
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 				
 	    	draw_explosion(explosion_object);
@@ -2171,11 +2053,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 	    	
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	    	
 	    	draw_explosion(explosion_object);
@@ -2195,11 +2074,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 		
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 	
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 	      	
 	      		      	
@@ -2220,11 +2096,8 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 
 		kill_player(explosion_object, player, monsters);
 		kill_monsters(explosion_object, monsters);
-<<<<<<< HEAD
-=======
 		kill_monsters(explosion_object2, monsters);
 
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 		kill_player(explosion_object2, player, monsters);
 		
 	  	draw_explosion(explosion_object);
@@ -3116,10 +2989,6 @@ int main (int argc, char *args[]) {
 				
 			
 					
-<<<<<<< HEAD
-			time_bomb_countdown(&bomb_object,&bomb_object1,&bomb_object2,&bomb_object3,&explosion_object,	  
-			&explosion_object1, &explosion_object2, &explosion_object3,lista_destructibles, monsters,&player);
-=======
 			time_bomb_countdown(
 				&bomb_object,
 				&bomb_object1,
@@ -3130,7 +2999,6 @@ int main (int argc, char *args[]) {
 				lista_destructibles,
 				monsters,
 				&player);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 
 			//kill_monsters(&explosion_object, monsters);
 			kill_player(&explosion_object, &player, monsters);
@@ -3324,9 +3192,6 @@ else if (state == LEVEL_2) {
 				
 
 					
-<<<<<<< HEAD
-			time_bomb_countdown(&bomb_object,&bomb_object1,&bomb_object2,&bomb_object3,&explosion_object,	  &explosion_object1, &explosion_object2, 	&explosion_object3,lista_destructibles, monsters,&player);
-=======
 			time_bomb_countdown(
 				&bomb_object,
 				&bomb_object1,
@@ -3337,7 +3202,6 @@ else if (state == LEVEL_2) {
 				lista_destructibles,
 				monsters,
 				&player);
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 
 			//kill_monsters(&explosion_object, monsters);		
 							
@@ -3535,10 +3399,6 @@ else if (state == LEVEL_2) {
 			draw_game_element_des(&lista_destructibles[i]);
 			}				
 					
-<<<<<<< HEAD
-			time_bomb_countdown(&bomb_object,&bomb_object1,&bomb_object2,&bomb_object3,&explosion_object,	 
-			 &explosion_object1, &explosion_object2, &explosion_object3,lista_destructibles, monsters,&player);		
-=======
 			time_bomb_countdown(
 				&bomb_object,
 				&bomb_object1,
@@ -3549,7 +3409,6 @@ else if (state == LEVEL_2) {
 			 	lista_destructibles,
 			 	monsters,
 			 	&player);		
->>>>>>> 7b1ed97 (Se soluciona colision monstro - explosion)
 							
 			kill_player(&explosion_object, &player, monsters);
 			for (int i = 0; i < num_monster-2; i++) {
@@ -3872,7 +3731,6 @@ if (portal == NULL) {
 	
 	return SUCCESS;
 }
-
 
 
 
