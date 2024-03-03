@@ -76,10 +76,10 @@
 
 
 // Movement diferential
-int MOVEMENT_DELTA = 5;
+int MOVEMENT_DELTA = 2;
 
 // esto espara que se muevan mas rapido con cada nivel los zorros
-int MOVEMENT_DELT = 5;
+int monster_speed = 5;
 
 Uint32 bomb_timer = 0; // Almacena el momento en que se coloca la bomba
 
@@ -90,17 +90,17 @@ int bomb_placed_1 = 0;
 int bomb_placed_2 = 0;
 int bomb_placed_3 = 0;
 
-int number_bombs = 3; // Cantidad de bombas que se pueden lanzar a la vez
+int number_bombs = 0; // Cantidad de bombas que se pueden lanzar a la vez
 
 int add_range = 0;
 
 // Spawn de monstruos
-int num_monster = 3;
+int num_monster = 5;
 
 // Se inicializa contador de vidas
 int contador_vidas = 3;
 
-int contador_muerte = 3;
+int contador_muerte;
 
 //Coordenadas de bordes y bloques inamovibles
 float map_elements_values[25][4] = {
@@ -179,7 +179,7 @@ int init_SDL(int w, int h, int argc, char *args[]);
 
 bool fire_touched = false;
 
-int puntaje = 50;
+int puntaje = 0;
 
 int temporizador = 200;
 
@@ -252,10 +252,6 @@ static SDL_Surface *powerup_explosion_range_image;
 static SDL_Surface *lava;
 static SDL_Surface *win;
 static SDL_Surface *agua;
-//static SDL_Surface *spaceman;
-
-
-
 
 
 //textures
@@ -286,9 +282,7 @@ static void init_game(
     game_element_t *bomb_object2,
     game_element_t *bomb_object3,
     game_element_t *explosion_object,
-    game_element_t *explosion_object1,
     game_element_t *explosion_object2,
-    game_element_t *explosion_object3,
     game_element_t *monsters,
     game_element_t *portal_object,
     game_element_t *powerup_addbomb_object,
@@ -336,23 +330,15 @@ static void init_game(
 	//Explosion
 	explosion_object->x = PLAYER_START_X+2000;
 	explosion_object->y = PLAYER_START_Y+2000;
-	explosion_object->w = BLOCK_SIZE;
-	explosion_object->h = BLOCK_SIZE;
-	
-	explosion_object1->x = PLAYER_START_X+2000;
-	explosion_object1->y = PLAYER_START_Y+2000;
-	explosion_object1->w = BLOCK_SIZE;
-	explosion_object1->h = BLOCK_SIZE;
+	explosion_object->w = 80;
+	explosion_object->h = 80;
 	
 	explosion_object2->x = PLAYER_START_X+2000;
 	explosion_object2->y = PLAYER_START_Y+2000;
-	explosion_object2->w = BLOCK_SIZE;
-	explosion_object2->h = BLOCK_SIZE;
+	explosion_object2->w = 80;
+	explosion_object2->h = 80;
 	
-	explosion_object3->x = PLAYER_START_X+2000;
-	explosion_object3->y = PLAYER_START_Y+2000;
-	explosion_object3->w = BLOCK_SIZE;
-	explosion_object3->h = BLOCK_SIZE;
+	
 	//Powerups objects
 
 	powerup_addbomb_object->w = 70;
@@ -370,7 +356,7 @@ static void init_game(
 	
 	
 	
-	for (int i = 0; i < 25; i++) { // Ajustado a 25 para coincidir con la cantidad de valores definidos
+	for (int i = 0; i < 26; i++) { // Ajustado a 25 para coincidir con la cantidad de valores definidos
 	    map_elements[i].x = map_elements_values[i][0];
 	    map_elements[i].y = map_elements_values[i][1];
 	    map_elements[i].w = map_elements_values[i][2];
@@ -400,52 +386,53 @@ static void init_game(
 			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
 			lista_destructibles[i].w = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
 			lista_destructibles[i].h = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+
 			}
 		else if (i==1){
 		
-		powerup_addbomb_object->x = coordenadas_destructibles[index_aleatorio][0];
-		powerup_addbomb_object->y = coordenadas_destructibles[index_aleatorio][1];
-		
-		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-		lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-		lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
-		
+			powerup_addbomb_object->x = coordenadas_destructibles[index_aleatorio][0];
+			powerup_addbomb_object->y = coordenadas_destructibles[index_aleatorio][1];
+			
+			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
+			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
+			
 		}
 		
 		else if (i==2){
-		powerup_speed_object->x = coordenadas_destructibles[index_aleatorio][0];
-		powerup_speed_object->y = coordenadas_destructibles[index_aleatorio][1];
-		
-		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-		lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-		lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
-		
+			powerup_speed_object->x = coordenadas_destructibles[index_aleatorio][0];
+			powerup_speed_object->y = coordenadas_destructibles[index_aleatorio][1];
+			
+			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
+			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
+			
 		
 		
 		
 		}
 		
 		else if (i==3){
-		powerup_explosion_range_object->x = coordenadas_destructibles[index_aleatorio][0];
-		powerup_explosion_range_object->y = coordenadas_destructibles[index_aleatorio][1];
-		
-		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-		lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-		lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
-		
+			powerup_explosion_range_object->x = coordenadas_destructibles[index_aleatorio][0];
+			powerup_explosion_range_object->y = coordenadas_destructibles[index_aleatorio][1];
+			
+			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
+			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
+			
 		
 		}
 			
 			
 		else{
 		
-		lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-		lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-		lista_destructibles[i].w = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
-		lista_destructibles[i].h = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
+			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
+			lista_destructibles[i].w = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
+			lista_destructibles[i].h = 1.5 * BLOCK_SIZE; // Fijo a 1.5 veces BLOCK_SIZE
 	
 		
 		// Marcar la coordenada como usada
@@ -454,11 +441,16 @@ static void init_game(
     }
     
 	// Asignar coordenadas a monsters asegurándose de que no coincidan con las de lista_destructibles
+
 	for (int i = 0; i < num_monster; i++) {
 	    int index_aleatorio;
 	    do {
 		index_aleatorio = rand() % num_coordenadas;
-	    } while (coordenadas_usadas[index_aleatorio]); // Repetir si la coordenada ya fue 		
+		printf("index_aleatorio: %d",index_aleatorio);
+		printf("\n");
+	    } 
+
+	    while (coordenadas_usadas[index_aleatorio]); // Repetir si la coordenada ya fue 		
 										//usada
 	    
 	    // Asignar coordenadas no usadas a monsters
@@ -542,7 +534,14 @@ void portal_collision(game_element_t *player, game_element_t *portal_object){
 }
 
 
-void move_player(int d, game_element_t *player, game_element_t lista_destructibles[], int ld_size, game_element_t map_elements[], int me_size) {
+void move_player(
+	int d,
+ 	game_element_t *player,
+ 	game_element_t lista_destructibles[], 
+ 	int ld_size, 
+ 	game_element_t map_elements[], 
+ 	int me_size)
+{
     player->x += (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
     player->y += (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
 
@@ -568,138 +567,149 @@ void move_player(int d, game_element_t *player, game_element_t lista_destructibl
 
 
 
-void move_monsters(game_element_t *map_element, game_element_t lista_destructibles[], game_element_t *monsters, game_element_t *bomb_object,game_element_t *bomb_object2) {
+void move_monsters(
+	game_element_t *map_element, 
+	game_element_t lista_destructibles[], 
+	game_element_t *monsters, 
+	game_element_t *bomb_object,
+	game_element_t *bomb_object2) {
+
     srand(time(0)); 
 
    
     for(int i = 0; i<num_monster; i++){
      int d = rand() % 4; //genero nueva direccion
-      int collision;
+     int collision;
 	switch(d) {
         case LEFT:
-            monsters[i].x -= MOVEMENT_DELT;
-            for(int j = 0; j < 25; j++) {
+            monsters[i].x -= monster_speed;
+            for(int j = 0; j < 26; j++) {
 
                 collision = check_collision(monsters[i], map_element[j]);
                 if(TRUE == collision) {
-                    monsters[i].x += MOVEMENT_DELT;
+                    monsters[i].x += monster_speed;
                     break;
                 }
             }
             for(int j = 0; j < 15; j++) {
                 collision = check_collision(monsters[i], lista_destructibles[j]);
                 if(TRUE == collision) {
-                    monsters[i].x += MOVEMENT_DELT;
+                    monsters[i].x += monster_speed;
                     break;
                 }
             }       
                     collision = check_collision(monsters[i], *bomb_object);
                     if (TRUE == collision) {
-                        monsters[i].x += MOVEMENT_DELT;
+                        monsters[i].x += monster_speed;
                         break;
                     
                 }
                     
-                  /*  collision = check_collision(monsters[i], *bomb_object2);
+                    collision = check_collision(monsters[i], *bomb_object2);
                     if (TRUE == collision) {
-                        monsters[i].x += MOVEMENT_DELT;
+                        monsters[i].x += monster_speed;
                         break;
                     
-                }*/
+                }
                	    
             break;
 ///////////////////////////////////////////////////////////////////
         case RIGHT:
-            monsters[i].x += MOVEMENT_DELTA;
-            for(int j = 0; j < 25; j++) {
+            monsters[i].x += monster_speed;
+            for(int j = 0; j < 26; j++) {
                 collision = check_collision(monsters[i], map_element[j]);
                 if(TRUE == collision) {
-                    monsters[i].x -= MOVEMENT_DELT;
+                    monsters[i].x -= monster_speed;
                     break;
                 }
             }
             for(int j = 0; j < 15; j++) {
                 collision = check_collision(monsters[i], lista_destructibles[j]);
                 if(TRUE == collision) {
-                    monsters[i].x -= MOVEMENT_DELT;
+                    monsters[i].x -= monster_speed;
                     break;
                 }
             }
 
                    collision = check_collision(monsters[i], *bomb_object);
                     if (TRUE == collision) {
-                        monsters[i].x -= MOVEMENT_DELT;
+                        monsters[i].x -= monster_speed;
                        break;
                     
                 }
-                /*collision = check_collision(monsters[i], *bomb_object2);
+                collision = check_collision(monsters[i], *bomb_object2);
                     if (TRUE == collision) {
-                        monsters[i].x -= MOVEMENT_DELT;
+                        monsters[i].x -= monster_speed;
                        break;
                     
-                }*/
+                }
             break;
 ///////////////////////////////////////////////////////////////////////////
         case UP:
-            monsters[i].y -= MOVEMENT_DELTA;
-            for(int j = 0; j < 25; j++) {
+            monsters[i].y -= monster_speed;
+            for(int j = 0; j < 26; j++) {
                 collision = check_collision(monsters[i], map_element[j]);
                 if(TRUE == collision) {
-                    monsters[i].y += MOVEMENT_DELT;
+                    monsters[i].y += monster_speed;
                     break;
                 }
             }
             for(int j = 0; j < 15; j++) {
                 collision = check_collision(monsters[i], lista_destructibles[j]);
                 if(TRUE == collision) {
-                    monsters[i].y += MOVEMENT_DELT;
+                    monsters[i].y += monster_speed;
                     break;
                 }
             }
 
                 collision = check_collision(monsters[i], *bomb_object);
                     if (TRUE == collision) {
-                        monsters[i].y += MOVEMENT_DELT;
+                        monsters[i].y += monster_speed;
                         break;
                     
                 }
-               /* collision = check_collision(monsters[i], *bomb_object2);
+                collision = check_collision(monsters[i], *bomb_object2);
                     if (TRUE == collision) {
-                        monsters[i].y += MOVEMENT_DELT;
+                        monsters[i].y += monster_speed;
                         break;
                     
-                }*/
+                }
             break;
 //////////////////////////////////////////////////////////////////
         case DOWN:
-            monsters[i].y += MOVEMENT_DELTA;
-            for(int j = 0; j < 25; j++) {
+            monsters[i].y += monster_speed;
+            for(int j = 0; j < 26; j++) {
                 collision = check_collision(monsters[i], map_element[j]);
                 if(TRUE == collision) {
-                    monsters[i].y -= MOVEMENT_DELT;
+                    monsters[i].y -= monster_speed;
                     break;
                 }
+                else{}
             }
+
             for(int j = 0; j < 15; j++) {
                 collision = check_collision(monsters[i], lista_destructibles[j]);
                 if(TRUE == collision) {
-                    monsters[i].y -= MOVEMENT_DELT;
+                    monsters[i].y -= monster_speed;
                     break;
+
                 }
+
+                else{}
             }
 
-                    collision = check_collision(monsters[i], *bomb_object);
+                collision = check_collision(monsters[i], *bomb_object);
+                if (TRUE == collision) {
+                    monsters[i].y -= monster_speed;
+                    break;
+                    
+                }
+                collision = check_collision(monsters[i], *bomb_object2);
                     if (TRUE == collision) {
-                        monsters[i].y -= MOVEMENT_DELT;
+                        monsters[i].y += monster_speed;
                         break;
                     
                 }
-               /* collision = check_collision(monsters[i], *bomb_object2);
-                    if (TRUE == collision) {
-                        monsters[i].y += MOVEMENT_DELT;
-                        break;
-                    
-                }*/
             break;
       }
     }
@@ -1086,7 +1096,7 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
 	
 	for (int i=0; i<num_monster; i++){
 	if (check_collision(*explosion_object, monsters[i]) == TRUE){
-			printf("Choco el hp:      ");
+			puntaje+=50;
 			monsters[i].x = -4000;
 			monsters[i].y = -4000;
 			monsters[i].w = 0*BLOCK_SIZE;
@@ -1151,7 +1161,8 @@ void time_bomb_countdown(
 	game_element_t *explosion_object2,
 	game_element_t destructible[],
 	game_element_t *monsters,
-	game_element_t *player){
+	game_element_t *player,
+	game_element_t map_elements[]){
 
 
 if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 5 segundos
@@ -1167,42 +1178,41 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) { // 5000 milisegundos = 
 			kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
-	    	
-	    	
-	    	explosion_object->x = bomb_object->x;
-	    	explosion_object->y = bomb_object->y+77;
-	    	destroy_block(destructible, explosion_object);
+    		explosion_object->x = bomb_object->x;
+			explosion_object->y = bomb_object->y+77;
+			destroy_block(destructible, explosion_object);
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
-	    	draw_explosion(explosion_object);
-	    	
-	    	
-	    	
-	    	
-	    	explosion_object->x = bomb_object->x;
-	    	explosion_object->y = bomb_object->y-77;
-	    	destroy_block(destructible, explosion_object);
+    		draw_explosion(explosion_object);
+
+			explosion_object->x = bomb_object->x;
+			explosion_object->y = bomb_object->y-77;
+			destroy_block(destructible, explosion_object);
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
-	    	draw_explosion(explosion_object);
-	    	
-	    	
-	  	
-	    	explosion_object->x = bomb_object->x+77;
+			draw_explosion(explosion_object);
+
+			explosion_object->x = bomb_object->x+77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
 	      	draw_explosion(explosion_object);
 	    	
-	    	
-	    	
 	    	explosion_object->x = bomb_object->x-77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
 			kill_player(explosion_object, player, monsters);
 			kill_monsters(explosion_object, monsters);
-	  		draw_explosion(explosion_object);}
+	  		draw_explosion(explosion_object);
+
+
+	    	}
+
+		
+
+
+
   	
   	else if (add_range == 1){
   	//Central
@@ -2684,9 +2694,7 @@ int main (int argc, char *args[]) {
 	// Define the player and the maps
 	game_element_t player;
 	game_element_t explosion_object;
-	game_element_t explosion_object1;
 	game_element_t explosion_object2;
-	game_element_t explosion_object3;
 	game_element_t bomb_object;
 	game_element_t bomb_object1;
 	game_element_t bomb_object2;
@@ -2702,12 +2710,21 @@ int main (int argc, char *args[]) {
 	game_element_t powerup_speed_object;
 	
 
-	// For the project the elements of the map should be created
-	// dinamically (using malloc) and using linked lists.
-	monsters = (game_element_t*)malloc(num_monster * sizeof(game_element_t));
+	monsters = (game_element_t*)malloc(num_monster  * sizeof(game_element_t));
 
-	
+	printf("num_monster*sizeof(game_element_t): %ld",num_monster*sizeof(game_element_t));
+	printf("\n");
 
+	printf("num_monster: %d",num_monster);
+	printf("\n");
+
+	printf("sizeof(game_element_t): %ld",sizeof(game_element_t));
+	printf("\n");
+
+
+
+
+	//monsters[];
 	//SDL Window setup
 	if (init_SDL(SCREEN_WIDTH, SCREEN_HEIGHT, argc, args) == FAILURE) {
 		
@@ -2720,31 +2737,7 @@ int main (int argc, char *args[]) {
 	int quit = FALSE;
 	int state = START_SCREEN;
 	Uint32 next_game_tick = SDL_GetTicks();
-	
-
-	
-	init_game(&player,
-	  map_elements, 
-	  NUM_MAP_ELEMENTS,
-	  lista_destructibles, 
-	  NUM_DESTRUCTIBLES,
-	  &explosion_object,
-	  &explosion_object1,
-  	  &explosion_object2,
-  	  &explosion_object3,
-	  &bomb_object, 
-	  &bomb_object1,
-  	  &bomb_object2,
-  	  &bomb_object3,
-	  monsters,
-	  &portal_object,
-	  &powerup_addbomb_object,
-	  &powerup_speed_object,
-  	  &powerup_explosion_range_object);
-	  
-	
-	
-	
+		
 	// The & means "Address of"
 	//render loop
 	while(quit == FALSE) {
@@ -2830,20 +2823,28 @@ int main (int argc, char *args[]) {
 		
 		//display main menu
 		if (state == START_SCREEN ) {
+			//free(monsters);
+
+			number_bombs = 0;
+			contador_muerte = num_monster;
+			contador_vidas = 3;
+			puntaje = 0;
+			add_range = 0;
+			number_bombs = 0;
+			temporizador = 200;
+			monster_speed = 5;
+			MOVEMENT_DELTA = 5;
 		
 			if (keystate[SDL_SCANCODE_SPACE]) {
-				temporizador = 200;
+
 				state = LEVEL_1;
-				
 			  init_game(&player,
 			  map_elements, 
 			  NUM_MAP_ELEMENTS,
 			  lista_destructibles, 
 			  NUM_DESTRUCTIBLES,
 			  &explosion_object,
-			  &explosion_object1,
 		  	  &explosion_object2,
-		  	  &explosion_object3,
 			  &bomb_object, 
 			  &bomb_object1,
 		  	  &bomb_object2,
@@ -2871,9 +2872,7 @@ int main (int argc, char *args[]) {
 			  lista_destructibles, 
 			  NUM_DESTRUCTIBLES,
 			  &explosion_object,
-			  &explosion_object1,
 		  	  &explosion_object2,
-		  	  &explosion_object3,
 			  &bomb_object, 
 			  &bomb_object1,
 		  	  &bomb_object2,
@@ -2897,7 +2896,9 @@ int main (int argc, char *args[]) {
 				
 		//display the game
 		} else if (state == LEVEL_1) {
-		MOVEMENT_DELT = 5;
+		
+
+
 		//Dibuja el pasto
 		draw_grass();
 
@@ -2998,13 +2999,14 @@ int main (int argc, char *args[]) {
 				&explosion_object2,
 				lista_destructibles,
 				monsters,
-				&player);
+				&player,
+				map_elements);
 
 			//kill_monsters(&explosion_object, monsters);
 			kill_player(&explosion_object, &player, monsters);
 				
 
-			for (int i = 0; i < num_monster-2; i++) {
+			for (int i = 0; i < num_monster; i++) {
 			    draw_game_element_monster(&monsters[i]);
 			}			
 			
@@ -3077,9 +3079,9 @@ int main (int argc, char *args[]) {
 
 			if(contador_muerte == 0){
 				if (check_collision(player, portal_object) == TRUE) {
-				printf("CHOCO");
 							
-				contador_muerte = 3;	
+				contador_muerte = num_monster;	
+				monster_speed = 5*1.5;
 				state = LEVEL_2;
 				
 				  init_game(&player,
@@ -3088,9 +3090,7 @@ int main (int argc, char *args[]) {
 				  lista_destructibles, 
 				  NUM_DESTRUCTIBLES,
 				  &explosion_object,
-				  &explosion_object1,
 			  	  &explosion_object2,
-			  	  &explosion_object3,
 				  &bomb_object, 
 				  &bomb_object1,
 			  	  &bomb_object2,
@@ -3111,7 +3111,8 @@ int main (int argc, char *args[]) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 else if (state == LEVEL_2) {
 		//Dibuja el pasto
-		MOVEMENT_DELT = 5*1.5;
+		//temporizador = 200;
+		//monster_speed = monster_speed*1.5;
 		draw_lava();
 		draw_vida(contador_vidas);
 		draw_numbermap();
@@ -3161,7 +3162,7 @@ else if (state == LEVEL_2) {
 		else if (check_collision(player, powerup_speed_object) == TRUE){
 		
 			powerup_speed_object.x = 2000;
-			MOVEMENT_DELTA =+ 5;
+			MOVEMENT_DELTA =+ 10;
 		}
 		
 		else if (check_collision(player, powerup_explosion_range_object) == TRUE){
@@ -3201,7 +3202,8 @@ else if (state == LEVEL_2) {
 				&explosion_object2,
 				lista_destructibles,
 				monsters,
-				&player);
+				&player,
+				map_elements);
 
 			//kill_monsters(&explosion_object, monsters);		
 							
@@ -3209,7 +3211,7 @@ else if (state == LEVEL_2) {
 
 
 
-			for (int i = 0; i < num_monster-2; i++) {
+			for (int i = 0; i < num_monster; i++) {
 			    draw_game_element_monster2(&monsters[i]);
 			}			
 			
@@ -3284,9 +3286,8 @@ else if (state == LEVEL_2) {
 		}
 			if(contador_muerte == 0){
 				if (check_collision(player, portal_object) == TRUE) {
-				printf("CHOCO");
-				//portal_collision(&player, &portal_object);				
-				contador_muerte = 3;
+				contador_muerte = num_monster;
+				monster_speed = 5 * 1.8;
 					
 				state = LEVEL_3;
 					
@@ -3296,9 +3297,7 @@ else if (state == LEVEL_2) {
 				  lista_destructibles, 
 				  NUM_DESTRUCTIBLES,
 				  &explosion_object,
-				  &explosion_object1,
 			  	  &explosion_object2,
-			  	  &explosion_object3,
 				  &bomb_object, 
 				  &bomb_object1,
 			  	  &bomb_object2,
@@ -3315,9 +3314,8 @@ else if (state == LEVEL_2) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 	
 		
-			else if (state == LEVEL_3) {
+		else if (state == LEVEL_3) {
 		
-		MOVEMENT_DELT = 5*1.8;
 		//Dibuja el pasto
 				  	
 		draw_agua();
@@ -3370,7 +3368,7 @@ else if (state == LEVEL_2) {
 		else if (check_collision(player, powerup_speed_object) == TRUE){
 		
 			powerup_speed_object.x = 2000;
-			MOVEMENT_DELTA =+ 5;
+			MOVEMENT_DELTA =+ 10;
 		}
 		
 		else if (check_collision(player, powerup_explosion_range_object) == TRUE){
@@ -3408,14 +3406,15 @@ else if (state == LEVEL_2) {
 			 	&explosion_object2,
 			 	lista_destructibles,
 			 	monsters,
-			 	&player);		
+			 	&player,
+			 	map_elements);		
 							
 			kill_player(&explosion_object, &player, monsters);
-			for (int i = 0; i < num_monster-2; i++) {
+			for (int i = 0; i < num_monster; i++) {
 			    draw_game_element_monster3(&monsters[i]);
 			}		
 			
-			for (int i = 0; i < num_monster-2; i++) {
+			for (int i = 0; i < num_monster; i++) {
 			}			
 			
 			
@@ -3486,8 +3485,6 @@ else if (state == LEVEL_2) {
 		}
 			if(contador_muerte == 0){
 				if (check_collision(player, portal_object) == TRUE) {
-				printf("CHOCO");
-				//portal_collision(&player, &portal_object);				
 					
 					state = WIN;
 					
@@ -3497,9 +3494,7 @@ else if (state == LEVEL_2) {
 			  lista_destructibles, 
 			  NUM_DESTRUCTIBLES,
 			  &explosion_object,
-			  &explosion_object1,
 		  	  &explosion_object2,
-		  	  &explosion_object3,
 			  &bomb_object, 
 			  &bomb_object1,
 		  	  &bomb_object2,
@@ -3564,6 +3559,8 @@ else if (state == LEVEL_2) {
 	SDL_FreeSurface(agua);
 	
 	free(monsters);
+	monsters = NULL; // Evita el uso de un puntero a memoria liberada.
+
 	
 	
 
@@ -3731,7 +3728,6 @@ if (portal == NULL) {
 	
 	return SUCCESS;
 }
-
 
 
 
