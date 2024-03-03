@@ -263,7 +263,7 @@ static SDL_Surface *agua;
 
 
 
-
+//arreglando el git
 
 //textures
 SDL_Texture *screen_texture;
