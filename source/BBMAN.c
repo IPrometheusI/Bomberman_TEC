@@ -492,10 +492,6 @@ int check_collision(game_element_t a, game_element_t b){
  * Return:
  *	void.
  */ 
-
-
-
-
 void move_player(
 	int d,
  	game_element_t *player,
@@ -525,7 +521,21 @@ void move_player(
         }
     }
 }
-
+/* Function: move_monster
+ * ---------------------
+ * Esta funcion se encarga de reubicar al monstruo en distintan posiciones
+ del mapa 
+ *
+ * Arguments:
+ *	d: Es la direccion random donde se va mover el monstruo
+ *	lista_destructibles, map element: elementos donde chocaran los monstruos
+ *	bom_objects: Bombas donde detectan colision los monstruos
+ *
+ *
+ * Return:
+ *	void.
+ */ 
+ 
 void move_monsters(
 	game_element_t *map_element, 
 	game_element_t lista_destructibles[], 
@@ -767,7 +777,17 @@ static void draw_game_over() {
 	SDL_BlitSurface(end, &src, screen, &dest);
 }
 	
-
+/* Function: draw_win
+ * ----------------------------
+ * Esta funcion es para dibujar la pantalla de ganador, en cuanto se completen todos los niveles.
+ *
+ * Arguments: 
+ *	none
+ *
+ * Return:
+ *
+ *	void.
+ */
 static void draw_win() {
 
 	SDL_Rect src;
@@ -786,23 +806,7 @@ static void draw_win() {
 	SDL_BlitSurface(win, &src, screen, &dest);
 }
 
-static void draw_agua() {
 
-	SDL_Rect src;
-	SDL_Rect dest;
-
-	src.x = 0;
-	src.y = 0;
-	src.w = agua->w;
-	src.h = agua->h;
-
-	dest.x = (screen->w / 2) - (src.w / 2);
-	dest.y = (screen->h / 2) - (src.h / 2);
-	dest.w = agua->w;
-	dest.h = agua->h;
-
-	SDL_BlitSurface(agua, &src, screen, &dest);
-}
 
 /* Function: draw_menu
  * --------------------------------
@@ -868,6 +872,18 @@ static void draw_game_element(game_element_t *element) {
 	
 	}
 }
+/* Function: draw_game_elementLImites
+ * -------------------------------
+ * This functions draws a game element on the screen according to its
+ * properties and coordinates. Please note that the element to be 
+ * drawn is passed as an reference insted of a value.
+ *
+ * Arguments:
+ *	element: Element to be drawn on the screen.
+ *
+ * Return:
+ *	void.
+ */
 static void draw_game_elementLimites(game_element_t *element) {
 	
 	SDL_Rect src;
@@ -888,6 +904,18 @@ static void draw_game_elementLimites(game_element_t *element) {
 		}
 	}
 }
+/* Function: draw_game_element
+ * -------------------------------
+ * This functions draws a game element on the screen according to its
+ * properties and coordinates. Please note that the element to be 
+ * drawn is passed as an reference insted of a value.
+ *
+ * Arguments:
+ *	destructiubles: Element to be drawn on the screen.
+ *
+ * Return:
+ *	void.
+ */
 static void draw_game_element_des(game_element_t destructibles[]) {
 
 	SDL_Rect src;
@@ -911,10 +939,7 @@ static void draw_game_element_des(game_element_t destructibles[]) {
 	}
 }
 
-// The header of this two functions are for the student to complete
-// Try changing the coordinates to see the effect that has on the game
-// Also, are here the magic numbers justified? Or should be declared
-// as constants in the beggining of the file?
+//sin uso
 static void draw_game_element_0_score() {
 	
 	SDL_Rect src;
@@ -938,6 +963,7 @@ static void draw_game_element_0_score() {
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
 
+//sin uso
 static void draw_game_element_1_score() {
 	
 	SDL_Rect src;
@@ -960,7 +986,18 @@ static void draw_game_element_1_score() {
 
 	SDL_BlitSurface(numbermap, &src, screen, &dest);
 }
-
+/* Function: draw_explosion
+ * -------------------------------
+ * Esta funcion dibuja las explosiones en pantalla de acuerdo con
+ * las propiedades que se le asignan.
+ *
+ *
+ * Arguments:
+ *	explosion_object: Elemento que sera dibujado en pantalla
+ *
+ * Return:
+ *	void.
+ */
 static void draw_explosion(game_element_t *explosion_object){
 
 	SDL_Rect src;
@@ -980,7 +1017,17 @@ static void draw_explosion(game_element_t *explosion_object){
 
 }
 
-
+/* Function: draw_explosion
+ * -------------------------------
+ * Esta funcion dibuja las vidas en la pantalla, segun las caracteristicas dadas.
+ *Note que conforme pierde vidas, se van dibujando menos corazones en pantalla.
+ *Esto debido a que se envian los corazones a posiciones fuera de la pantalla.
+ * Arguments:
+ *	dest: Elemento que sera dibujado en pantalla.
+ *
+ * Return:
+ *	void.
+ */
 static void draw_vida(int contador_vidas){
 
 	SDL_Rect src;
@@ -1083,7 +1130,19 @@ static void draw_vida(int contador_vidas){
 	
 
 }
-
+/* Function: destroy_block
+ * -------------------------------
+ *Esta funcion detecta la colision entre dos objetos, en este caso entre
+ *los bloques destructibles y la explosion de fuego.
+ *Note que la forma de operar es si detecta colision, envia los bloques fuera de pantalla.
+ *
+ * Arguments:
+ *	lista_destructibles: Elemento que sera destruido.
+ *      explosion_object: 
+ *
+ * Return:
+ *	void.
+ */
 
 void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object){
 	
@@ -1109,7 +1168,18 @@ void destroy_block(game_element_t *map_des_block, game_element_t *explosion_obje
 	}
 }
 
-// Esta funcion hace explotar a los monstruos 
+/* Function: kill_monsters
+ * -------------------------------
+ *Esta funcion envia a los monstruos fuera de la pantalla, si se detecta la collision con el poder de fuego.
+ *Note que ademas si hay colision, el puntaje incrementa su valor y ademas si mata un monstruo, se restara 
+ *uno al contador de muertes, para asi poder abrir el portal.
+ *
+ * Arguments:
+ *	Monsters: Elemento que sera destruido.
+ *	explosion_object: Poder de fuego que mata mosntruos.
+ * Return:
+ *	void.
+ */
 void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
 	
 	
@@ -1128,8 +1198,23 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
 		}
 	}
 }
-//Funcion para detectar muertees del jugador.
+/* Function: kill_player
+ * -------------------------------
+ *Esta funcion detecta colision del player, con el poder de fuego y los monstruos,
+ *en caso de detectar colision, se resta una vida al contador de vidas.
+ *Note que si detecta cualquier tipo de colision, el player reaparecera en la posicion inicial.
+ *
+ *
+ * Arguments:
+ *	Monsters: Enemigo que intentara matar al player.
+ *	explosion_object: Poder de fuego peligro para el player.
+ *	player: Jugador que intentara no colisionar con los anteriores argumentos.
+ * Return:
+ *	void.
+ */
+ 
 void kill_player(game_element_t *explosion_object, game_element_t *player, game_element_t *monsters) {
+    
     if (SDL_GetTicks()  > 4000) { //Establece 4 segundos inmortal.
     if (check_collision(*explosion_object, *player) == TRUE) {
         if (!fire_touched) {
@@ -1167,7 +1252,24 @@ void kill_player(game_element_t *explosion_object, game_element_t *player, game_
 return;
   }
 }
-
+/* Function: time_bomb_countdown
+ * -------------------------------
+ * Esta funcion regula el tiempo de colocacion de bombas, ademas controla la colocacion de la bomba 2 y 3.
+ *Tambien aumenta el poder de fuego hacia varias direcciones en caso de obtener powerups.
+ *Nota: cuando se toma una segunda bomba el boton utilizado no es el original. Botones asignados para la cantidad de bombas
+ * 1,2,3 y estas activan las bombas 1,2 y 3 sucesivamente. Recalcar que la bomba 2 nos se pondra hasta tomar el powerup de bomba, igual la bomba3.
+ *
+ * Arguments:
+ *
+ *	bomb_objects: son las bombas a colocar.
+ *	explosion_object,explosion_object2: Poderes de fuego utilizados.
+ *	destructible: Lista de elementos destructribles
+ *	monsters: monstruos que intetaran matar al player
+*	add_range: rango obtenido por colisionar con el powerup de fuego.
+ *	bomb_placed: indica el estado de la bomba: colocada o no.
+ * Return:
+ *	void.
+ */
 
 void time_bomb_countdown(
 	game_element_t *bomb_object,
@@ -2228,9 +2330,15 @@ else {
 
 }
 
-//Nombre Funcion:
-//Accion:
-//Argumentos:
+/* Function: draw_bomb
+ * -------------------------------
+ *Esta funcion dibuja en pantalla las cantidades de bombas obtenidas en el juego, esto segun la posicion del player.
+ *
+ * Arguments:
+ *	bomb_object: Bomba que se dibujara en patalla.
+ * Return:
+ *	void.
+ */
 
 static void draw_bomb(game_element_t *bomb_object, int event ){
 
@@ -2288,6 +2396,15 @@ static void draw_bomb(game_element_t *bomb_object, int event ){
 	
 				
 	
+/* Function: draw_skin
+ * -------------------------------
+ *Esta funcion dibuja en pantalla una skin sobre el player.
+ *
+ * Arguments:
+ *	player: Puntero del objeto player.
+ * Return:
+ *	void.
+ */
 
 
 static void draw_skin(int d, game_element_t *player){
@@ -2347,6 +2464,15 @@ static void draw_skin(int d, game_element_t *player){
 	
 
 }
+/* Function: draw_portal
+ * -------------------------------
+ *Esta funcion dibuja un portal detras de un bloque destruictible.
+ *
+ * Arguments:
+ *	portal_object: Encargado de avanzar al siguiente nivel.
+ * Return:
+ *	void.
+ */
 
 static void draw_portal(game_element_t *portal_object){
 	
@@ -2368,7 +2494,15 @@ static void draw_portal(game_element_t *portal_object){
 	
 
 }
-
+/* Function: draw_grass
+ * -------------------------------
+ *Esta funcion dibuja un fondo de pantalla para el nivel 1.
+ *
+ * Arguments:
+ *	none
+ * Return:
+ *	void.
+ */
 static void draw_grass(){
 	
 	SDL_Rect src;
@@ -2389,7 +2523,15 @@ static void draw_grass(){
 	
 
 }
-
+/* Function: draw_lava
+ * -------------------------------
+ *Esta funcion dibuja un fondo de pantalla para el nivel 2.
+ *
+ * Arguments:
+ *	none
+ * Return:
+ *	void.
+ */
 static void draw_lava(){
 	
 	SDL_Rect src;
@@ -2410,12 +2552,44 @@ static void draw_lava(){
 	
 
 }
+/* Function: draw_agua
+ * -------------------------------
+ *Esta funcion dibuja un fondo de pantalla para el nivel 3.
+ *
+ * Arguments:
+ *	none
+ * Return:
+ *	void.
+ */
+static void draw_agua() {
+
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0;
+	src.y = 0;
+	src.w = agua->w;
+	src.h = agua->h;
+
+	dest.x = (screen->w / 2) - (src.w / 2);
+	dest.y = (screen->h / 2) - (src.h / 2);
+	dest.w = agua->w;
+	dest.h = agua->h;
+
+	SDL_BlitSurface(agua, &src, screen, &dest);
+}
 
 
 
-
-
-
+/* Function: draw_game_element_monster
+ * -------------------------------
+  *Esta funcion dibuja los monstruos en el nivel 1.
+ *
+ * Arguments:
+ *	monsters: Lista de monstruos.
+ * Return:
+ *	void.
+ */
 static void draw_game_element_monster(game_element_t *monsters) {
 
 	SDL_Rect src;
@@ -2437,6 +2611,15 @@ static void draw_game_element_monster(game_element_t *monsters) {
 	
 	}
 }
+/* Function: draw_game_element_monster2
+ * -------------------------------
+ *Esta funcion dibuja los monstruos en el nivel 3.
+ *
+ * Arguments:
+ *	monsters: Lista de monstruos.
+ * Return:
+ *	void.
+ */
 static void draw_game_element_monster2(game_element_t *monsters) {
 
 	SDL_Rect src;
@@ -2458,6 +2641,15 @@ static void draw_game_element_monster2(game_element_t *monsters) {
 	
 	}
 }
+/* Function: draw_game_element_monster3
+ * -------------------------------
+ *Esta funcion dibuja los monstruos en el nivel 2.
+ *
+ * Arguments:
+ *	monsters: Lista de monstruos.
+ * Return:
+ *	void.
+ */
 static void draw_game_element_monster3(game_element_t *monsters) {
 
 	SDL_Rect src;
@@ -2479,7 +2671,7 @@ static void draw_game_element_monster3(game_element_t *monsters) {
 	
 	}
 }
-
+//sin uso
 static void draw_score(){
 	
 	SDL_Rect src;
@@ -2499,7 +2691,15 @@ static void draw_score(){
 	SDL_BlitSurface(score, &dest, screen, &src);
 
 }
-
+/* Function: draw_numbermap
+ * -------------------------------
+ *Esta funcion dibuja las unidades, decenas y centenas en pantalla del puntuaje.
+ *e
+ * Arguments:
+ *	none
+ * Return:
+ *	void.
+ */
 static void draw_numbermap() {
 
     
@@ -2531,7 +2731,15 @@ static void draw_numbermap() {
         SDL_BlitSurface(numbermap, &src, screen, &dest);
     }
 }
-
+/* Function: draw_clock_image
+ * -------------------------------
+ *Esta funcion dibuja el temporizador del juego.
+ *
+ * Arguments:
+ *	none
+ * Return:
+ *	void.
+ */
 static void draw_clock_image(){
 	
 	SDL_Rect src;
@@ -2551,7 +2759,15 @@ static void draw_clock_image(){
 	SDL_BlitSurface(clock_image, &dest, screen, &src);
 
 }
-
+/* Function: draw_clock_image
+ * -------------------------------
+ *Esta funcion hace la labor de cronometrar el tiempo que utilizara cada nivel.
+ *Note que se crea un arreglo de tres, para asi guardar las unidades, decenas y centenas,que indicaran el tiempo transcurrido.
+ * Arguments:
+ *	none
+ * Return:
+ *	void.
+ */
 static void draw_timer_countdown(){
 
 
@@ -2595,7 +2811,14 @@ static void draw_timer_countdown(){
     }
 }
 
-
+/* Function: draw_powerup_addbomb
+ * -------------------------------
+ *Esta funcion dibuja el poder de agregar otra bomba en pantalla.
+ * Arguments:
+ *	powerup_addbomb_object: Poder de agregar otra bomba.
+ * Return:
+ *	void.
+ */
 static void draw_powerup_addbomb(game_element_t *powerup_addbomb_object) {
 
 
@@ -2618,7 +2841,14 @@ static void draw_powerup_addbomb(game_element_t *powerup_addbomb_object) {
     
     SDL_BlitSurface(powerup_addbomb_image, &src, screen, &dest);
 }
-
+/* Function: draw_powerup_speed
+ * -------------------------------
+ *Esta funcion dibuja el poder de velocidad en pantalla.
+ * Arguments:
+ *	powerup_speed_object: Poder de correr mas rapido.
+ * Return:
+ *	void.
+ */
 static void draw_powerup_speed(game_element_t *powerup_speed_object) {
 
 
@@ -2637,7 +2867,14 @@ static void draw_powerup_speed(game_element_t *powerup_speed_object) {
 
     SDL_BlitSurface(powerup_speed_image, &src, screen, &dest);
 }
-
+/* Function: draw_powerup_explosion_range
+ * -------------------------------
+ *Esta funcion dibuja el poder de fuego en pantalla.
+ * Arguments:
+ *	powerup_speed_object: Rango del poder de fuego.
+ * Return:
+ *	void.
+ */
 static void draw_powerup_explosion_range(game_element_t *powerup_explosion_range_object) {
 
 
