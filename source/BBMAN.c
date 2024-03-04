@@ -34,6 +34,7 @@
 
 
 // Defines of the game states of each screen
+int state = 0;
 #define START_SCREEN 0
 #define LEVEL_1 1
 #define GAME_OVER 2
@@ -162,7 +163,7 @@ bool fire_touched = false;
 
 int puntaje = 0;
 
-int temporizador = 200;
+int temporizador;
 
 
 //Se inicializan los powerups
@@ -341,7 +342,7 @@ static void init_game(
 	
     	srand(time(NULL));
     	int num_coordenadas = sizeof(coordenadas_destructibles) / 	
-							sizeof(coordenadas_destructibles[0]);	
+							  sizeof(coordenadas_destructibles[0]);	
 
 	bool coordenadas_usadas[num_coordenadas];
 	memset(coordenadas_usadas, false, num_coordenadas * sizeof(bool));
@@ -1167,45 +1168,149 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
  *	void.
  */
  
-void kill_player(game_element_t *explosion_object, game_element_t *player, game_element_t *monsters) {
-    
-    if (SDL_GetTicks()  > 4000) { //Establece 4 segundos inmortal.
-    if (check_collision(*explosion_object, *player) == TRUE) {
-        if (!fire_touched) {
-         
-            
-            player->x = PLAYER_START_X;
-            player->y = PLAYER_START_Y;
-            player->w = 1 * BLOCK_SIZE;
-            player->h = 1 * BLOCK_SIZE;
-            
-            contador_vidas--;
-            
-            fire_touched = true; 
-        }
-    } else {
+void kill_player(game_element_t *explosion_object, game_element_t *player, game_element_t *monsters, int state) {
 
-        for (int i = 0; i < num_monster; ++i) {
-            if (check_collision(monsters[i], *player)) {
-              
+    if (temporizador < 195 && state == LEVEL_1 ){ //Establece 5 segundos inmortal.
 
-                player->x = PLAYER_START_X;
-                player->y = PLAYER_START_Y;
-                player->w = 1 * BLOCK_SIZE;
-                player->h = 1 * BLOCK_SIZE;
-                
-	      	contador_vidas--;
+	    if (check_collision(*explosion_object, *player) == TRUE) {
+	        if (!fire_touched) {
+	         
+	            printf("entre");
+	            player->x = PLAYER_START_X;
+	            player->y = PLAYER_START_Y;
+	            player->w = 1 * BLOCK_SIZE;
+	            player->h = 1 * BLOCK_SIZE;
+	            
+	            contador_vidas--;
+	            
+	            fire_touched = true; 
+	        }
+	    } else {
 
-            }
-            else{
-            
-            }
-        }
-        fire_touched = false; 
+	        for (int i = 0; i < num_monster; ++i) {
+	            if (check_collision(monsters[i], *player)) {
+	              
+
+	                player->x = PLAYER_START_X;
+	                player->y = PLAYER_START_Y;
+	                player->w = 1 * BLOCK_SIZE;
+	                player->h = 1 * BLOCK_SIZE;
+	                
+		      		contador_vidas--;
+
+	            }
+	            else{
+	            
+	            }
+	        }
+	        fire_touched = false; 
+	    }
+	}
+
+	else if (temporizador < 145 && state == LEVEL_2){
+
+		if (check_collision(*explosion_object, *player) == TRUE) {
+	        if (!fire_touched) {
+	         
+	            
+	            player->x = PLAYER_START_X;
+	            player->y = PLAYER_START_Y;
+	            player->w = 1 * BLOCK_SIZE;
+	            player->h = 1 * BLOCK_SIZE;
+	            
+	            contador_vidas--;
+	            
+	            fire_touched = true; 
+	        }
+	    } else {
+
+	        for (int i = 0; i < num_monster; ++i) {
+	            if (check_collision(monsters[i], *player)) {
+	              
+
+	                player->x = PLAYER_START_X;
+	                player->y = PLAYER_START_Y;
+	                player->w = 1 * BLOCK_SIZE;
+	                player->h = 1 * BLOCK_SIZE;
+	                
+		      		contador_vidas--;
+
+	            }
+	            else{
+	            
+	            }
+	        }
+	        fire_touched = false; 
+	    }
+	}
+
+
+	else if (temporizador < 95 && state == LEVEL_3){
+
+		if (check_collision(*explosion_object, *player) == TRUE) {
+	        if (!fire_touched) {
+	         
+	            
+	            player->x = PLAYER_START_X;
+	            player->y = PLAYER_START_Y;
+	            player->w = 1 * BLOCK_SIZE;
+	            player->h = 1 * BLOCK_SIZE;
+	            
+	            contador_vidas--;
+	            
+	            fire_touched = true; 
+	        }
+	    } else {
+
+	        for (int i = 0; i < num_monster; ++i) {
+	            if (check_collision(monsters[i], *player)) {
+	              
+
+	                player->x = PLAYER_START_X;
+	                player->y = PLAYER_START_Y;
+	                player->w = 1 * BLOCK_SIZE;
+	                player->h = 1 * BLOCK_SIZE;
+	                
+		      	contador_vidas--;
+
+	            }
+	            else{
+	            
+	            }
+	        }
+	        fire_touched = false; 
+	    }
+	}
+
+	else if (state == 4){
+
+		if (check_collision(*explosion_object, *player) == TRUE) {
+	        if (!fire_touched) {
+	         
+	            
+	            player->x = PLAYER_START_X;
+	            player->y = PLAYER_START_Y;
+	            player->w = 1 * BLOCK_SIZE;
+	            player->h = 1 * BLOCK_SIZE;
+	            
+	            contador_vidas--;
+	            
+	            fire_touched = true; 
+	        }
+		}
+	}
+
+
+
+    else{
+    	//return;
     }
-return;
-  }
+  
+
+
+
 }
+
 /* Function: time_bomb_countdown
  * -------------------------------
  * Esta funcion regula el tiempo de colocacion de bombas, ademas controla la colocacion de la bomba 2 y 3.
@@ -1245,7 +1350,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);	
 		    draw_explosion(explosion_object);
 
@@ -1255,28 +1360,28 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
     		explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y+77;
 			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			draw_explosion(explosion_object);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y-77;
 			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			draw_explosion(explosion_object);
 
 			explosion_object->x = bomb_object->x+77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			draw_explosion(explosion_object);
 	    	
 	    	explosion_object->x = bomb_object->x-77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			draw_explosion(explosion_object);
 
@@ -1292,7 +1397,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	  		explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1306,11 +1411,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 			
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1319,7 +1424,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y-77;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 		    draw_explosion(explosion_object);
 	    	
@@ -1334,10 +1439,10 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 		
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 		      	
 	      	draw_explosion(explosion_object);
 	      	draw_explosion(explosion_object2);
@@ -1346,7 +1451,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object->x-77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 
 
@@ -1355,10 +1460,10 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
   	}
   	
   	else if (add_range == 2){
-	  	explosion_object->x = bomb_object->x;
+	  		explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1372,11 +1477,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 		
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1394,11 +1499,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	
 	    	draw_explosion(explosion_object);
@@ -1415,11 +1520,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 		
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      	draw_explosion(explosion_object);
 	      	draw_explosion(explosion_object2);
@@ -1428,7 +1533,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object->x-77;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 		  	draw_explosion(explosion_object);
   	  	 	
@@ -1438,7 +1543,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	  	explosion_object->x = bomb_object->x;
 	    	explosion_object->y = bomb_object->y;
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1452,11 +1557,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 		
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1474,11 +1579,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	
 	    	draw_explosion(explosion_object);
@@ -1495,11 +1600,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 		
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      	draw_explosion(explosion_object);
 	      	draw_explosion(explosion_object2);
@@ -1516,11 +1621,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 	    	
 	    	
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 	  	
 	  	
 	  	draw_explosion(explosion_object);
@@ -1554,7 +1659,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x;
 	    	explosion_object->y = bomb_object_1->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1563,7 +1668,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x;
 	    	explosion_object->y = bomb_object_1->y+77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1573,7 +1678,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x;
 	    	explosion_object->y = bomb_object_1->y-77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1582,7 +1687,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x+77;
 	    	explosion_object->y = bomb_object_1->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	      	draw_explosion(explosion_object);
 	    	
@@ -1591,18 +1696,18 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x-77;
 	    	explosion_object->y = bomb_object_1->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object);}
   	
   	else if (add_range == 1){
   	
 
-	  	explosion_object->x = bomb_object_1->x;
+	  		explosion_object->x = bomb_object_1->x;
 	    	explosion_object->y = bomb_object_1->y;	
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
+			kill_player(explosion_object, player, monsters, 4);
+			kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
 	    	
@@ -1615,11 +1720,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 		
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 		
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1630,7 +1735,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x;
 	    	explosion_object->y = bomb_object_1->y-77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1645,11 +1750,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 	    	
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      	draw_explosion(explosion_object);
 	      	draw_explosion(explosion_object2);
@@ -1658,7 +1763,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x-77;
 	    	explosion_object->y = bomb_object_1->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object);
   	
@@ -1674,7 +1779,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	  	explosion_object->x = bomb_object_1->x;
 	    	explosion_object->y = bomb_object_1->y;	
 	    	destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1688,11 +1793,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-			kill_player(explosion_object, player, monsters);
+			kill_player(explosion_object, player, monsters, 4);
 			kill_monsters(explosion_object, monsters);
 			kill_monsters(explosion_object2, monsters);
 
-			kill_player(explosion_object2, player, monsters);
+			kill_player(explosion_object2, player, monsters, 4);
 			
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1709,11 +1814,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1729,11 +1834,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 	    	
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      	draw_explosion(explosion_object);
 	      	draw_explosion(explosion_object2);
@@ -1742,7 +1847,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object_1->x-77;
 	    	explosion_object->y = bomb_object_1->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object);
   	
@@ -1751,11 +1856,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	else if (add_range == 3){
 	
 	
-	  	explosion_object->x = bomb_object_1->x;
+	  		explosion_object->x = bomb_object_1->x;
 	    	explosion_object->y = bomb_object_1->y;	
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
-		kill_monsters(explosion_object, monsters);
+			kill_player(explosion_object, player, monsters, 4);
+			kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
 	    	
@@ -1768,11 +1873,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 		
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1789,11 +1894,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1809,11 +1914,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 	    	
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      	draw_explosion(explosion_object);
 	      	draw_explosion(explosion_object2);
@@ -1829,11 +1934,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 		
 	  	draw_explosion(explosion_object);
 	  	draw_explosion(explosion_object2);
@@ -1844,7 +1949,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
     	explosion_object2->x = 2000;
     	
     	bomb_object_1->x = 2000;
-	bomb_object_1->y = 2000; 	   
+		bomb_object_1->y = 2000; 	   
     
    } 
     
@@ -1861,7 +1966,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	
 	    	draw_explosion(explosion_object);
@@ -1871,7 +1976,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x;
 	    	explosion_object->y = bomb_object2->y+77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1881,7 +1986,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x;
 	    	explosion_object->y = bomb_object2->y-77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1890,7 +1995,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x+77;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	      	draw_explosion(explosion_object);
 	    	
@@ -1899,7 +2004,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x-77;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object); }
 	  
@@ -1908,7 +2013,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 		explosion_object->x = bomb_object2->x;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);    	
 	    	draw_explosion(explosion_object);
 	    	
@@ -1923,11 +2028,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    		    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 				
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -1937,7 +2042,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x;
 	    	explosion_object->y = bomb_object2->y-77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -1953,11 +2058,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      		      	
 	      	draw_explosion(explosion_object);
@@ -1968,7 +2073,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x-77;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object);
 	  	
@@ -1982,7 +2087,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 		explosion_object->x = bomb_object2->x;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);    	
 	    	draw_explosion(explosion_object);
 	    	
@@ -1997,11 +2102,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    		    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 				
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2017,11 +2122,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2038,11 +2143,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      		      	
 	      	draw_explosion(explosion_object);
@@ -2053,7 +2158,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object2->x-77;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object);	
 	}
@@ -2064,7 +2169,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 		explosion_object->x = bomb_object2->x;
 	    	explosion_object->y = bomb_object2->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);    	
 	    	draw_explosion(explosion_object);
 	    	
@@ -2079,11 +2184,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    		    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 	
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 				
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2099,11 +2204,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2120,11 +2225,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 	
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      		      	
 	      	draw_explosion(explosion_object);
@@ -2142,11 +2247,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 		
 	  	draw_explosion(explosion_object);
 	  	draw_explosion(explosion_object2);
@@ -2160,10 +2265,12 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
     	explosion_object2->x = 2000;
     	
     	bomb_object2->x = 2000;
-	bomb_object2->y = 2000; 
+		bomb_object2->y = 2000; 
     		   
     
     }
+//---------------------------------------Tecla 4---------------------------------------------------------
+
     
     else if (bomb_placed_3 && SDL_GetTicks() - bomb_timer > 2000) { 
 
@@ -2175,7 +2282,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	
 	    	draw_explosion(explosion_object);
@@ -2185,7 +2292,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x;
 	    	explosion_object->y = bomb_object3->y+77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -2195,7 +2302,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x;
 	    	explosion_object->y = bomb_object3->y-77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -2204,7 +2311,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x+77;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	      	draw_explosion(explosion_object);
 	    	
@@ -2213,7 +2320,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x-77;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object); }
 	  
@@ -2222,7 +2329,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 		explosion_object->x = bomb_object3->x;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);    	
 	    	draw_explosion(explosion_object);
 	    	
@@ -2237,11 +2344,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    		    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 				
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2251,7 +2358,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x;
 	    	explosion_object->y = bomb_object3->y-77;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	    	draw_explosion(explosion_object);
 	    	
@@ -2259,7 +2366,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	  	
 	    	explosion_object->x = bomb_object3->x+77;
 	    	explosion_object->y = bomb_object3->y;
-		explosion_object2->x = bomb_object3->x+77+77;
+			explosion_object2->x = bomb_object3->x+77+77;
 	    	explosion_object2->y = bomb_object3->y;
 	    
 	    	
@@ -2267,11 +2374,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      		      	
 	      	draw_explosion(explosion_object);
@@ -2282,7 +2389,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x-77;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object);
 	  	
@@ -2296,7 +2403,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 		explosion_object->x = bomb_object3->x;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);    	
 	    	draw_explosion(explosion_object);
 	    	
@@ -2311,11 +2418,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    		    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 				
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2331,11 +2438,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2352,11 +2459,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      		      	
 	      	draw_explosion(explosion_object);
@@ -2367,7 +2474,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	explosion_object->x = bomb_object3->x-77;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 	  	draw_explosion(explosion_object);	
 	}
@@ -2378,7 +2485,7 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 		explosion_object->x = bomb_object3->x;
 	    	explosion_object->y = bomb_object3->y;
 	    	destroy_block(destructible, explosion_object);
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);    	
 	    	draw_explosion(explosion_object);
 	    	
@@ -2393,11 +2500,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    		    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 	
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 				
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2413,11 +2520,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 	    	
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	    	
 	    	draw_explosion(explosion_object);
 	    	draw_explosion(explosion_object2);
@@ -2434,11 +2541,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object2);
 		
 		
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 	
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 	      	
 	      		      	
 	      	draw_explosion(explosion_object);
@@ -2456,11 +2563,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	    	destroy_block(destructible, explosion_object);
 	    	destroy_block(destructible, explosion_object2);
 
-		kill_player(explosion_object, player, monsters);
+		kill_player(explosion_object, player, monsters, 4);
 		kill_monsters(explosion_object, monsters);
 		kill_monsters(explosion_object2, monsters);
 
-		kill_player(explosion_object2, player, monsters);
+		kill_player(explosion_object2, player, monsters, 4);
 		
 	  	draw_explosion(explosion_object);
 	  	draw_explosion(explosion_object2);
@@ -2470,9 +2577,11 @@ if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
 	}
   	
     	explosion_object->x = 2000;
+    	explosion_object2->x = 2000;
+
     	
     	bomb_object3->x = 2000;
-	bomb_object3->y = 2000; 
+		bomb_object3->y = 2000; 
     		   
     
     }
@@ -2500,7 +2609,6 @@ else {
 
 static void draw_bomb(game_element_t *bomb_object, int event ){
 
-//number_bombs
 	
 
 	SDL_Rect src;
@@ -3181,13 +3289,13 @@ int main (int argc, char *args[]) {
 
 			number_bombs = 0;
 			contador_muerte = num_monster;
-			contador_vidas = 3;
+			contador_vidas = 100000;
 			puntaje = 0;
 			add_range = 0;
 			number_bombs = 0;
 			temporizador = 200;
 			monster_speed = 5;
-			MOVEMENT_DELTA = 3;
+			MOVEMENT_DELTA = 10;
 		
 			if (keystate[SDL_SCANCODE_SPACE]) {
 
@@ -3300,13 +3408,13 @@ int main (int argc, char *args[]) {
 			for (int i = 0; i < 25; i++) { 
    				 if (i < 4) {
         			
-       				 draw_game_elementLimites(&map_elements[i]);}
+       				draw_game_elementLimites(&map_elements[i]);}
        				 
 			    	 else {
 				
-				draw_game_element(&map_elements[i]);
+					draw_game_element(&map_elements[i]);
 			    }
-			    }
+		    }
 			
 
 			for(int i=0;i<16;i++){
@@ -3327,7 +3435,9 @@ int main (int argc, char *args[]) {
 				&player,
 				map_elements);
 
-			kill_player(&explosion_object, &player, monsters);
+			printf("Time remaining: %d",temporizador);
+			printf("\n");
+			kill_player(&explosion_object, &player, monsters, state);
 				
 
 			for (int i = 0; i < num_monster; i++) {
@@ -3406,9 +3516,9 @@ int main (int argc, char *args[]) {
 							
 				contador_muerte = num_monster;	
 				monster_speed = 5*1.5;
+				temporizador = 150;
 
 				state = LEVEL_2;
-				temporizador = 150;
 				  init_game(&player,
 				  map_elements, 
 				  NUM_MAP_ELEMENTS,
@@ -3527,8 +3637,11 @@ else if (state == LEVEL_2) {
 				monsters,
 				&player,
 				map_elements);
-							
-			kill_player(&explosion_object, &player, monsters);
+
+			printf("Time remaining: %d",temporizador);
+			printf("\n");
+
+			kill_player(&explosion_object, &player, monsters, state);
 
 
 
@@ -3729,9 +3842,13 @@ else if (state == LEVEL_2) {
 			 	lista_destructibles,
 			 	monsters,
 			 	&player,
-			 	map_elements);		
-							
-			kill_player(&explosion_object, &player, monsters);
+			 	map_elements);	
+			
+			printf("Time remaining: %d",temporizador);
+			printf("\n");				
+			kill_player(&explosion_object, &player, monsters, state);
+
+
 			for (int i = 0; i < num_monster; i++) {
 			    draw_game_element_monster3(&monsters[i]);
 			}		
