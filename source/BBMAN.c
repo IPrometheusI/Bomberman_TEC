@@ -1170,9 +1170,9 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters){
  
 void kill_player(game_element_t *explosion_object, game_element_t *player, game_element_t *monsters, int state) {
 
-    if (temporizador < 195 && state == LEVEL_1 ){ //Establece 5 segundos inmortal.
+    if (temporizador < 145 && state == LEVEL_1 ){ //Establece 5 segundos inmortal.
 
-	    if (check_collision(*explosion_object, *player) == TRUE) {
+	    if (check_collision(*explosion_object, *player) == TRUE ) {
 	        if (!fire_touched) {
 	         
 	            printf("entre");
@@ -1245,7 +1245,7 @@ void kill_player(game_element_t *explosion_object, game_element_t *player, game_
 	}
 
 
-	else if (temporizador < 95 && state == LEVEL_3){
+	else if (temporizador < 145 && state == LEVEL_3){
 
 		if (check_collision(*explosion_object, *player) == TRUE) {
 	        if (!fire_touched) {
@@ -1282,7 +1282,9 @@ void kill_player(game_element_t *explosion_object, game_element_t *player, game_
 	    }
 	}
 
-	else if (state == 4){
+
+
+	else if (temporizador < 145 && state == 4){
 
 		if (check_collision(*explosion_object, *player) == TRUE) {
 	        if (!fire_touched) {
@@ -1297,18 +1299,18 @@ void kill_player(game_element_t *explosion_object, game_element_t *player, game_
 	            
 	            fire_touched = true; 
 	        }
-		}
-	}
+	    } 
 
 
 
     else{
-    	//return;
+    	return;
     }
   
 
 
 
+}
 }
 
 /* Function: time_bomb_countdown
@@ -3289,13 +3291,13 @@ int main (int argc, char *args[]) {
 
 			number_bombs = 0;
 			contador_muerte = num_monster;
-			contador_vidas = 100000;
+			contador_vidas = 3;
 			puntaje = 0;
 			add_range = 0;
 			number_bombs = 0;
-			temporizador = 200;
+			temporizador = 150;
 			monster_speed = 5;
-			MOVEMENT_DELTA = 10;
+			MOVEMENT_DELTA = 3;
 		
 			if (keystate[SDL_SCANCODE_SPACE]) {
 
@@ -3438,6 +3440,8 @@ int main (int argc, char *args[]) {
 			printf("Time remaining: %d",temporizador);
 			printf("\n");
 			kill_player(&explosion_object, &player, monsters, state);
+			kill_player(&explosion_object2, &player, monsters, state);
+
 				
 
 			for (int i = 0; i < num_monster; i++) {
@@ -3642,6 +3646,7 @@ else if (state == LEVEL_2) {
 			printf("\n");
 
 			kill_player(&explosion_object, &player, monsters, state);
+kill_player(&explosion_object2, &player, monsters, state);
 
 
 
@@ -3722,7 +3727,7 @@ else if (state == LEVEL_2) {
 				if (check_collision(player, portal_object) == TRUE) {
 				contador_muerte = num_monster;
 				monster_speed = 5 * 1.8;
-				temporizador = 100;
+				temporizador = 150;
 					
 				state = LEVEL_3;
 					
@@ -3847,6 +3852,7 @@ else if (state == LEVEL_2) {
 			printf("Time remaining: %d",temporizador);
 			printf("\n");				
 			kill_player(&explosion_object, &player, monsters, state);
+kill_player(&explosion_object2, &player, monsters, state);
 
 
 			for (int i = 0; i < num_monster; i++) {
