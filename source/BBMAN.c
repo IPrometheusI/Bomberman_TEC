@@ -1,6 +1,5 @@
 #include <SDL.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -450,8 +449,6 @@ static void init_game(game_element_t *player, game_element_t map_elements[], int
 
 		monsters[i].w = 1.5 * BLOCK_SIZE;
 		monsters[i].h = 1.5 * BLOCK_SIZE;
-		printf("index_aleatorio agregado: %d", index_aleatorio);
-		printf("\n");
 		coordenadas_usadas[index_aleatorio] = true;
 	}
 }
@@ -878,11 +875,7 @@ static void draw_game_elementLimites(game_element_t *element) {
 	src.w = element->w;
 	src.h = element->h;
 
-	int r = SDL_FillRect(screen, &src, 0xFF000000);
-
-	if (r != 0) {
-		printf("fill rectangle failed in func draw_paddle()");
-	}
+	(void)SDL_FillRect(screen, &src, 0xFF000000);
 }
 /* Function: draw_game_element_des
  * ----------------------------
@@ -1170,7 +1163,6 @@ void kill_player(game_element_t *explosion_object, game_element_t *player, game_
 		if (check_collision(*explosion_object, *player) == TRUE) {
 			if (!fire_touched) {
 
-				printf("entre");
 				player->x = PLAYER_START_X;
 				player->y = PLAYER_START_Y;
 				player->w = 1 * BLOCK_SIZE;
@@ -3184,8 +3176,6 @@ int main(int argc, char *args[]) {
 								&explosion_object, &explosion_object2, lista_destructibles,
 								monsters, &player, map_elements);
 
-			printf("Time remaining: %d", temporizador);
-			printf("\n");
 			kill_player(&explosion_object, &player, monsters, state);
 			kill_player(&explosion_object2, &player, monsters, state);
 
@@ -3345,9 +3335,6 @@ int main(int argc, char *args[]) {
 			time_bomb_countdown(&bomb_object, &bomb_object1, &bomb_object2, &bomb_object3,
 								&explosion_object, &explosion_object2, lista_destructibles,
 								monsters, &player, map_elements);
-
-			printf("Time remaining: %d", temporizador);
-			printf("\n");
 
 			kill_player(&explosion_object, &player, monsters, state);
 			kill_player(&explosion_object2, &player, monsters, state);
@@ -3510,8 +3497,6 @@ int main(int argc, char *args[]) {
 								&explosion_object, &explosion_object2, lista_destructibles,
 								monsters, &player, map_elements);
 
-			printf("Time remaining: %d", temporizador);
-			printf("\n");
 			kill_player(&explosion_object, &player, monsters, state);
 			kill_player(&explosion_object2, &player, monsters, state);
 
@@ -3670,9 +3655,6 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 
 	// Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-
-		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-
 		return FAILURE;
 	}
 
@@ -3693,9 +3675,6 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	}
 
 	if (window == NULL) {
-
-		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-
 		return FAILURE;
 	}
 
@@ -3703,9 +3682,6 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	screen = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA32);
 
 	if (screen == NULL) {
-
-		printf("Could not create the screen surfce! SDL_Error: %s\n", SDL_GetError());
-
 		return FAILURE;
 	}
 
@@ -3714,62 +3690,46 @@ int init_SDL(int width, int height, int argc, char *args[]) {
 	screen_texture = SDL_CreateTextureFromSurface(renderer, screen);
 
 	if (screen_texture == NULL) {
-
-		printf("Could not create the screen_texture! SDL_Error: %s\n", SDL_GetError());
-
 		return FAILURE;
 	}
 
 	// Load the title image
-	title = SDL_LoadBMP("title.bmp");
-	Block = SDL_LoadBMP("Block.bmp");
-	Block_des = SDL_LoadBMP("Block_des.bmp");
-	bomb_image = SDL_LoadBMP("bomb.bmp");
-	fire = SDL_LoadBMP("fire.bmp");
-	skin = SDL_LoadBMP("skin.bmp");
-	monster = SDL_LoadBMP("monster.bmp");
-	monster2 = SDL_LoadBMP("monster2.bmp");
-	monster3 = SDL_LoadBMP("monster3.bmp");
-	portal = SDL_LoadBMP("portal.bmp");
-	grass = SDL_LoadBMP("grass.bmp");
-	vida = SDL_LoadBMP("vida.bmp");
-	score = SDL_LoadBMP("score.bmp");
-	clock_image = SDL_LoadBMP("clock_image.bmp");
+	title = SDL_LoadBMP("assets/title.bmp");
+	Block = SDL_LoadBMP("assets/Block.bmp");
+	Block_des = SDL_LoadBMP("assets/Block_des.bmp");
+	bomb_image = SDL_LoadBMP("assets/bomb.bmp");
+	fire = SDL_LoadBMP("assets/fire.bmp");
+	skin = SDL_LoadBMP("assets/skin.bmp");
+	monster = SDL_LoadBMP("assets/monster.bmp");
+	monster2 = SDL_LoadBMP("assets/monster2.bmp");
+	monster3 = SDL_LoadBMP("assets/monster3.bmp");
+	portal = SDL_LoadBMP("assets/portal.bmp");
+	grass = SDL_LoadBMP("assets/grass.bmp");
+	vida = SDL_LoadBMP("assets/vida.bmp");
+	score = SDL_LoadBMP("assets/score.bmp");
+	clock_image = SDL_LoadBMP("assets/clock_image.bmp");
 
-	powerup_addbomb_image = SDL_LoadBMP("powerup_addbomb_image.bmp");
-	powerup_speed_image = SDL_LoadBMP("powerup_speed_image.bmp");
-	powerup_explosion_range_image = SDL_LoadBMP("powerup_explosion_range_image.bmp");
+	powerup_addbomb_image = SDL_LoadBMP("assets/powerup_addbomb_image.bmp");
+	powerup_speed_image = SDL_LoadBMP("assets/powerup_speed_image.bmp");
+	powerup_explosion_range_image = SDL_LoadBMP("assets/powerup_explosion_range_image.bmp");
 
-	lava = SDL_LoadBMP("lava.bmp");
-	win = SDL_LoadBMP("win.bmp");
-	end = SDL_LoadBMP("end.bmp");
-	agua = SDL_LoadBMP("agua.bmp");
-
-	if (portal == NULL) {
-		printf("No se pudo cargar la imagen portal.bmp: %s\n", SDL_GetError());
-	}
+	lava = SDL_LoadBMP("assets/lava.bmp");
+	win = SDL_LoadBMP("assets/win.bmp");
+	end = SDL_LoadBMP("assets/end.bmp");
+	agua = SDL_LoadBMP("assets/agua.bmp");
 
 	if (title == NULL) {
-
-		printf("Could not Load title image! SDL_Error: %s\n", SDL_GetError());
-
 		return FAILURE;
 	}
 
 	// Load the numbermap image
-	numbermap = SDL_LoadBMP("numbermap.bmp");
+	numbermap = SDL_LoadBMP("assets/numbermap.bmp");
 
 	if (numbermap == NULL) {
-
-		printf("Could not Load numbermap image! SDL_Error: %s\n", SDL_GetError());
-
 		return FAILURE;
 	}
 
 	if (end == NULL) {
-
-		printf("Could not Load title image! SDL_Error: %s\n", SDL_GetError());
-
 		return FAILURE;
 	}
 
