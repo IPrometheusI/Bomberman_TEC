@@ -1,2 +1,4 @@
 # System dependencies (install via your package manager)
-SDL2
+gcc
+make
+libsdl2-dev
