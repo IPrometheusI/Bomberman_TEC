@@ -9,4 +9,4 @@ build:
     - apt-get update
     - apt-get install -y --no-install-recommends make gcc libsdl2-dev
   script:
-    - make
+    - make Build

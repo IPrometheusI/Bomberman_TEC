@@ -11,7 +11,10 @@ Course: Digital Systems Design
 ## Instalacion
 
 1. Instala gcc, make y SDL2 (ver `requirements.txt`).
-   - Script automatico: `bash scripts/install_deps.sh`
+   - Script automatico:
+     ```
+     bash scripts/install_deps.sh
+     ```
    - Windows: usa MSYS2 (MinGW64) o WSL y ejecuta el script desde ahi.
    - macOS (Homebrew): `brew install sdl2`
    - Ubuntu/Debian: `sudo apt install libsdl2-dev`
