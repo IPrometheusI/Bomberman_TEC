@@ -1279,6 +1279,29 @@ void kill_player(game_element_t *explosion_object, game_element_t *player, game_
 	}
 }
 
+static void apply_explosion_effects(game_element_t *explosion_object, game_element_t destructible[],
+									game_element_t *monsters, game_element_t *player) {
+
+	destroy_block(destructible, explosion_object);
+	kill_player(explosion_object, player, monsters, 4);
+	kill_monsters(explosion_object, monsters);
+	draw_explosion(explosion_object);
+}
+
+static void apply_explosion_pair_effects(game_element_t *explosion_object, game_element_t *explosion_object2,
+										 game_element_t destructible[], game_element_t *monsters,
+										 game_element_t *player) {
+
+	destroy_block(destructible, explosion_object);
+	destroy_block(destructible, explosion_object2);
+	kill_player(explosion_object, player, monsters, 4);
+	kill_monsters(explosion_object, monsters);
+	kill_monsters(explosion_object2, monsters);
+	kill_player(explosion_object2, player, monsters, 4);
+	draw_explosion(explosion_object);
+	draw_explosion(explosion_object2);
+}
+
 /* Function: time_bomb_countdown
  * ----------------------------
  * Esta funcion controla el tiempo de las bombas, genera explosiones
@@ -1327,48 +1350,30 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 		if (add_range == 0) {
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y + 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x + 77;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x - 77;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 		}
 
 		else if (add_range == 1) {
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y + 77;
@@ -1376,24 +1381,11 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x;
 			explosion_object2->y = bomb_object->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x + 77;
 			explosion_object->y = bomb_object->y;
@@ -1401,34 +1393,18 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x + 77 + 77;
 			explosion_object2->y = bomb_object->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x - 77;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 		}
 
 		else if (add_range == 2) {
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y + 77;
@@ -1436,17 +1412,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x;
 			explosion_object2->y = bomb_object->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y - 77;
@@ -1454,17 +1420,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x;
 			explosion_object2->y = bomb_object->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x + 77;
 			explosion_object->y = bomb_object->y;
@@ -1472,34 +1428,18 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x + 77 + 77;
 			explosion_object2->y = bomb_object->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x - 77;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 		}
 
 		else if (add_range == 3) {
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y + 77;
@@ -1507,17 +1447,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x;
 			explosion_object2->y = bomb_object->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y - 77;
@@ -1525,17 +1455,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x;
 			explosion_object2->y = bomb_object->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x + 77;
 			explosion_object->y = bomb_object->y;
@@ -1543,17 +1463,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x + 77 + 77;
 			explosion_object2->y = bomb_object->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object->x - 77;
 			explosion_object->y = bomb_object->y;
@@ -1561,17 +1471,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object->x - 77 - 77;
 			explosion_object2->y = bomb_object->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 		}
 
 		explosion_object->x = 2000;
@@ -1597,48 +1497,30 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y + 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x + 77;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x - 77;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 		}
 
 		else if (add_range == 1) {
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y + 77;
@@ -1646,24 +1528,11 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object_1->x;
 			explosion_object2->y = bomb_object_1->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x + 77;
 			explosion_object->y = bomb_object_1->y;
@@ -1671,24 +1540,11 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object_1->x + 77 + 77;
 			explosion_object2->y = bomb_object_1->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x - 77;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 		}
 
@@ -1696,10 +1552,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y + 77;
@@ -1707,17 +1560,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object_1->x;
 			explosion_object2->y = bomb_object_1->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y - 77;
@@ -1725,17 +1568,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object->x = bomb_object_1->x;
 			explosion_object2->y = bomb_object_1->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x + 77;
 			explosion_object->y = bomb_object_1->y;
@@ -1743,24 +1576,11 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object_1->x + 77 + 77;
 			explosion_object2->y = bomb_object_1->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x - 77;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 		}
 
@@ -1768,10 +1588,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y + 77;
@@ -1779,17 +1596,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object_1->x;
 			explosion_object2->y = bomb_object_1->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x;
 			explosion_object->y = bomb_object_1->y - 77;
@@ -1797,17 +1604,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object->x = bomb_object_1->x;
 			explosion_object2->y = bomb_object_1->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x + 77;
 			explosion_object->y = bomb_object_1->y;
@@ -1815,17 +1612,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object_1->x + 77 + 77;
 			explosion_object2->y = bomb_object_1->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object_1->x - 77;
 			explosion_object->y = bomb_object_1->y;
@@ -1833,17 +1620,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object_1->x - 77 - 77;
 			explosion_object2->y = bomb_object_1->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 		}
 
 		explosion_object->x = 2000;
@@ -1869,49 +1646,30 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y + 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x + 77;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x - 77;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 		}
 
 		else if (add_range == 1) {
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y + 77;
@@ -1919,48 +1677,22 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object2->x;
 			explosion_object2->y = bomb_object2->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x + 77;
 			explosion_object->y = bomb_object2->y;
 			explosion_object2->x = bomb_object2->x + 77 + 77;
 			explosion_object2->y = bomb_object2->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x - 77;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 		}
 
@@ -1968,10 +1700,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y + 77;
@@ -1979,17 +1708,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object2->x;
 			explosion_object2->y = bomb_object2->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y - 77;
@@ -1997,51 +1716,25 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object2->x;
 			explosion_object2->y = bomb_object2->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x + 77;
 			explosion_object->y = bomb_object2->y;
 			explosion_object2->x = bomb_object2->x + 77 + 77;
 			explosion_object2->y = bomb_object2->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x - 77;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 		}
 
 		else if (add_range == 3) {
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y + 77;
@@ -2049,17 +1742,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object2->x;
 			explosion_object2->y = bomb_object2->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x;
 			explosion_object->y = bomb_object2->y - 77;
@@ -2067,34 +1750,14 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object2->x;
 			explosion_object2->y = bomb_object2->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x + 77;
 			explosion_object->y = bomb_object2->y;
 			explosion_object2->x = bomb_object2->x + 77 + 77;
 			explosion_object2->y = bomb_object2->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object2->x - 77;
 			explosion_object->y = bomb_object2->y;
@@ -2102,17 +1765,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object2->x - 77 - 77;
 			explosion_object2->y = bomb_object2->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 		}
 
 		explosion_object->x = 2000;
@@ -2138,49 +1791,30 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y + 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x + 77;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x - 77;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 		}
 
 		else if (add_range == 1) {
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y + 77;
@@ -2188,48 +1822,22 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object3->x;
 			explosion_object2->y = bomb_object3->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y - 77;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x + 77;
 			explosion_object->y = bomb_object3->y;
 			explosion_object2->x = bomb_object3->x + 77 + 77;
 			explosion_object2->y = bomb_object3->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x - 77;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 		}
 
@@ -2237,10 +1845,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y + 77;
@@ -2248,17 +1853,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object3->x;
 			explosion_object2->y = bomb_object3->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y - 77;
@@ -2266,51 +1861,25 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object3->x;
 			explosion_object2->y = bomb_object3->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x + 77;
 			explosion_object->y = bomb_object3->y;
 			explosion_object2->x = bomb_object3->x + 77 + 77;
 			explosion_object2->y = bomb_object3->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x - 77;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 		}
 
 		else if (add_range == 3) {
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y;
-			destroy_block(destructible, explosion_object);
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			draw_explosion(explosion_object);
+			apply_explosion_effects(explosion_object, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y + 77;
@@ -2318,17 +1887,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object3->x;
 			explosion_object2->y = bomb_object3->y + 77 + 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x;
 			explosion_object->y = bomb_object3->y - 77;
@@ -2336,34 +1895,14 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object3->x;
 			explosion_object2->y = bomb_object3->y - 77 - 77;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x + 77;
 			explosion_object->y = bomb_object3->y;
 			explosion_object2->x = bomb_object3->x + 77 + 77;
 			explosion_object2->y = bomb_object3->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 
 			explosion_object->x = bomb_object3->x - 77;
 			explosion_object->y = bomb_object3->y;
@@ -2371,17 +1910,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 			explosion_object2->x = bomb_object3->x - 77 - 77;
 			explosion_object2->y = bomb_object3->y;
 
-			destroy_block(destructible, explosion_object);
-			destroy_block(destructible, explosion_object2);
-
-			kill_player(explosion_object, player, monsters, 4);
-			kill_monsters(explosion_object, monsters);
-			kill_monsters(explosion_object2, monsters);
-
-			kill_player(explosion_object2, player, monsters, 4);
-
-			draw_explosion(explosion_object);
-			draw_explosion(explosion_object2);
+			apply_explosion_pair_effects(explosion_object, explosion_object2, destructible, monsters, player);
 		}
 
 		explosion_object->x = 2000;
