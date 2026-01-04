@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 // The constants used to define the size of the window
@@ -48,6 +49,12 @@ int state = 0;
 
 // Time to render a frame in ms = 1000/60
 #define FRAME_TIME_MS 16
+
+// Explosion animation duration
+#define EXPLOSION_DURATION_MS 400
+
+// Max tiles to keep for explosion animation
+#define EXPLOSION_TILE_LIMIT 64
 
 // Movement diferential
 int MOVEMENT_DELTA = 2;
@@ -255,6 +262,12 @@ typedef struct game_element_t {
 struct game_element_t lista_destructibles[16];
 struct game_element_t map_elements[25];
 
+struct game_element_t explosion_tiles[EXPLOSION_TILE_LIMIT];
+int explosion_tiles_count = 0;
+Uint32 explosion_visible_until = 0;
+int explosion_visible = 0;
+int record_explosions = 0;
+
 int g_score[] = {0, 0, 0};
 
 // matriz centenas, decenas y unidades
@@ -395,60 +408,33 @@ static void init_game(game_element_t *player, game_element_t map_elements[], int
 	memset(coordenadas_usadas, false, num_coordenadas * sizeof(bool));
 
 	for (int i = 0; i < num_lista_destructibles; i++) {
+		int index_aleatorio;
+		do {
+			index_aleatorio = rand() % num_coordenadas;
+		} while (coordenadas_usadas[index_aleatorio]);
+		coordenadas_usadas[index_aleatorio] = true;
 
-		int index_aleatorio = rand() % num_coordenadas;
+		int coord_x = coordenadas_destructibles[index_aleatorio][0];
+		int coord_y = coordenadas_destructibles[index_aleatorio][1];
+
 		if (i == 0) {
-
-			portal_object->x = coordenadas_destructibles[index_aleatorio][0];
-			portal_object->y = coordenadas_destructibles[index_aleatorio][1];
-
-			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
+			portal_object->x = coord_x;
+			portal_object->y = coord_y;
 		} else if (i == 1) {
-
-			powerup_addbomb_object->x = coordenadas_destructibles[index_aleatorio][0];
-			powerup_addbomb_object->y = coordenadas_destructibles[index_aleatorio][1];
-
-			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
-
+			powerup_addbomb_object->x = coord_x;
+			powerup_addbomb_object->y = coord_y;
+		} else if (i == 2) {
+			powerup_speed_object->x = coord_x;
+			powerup_speed_object->y = coord_y;
+		} else if (i == 3) {
+			powerup_explosion_range_object->x = coord_x;
+			powerup_explosion_range_object->y = coord_y;
 		}
 
-		else if (i == 2) {
-			powerup_speed_object->x = coordenadas_destructibles[index_aleatorio][0];
-			powerup_speed_object->y = coordenadas_destructibles[index_aleatorio][1];
-
-			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
-
-		}
-
-		else if (i == 3) {
-			powerup_explosion_range_object->x = coordenadas_destructibles[index_aleatorio][0];
-			powerup_explosion_range_object->y = coordenadas_destructibles[index_aleatorio][1];
-
-			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
-
-		}
-
-		else {
-
-			lista_destructibles[i].x = coordenadas_destructibles[index_aleatorio][0];
-			lista_destructibles[i].y = coordenadas_destructibles[index_aleatorio][1];
-			lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
-			lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
-
-			coordenadas_usadas[index_aleatorio] = true;
-		}
+		lista_destructibles[i].x = coord_x;
+		lista_destructibles[i].y = coord_y;
+		lista_destructibles[i].w = 1.5 * BLOCK_SIZE;
+		lista_destructibles[i].h = 1.5 * BLOCK_SIZE;
 	}
 
 	for (int i = 0; i < num_monster; i++) {
@@ -530,23 +516,25 @@ int check_collision(game_element_t a, game_element_t b) {
 void move_player(int d, game_element_t *player, game_element_t lista_destructibles[], int ld_size,
 				 game_element_t map_elements[], int me_size) {
 
-	player->x += (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
-	player->y += (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
+	int dx = (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
+	int dy = (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
 
-	game_element_t *all_elements[ld_size + me_size];
+	player->x += dx;
+	player->y += dy;
+
 	for (int i = 0; i < ld_size; i++) {
-		all_elements[i] = &lista_destructibles[i];
-	}
-	for (int i = 0; i < me_size; i++) {
-		all_elements[ld_size + i] = &map_elements[i];
+		if (check_collision(*player, lista_destructibles[i]) == TRUE) {
+			player->x -= dx;
+			player->y -= dy;
+			return;
+		}
 	}
 
-	for (int i = 0; i < ld_size + me_size; i++) {
-		if (check_collision(*player, *all_elements[i]) == TRUE) {
-			// Revertir movimiento
-			player->x -= (d == LEFT) ? -MOVEMENT_DELTA : (d == RIGHT) ? MOVEMENT_DELTA : 0;
-			player->y -= (d == UP) ? -MOVEMENT_DELTA : (d == DOWN) ? MOVEMENT_DELTA : 0;
-			break;
+	for (int i = 0; i < me_size; i++) {
+		if (check_collision(*player, map_elements[i]) == TRUE) {
+			player->x -= dx;
+			player->y -= dy;
+			return;
 		}
 	}
 }
@@ -858,22 +846,18 @@ static void draw_game_element(game_element_t *element) {
 
 	SDL_Rect src;
 	SDL_Rect dest;
-	int i;
 
-	for (i = 0; i < 2; i++) {
+	src.x = element->x;
+	src.y = element->y;
+	src.w = element->w;
+	src.h = element->h;
 
-		src.x = element->x;
-		src.y = element->y;
-		src.w = element->w;
-		src.h = element->h;
+	dest.x = 0;
+	dest.y = 0;
+	dest.w = element->w;
+	dest.h = element->h;
 
-		dest.x = 0;
-		dest.y = 0;
-		dest.w = element->w;
-		dest.h = element->h;
-
-		SDL_BlitSurface(Block_des, &dest, screen, &src);
-	}
+	SDL_BlitSurface(Block_des, &dest, screen, &src);
 }
 /* Function: draw_game_elementLimites
  * ----------------------------
@@ -888,21 +872,16 @@ static void draw_game_element(game_element_t *element) {
 static void draw_game_elementLimites(game_element_t *element) {
 
 	SDL_Rect src;
-	int i;
 
-	for (i = 0; i < 2; i++) {
+	src.x = element->x;
+	src.y = element->y;
+	src.w = element->w;
+	src.h = element->h;
 
-		src.x = element->x;
-		src.y = element->y;
-		src.w = element->w;
-		src.h = element->h;
+	int r = SDL_FillRect(screen, &src, 0xFF000000);
 
-		int r = SDL_FillRect(screen, &src, 0xFF000000);
-
-		if (r != 0) {
-
-			printf("fill rectangle failed in func draw_paddle()");
-		}
+	if (r != 0) {
+		printf("fill rectangle failed in func draw_paddle()");
 	}
 }
 /* Function: draw_game_element_des
@@ -915,26 +894,46 @@ static void draw_game_elementLimites(game_element_t *element) {
  * Return:
  *	void.
  */
-static void draw_game_element_des(game_element_t destructibles[]) {
+static void draw_game_element_des(game_element_t *destructible) {
 
 	SDL_Rect src;
 	SDL_Rect dest;
-	int i;
 
-	for (i = 0; i < 2; i++) {
+	src.x = destructible->x;
+	src.y = destructible->y;
+	src.w = destructible->w;
+	src.h = destructible->h;
 
-		src.x = destructibles->x;
-		src.y = destructibles->y;
-		src.w = destructibles->w;
-		src.h = destructibles->h;
+	dest.x = 0;
+	dest.y = 0;
+	dest.w = destructible->w;
+	dest.h = destructible->h;
 
-		dest.x = 0;
-		dest.y = 0;
-		dest.w = destructibles->w;
-		dest.h = destructibles->h;
+	SDL_BlitSurface(Block, &dest, screen, &src);
+}
 
-		SDL_BlitSurface(Block, &dest, screen, &src);
+/* Function: add_explosion_tile
+ * ----------------------------
+ * Esta funcion guarda posiciones de explosion para mantenerlas visibles.
+ *
+ * Arguments:
+ *	x: Coordenada x.
+ *	y: Coordenada y.
+ *
+ * Return:
+ *	void.
+ */
+static void add_explosion_tile(int x, int y) {
+
+	if (explosion_tiles_count >= EXPLOSION_TILE_LIMIT) {
+		return;
 	}
+
+	explosion_tiles[explosion_tiles_count].x = x;
+	explosion_tiles[explosion_tiles_count].y = y;
+	explosion_tiles[explosion_tiles_count].w = 64;
+	explosion_tiles[explosion_tiles_count].h = 64;
+	explosion_tiles_count++;
 }
 
 /* Function: draw_explosion
@@ -952,6 +951,10 @@ static void draw_explosion(game_element_t *explosion_object) {
 	SDL_Rect src;
 	SDL_Rect dest;
 
+	if (record_explosions) {
+		add_explosion_tile(explosion_object->x, explosion_object->y);
+	}
+
 	src.x = 0;
 	src.y = 0;
 	src.w = 64;
@@ -963,6 +966,23 @@ static void draw_explosion(game_element_t *explosion_object) {
 	dest.h = 64;
 
 	SDL_BlitSurface(fire, &src, screen, &dest);
+}
+
+/* Function: draw_explosion_tiles
+ * ----------------------------
+ * Esta funcion dibuja las explosiones almacenadas mientras dure la animacion.
+ *
+ * Arguments:
+ *	ninguno.
+ *
+ * Return:
+ *	void.
+ */
+static void draw_explosion_tiles() {
+
+	for (int i = 0; i < explosion_tiles_count; i++) {
+		draw_explosion(&explosion_tiles[i]);
+	}
 }
 
 /* Function: draw_vida
@@ -1087,7 +1107,7 @@ static void draw_vida(int contador_vidas) {
 
 void destroy_block(game_element_t *map_des_block, game_element_t *explosion_object) {
 
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < NUM_DESTRUCTIBLES; i++) {
 
 		if (check_collision(*explosion_object, lista_destructibles[i]) == TRUE) {
 
@@ -1097,9 +1117,6 @@ void destroy_block(game_element_t *map_des_block, game_element_t *explosion_obje
 			lista_destructibles[i].h = 0 * BLOCK_SIZE;
 
 			break;
-		}
-
-		else {
 		}
 	}
 }
@@ -1127,9 +1144,6 @@ void kill_monsters(game_element_t *explosion_object, game_element_t *monsters) {
 			monsters[i].h = 0 * BLOCK_SIZE;
 			contador_muerte--;
 			break;
-		}
-
-		else {
 		}
 	}
 }
@@ -1300,9 +1314,24 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 						 game_element_t destructible[], game_element_t *monsters,
 						 game_element_t *player, game_element_t map_elements[]) {
 
-	if (bomb_placed && SDL_GetTicks() - bomb_timer > 2000) {
+	Uint32 ticks = SDL_GetTicks();
+
+	if (explosion_visible) {
+		if (ticks <= explosion_visible_until) {
+			draw_explosion_tiles();
+		} else {
+			explosion_visible = 0;
+			explosion_tiles_count = 0;
+		}
+	}
+
+	if (bomb_placed && ticks - bomb_timer > 2000) {
 
 		bomb_placed = 0;
+		explosion_tiles_count = 0;
+		explosion_visible = 1;
+		explosion_visible_until = ticks + EXPLOSION_DURATION_MS;
+		record_explosions = 1;
 		if (add_range == 0) {
 			explosion_object->x = bomb_object->x;
 			explosion_object->y = bomb_object->y;
@@ -1558,14 +1587,19 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 		bomb_object->x = 2000;
 		bomb_object->y = 2000;
+		record_explosions = 0;
 
 	}
 
 	// ······································Tecla2·····································
 
-	else if (bomb_placed_1 && SDL_GetTicks() - bomb_timer > 2000) {
+	else if (bomb_placed_1 && ticks - bomb_timer > 2000) {
 
 		bomb_placed_1 = 0;
+		explosion_tiles_count = 0;
+		explosion_visible = 1;
+		explosion_visible_until = ticks + EXPLOSION_DURATION_MS;
+		record_explosions = 1;
 
 		if (add_range == 0) {
 
@@ -1825,14 +1859,19 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 		bomb_object_1->x = 2000;
 		bomb_object_1->y = 2000;
+		record_explosions = 0;
 
 	}
 
 	// ······································Tecla3·····································
 
-	else if (bomb_placed_2 && SDL_GetTicks() - bomb_timer > 2000) {
+	else if (bomb_placed_2 && ticks - bomb_timer > 2000) {
 
 		bomb_placed_2 = 0;
+		explosion_tiles_count = 0;
+		explosion_visible = 1;
+		explosion_visible_until = ticks + EXPLOSION_DURATION_MS;
+		record_explosions = 1;
 
 		if (add_range == 0) {
 
@@ -2086,6 +2125,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 		explosion_object->x = 2000;
 		explosion_object2->x = 2000;
+		record_explosions = 0;
 
 		bomb_object2->x = 2000;
 		bomb_object2->y = 2000;
@@ -2094,9 +2134,13 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 	//---------------------------------------Tecla
 	//4---------------------------------------------------------
 
-	else if (bomb_placed_3 && SDL_GetTicks() - bomb_timer > 2000) {
+	else if (bomb_placed_3 && ticks - bomb_timer > 2000) {
 
 		bomb_placed_3 = 0;
+		explosion_tiles_count = 0;
+		explosion_visible = 1;
+		explosion_visible_until = ticks + EXPLOSION_DURATION_MS;
+		record_explosions = 1;
 
 		if (add_range == 0) {
 
@@ -2350,6 +2394,7 @@ void time_bomb_countdown(game_element_t *bomb_object, game_element_t *bomb_objec
 
 		explosion_object->x = 2000;
 		explosion_object2->x = 2000;
+		record_explosions = 0;
 
 		bomb_object3->x = 2000;
 		bomb_object3->y = 2000;
