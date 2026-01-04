@@ -14,14 +14,16 @@ CC=gcc
 CC_SDL= `sdl2-config --cflags --libs`
 
 
-all:Build
+all: clean Build run
 
 Build:
 	$(CC) $(S_FILES) -o $(EXEC) $(CC_SDL)
 
-build_run:Build
+run:
 	$(EXEC)
 
+build_run: clean Build run
+
 clean:
-	rm -f salida
+	rm -f $(EXEC)
 	rm -f source/.*.swp
