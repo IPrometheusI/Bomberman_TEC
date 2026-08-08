@@ -1,49 +1,118 @@
-# Bomberman_TEC
+<div align="center">
 
-Author: @MaickolFernandez | @JordiPerez
+# Bomberman TEC
 
-Description: This project determines how good we are at coding in C, we are going to do that by programming a cool game called Bomberman.
+Una versión del clásico **Bomberman** escrita en C con SDL2: destruye bloques,
+vence a los enemigos y encuentra el portal antes de que se agote el tiempo.
 
-Date: 11/02/2024
+[![C](https://img.shields.io/badge/language-C-00599C?logo=c&logoColor=white)](source/BBMAN.c)
+[![SDL2](https://img.shields.io/badge/render-SDL2-0B7285)](https://www.libsdl.org/)
+[![Make](https://img.shields.io/badge/build-Make-A42E2B?logo=gnu&logoColor=white)](Makefile)
+[![MIT](https://img.shields.io/badge/license-MIT-F4C430)](LICENSE)
 
-Course: Digital Systems Design
+<img src="docs/images/bomberman-preview.jpg" alt="Pantalla de inicio de Bomberman TEC" width="820">
 
-## Instalacion
+</div>
 
-1. Instala gcc, make y SDL2 (ver `requirements.txt`).
-   - Script automatico:
-     ```
-     bash scripts/install_deps.sh
-     ```
-   - Windows: usa MSYS2 (MinGW64) o WSL y ejecuta el script desde ahi.
-   - macOS (Homebrew): `brew install sdl2`
-   - Ubuntu/Debian: `sudo apt install libsdl2-dev`
-   - Fedora: `sudo dnf install SDL2-devel`
-   - Arch: `sudo pacman -S sdl2`
-2. Verifica que `sdl2-config` este en tu PATH.
-3. Desde la raiz del repo ejecuta: `make`
+## Descripción
 
-## Uso
+Bomberman TEC es un juego de escritorio desarrollado como proyecto del curso
+**Diseño de Sistemas Digitales**. El jugador debe abrirse paso por escenarios
+llenos de bloques destructibles, evitar explosiones y monstruos, recoger
+mejoras y alcanzar el portal de salida.
 
-- `make`: limpia, compila y ejecuta el juego.
-- `make Build`: solo compila.
-- `make build_run`: clean + build + run.
-- `make clean`: elimina `salida` y archivos temporales.
-- Ejecutable: `./salida` (desde la raiz; los assets se cargan desde `assets/`).
-- Pantalla completa: `./salida -f` (opcional).
+El juego incluye tres niveles con ambientaciones diferentes, dificultad
+progresiva, vidas, puntuación y un límite de tiempo.
 
-## Controles de juego
+## Características
 
-- Flechas: mover al jugador.
-- `1`/`2`/`3`/`4`: colocar bombas (segun powerups disponibles).
-- `Espacio`: iniciar desde el menu y volver al menu tras Game Over.
-- `Esc`: salir.
+- Tres niveles con escenarios de césped, lava y agua.
+- Enemigos con movimiento automático y velocidad progresiva.
+- Hasta cuatro bombas simultáneas mediante mejoras.
+- Power-ups de velocidad, alcance de explosión y bomba adicional.
+- Sistema de vidas, puntuación y cuenta regresiva.
+- Modo ventana y pantalla completa.
+
+## Inicio rápido
+
+Necesitas un compilador de C, `make` y SDL2 con `sdl2-config` disponible en el
+`PATH`.
+
+```bash
+git clone https://github.com/IPrometheusI/Bomberman_TEC.git
+cd Bomberman_TEC
+make Build
+./salida
+```
+
+Si todavía no tienes las dependencias, el instalador interactivo detecta tu
+sistema y muestra las opciones disponibles:
+
+```bash
+bash scripts/install_deps.sh
+```
+
+> [!IMPORTANT]
+> Ejecuta el juego desde la raíz del repositorio para que pueda encontrar los
+> recursos de la carpeta `assets/`.
+
+Para iniciar en pantalla completa:
+
+```bash
+./salida -f
+```
+
+<details>
+<summary><strong>Instalación manual de SDL2</strong></summary>
+
+| Sistema | Comando |
+| --- | --- |
+| macOS | `brew install sdl2` |
+| Ubuntu / Debian | `sudo apt install libsdl2-dev` |
+| Fedora | `sudo dnf install SDL2-devel` |
+| Arch Linux | `sudo pacman -S sdl2` |
+| Windows | Instala SDL2 desde MSYS2 (MinGW64) o utiliza WSL. |
+
+</details>
+
+## Controles
+
+| Tecla | Acción |
+| :---: | --- |
+| <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> | Mover al jugador |
+| <kbd>1</kbd> | Colocar la primera bomba |
+| <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> | Colocar bombas adicionales después de obtener power-ups |
+| <kbd>Espacio</kbd> | Iniciar la partida o volver al menú |
+| <kbd>Esc</kbd> | Salir del juego |
+
+## Comandos disponibles
+
+| Comando | Descripción |
+| --- | --- |
+| `make` | Limpia, compila y ejecuta el juego. |
+| `make Build` | Compila el ejecutable `salida`. |
+| `make run` | Ejecuta una compilación existente. |
+| `make build_run` | Limpia, compila y ejecuta. |
+| `make clean` | Elimina el binario y los archivos temporales. |
 
 ## Estructura del proyecto
 
-- `source/BBMAN.c`: logica principal del juego (SDL2).
-- `assets/`: sprites y fondos `.bmp`.
-- `Makefile`: tareas de build/limpieza/ejecucion.
-- `salida`: binario generado por `make`.
-- `requirements.txt`: lista referencial de dependencias del sistema.
-- `README.md`: esta guia.
+```text
+Bomberman_TEC/
+├── assets/               # Sprites, fondos y recursos gráficos
+├── scripts/
+│   └── install_deps.sh   # Instalador de dependencias por plataforma
+├── source/
+│   └── BBMAN.c           # Lógica, entrada y renderizado del juego
+├── Makefile              # Compilación y ejecución
+└── requirements.txt      # Dependencias del sistema
+```
+
+## Autores
+
+- Maickol Fernández
+- Jordi Pérez
+
+## Licencia
+
+Distribuido bajo la [licencia MIT](LICENSE).
