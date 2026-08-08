@@ -95,18 +95,7 @@ Para iniciar en pantalla completa:
 | `make build_run` | Limpia, compila y ejecuta. |
 | `make clean` | Elimina el binario y los archivos temporales. |
 
-## Estructura del proyecto
 
-```text
-Bomberman_TEC/
-├── assets/               # Sprites, fondos y recursos gráficos
-├── scripts/
-│   └── install_deps.sh   # Instalador de dependencias por plataforma
-├── source/
-│   └── BBMAN.c           # Lógica, entrada y renderizado del juego
-├── Makefile              # Compilación y ejecución
-└── requirements.txt      # Dependencias del sistema
-```
 
 ## Autores
 
